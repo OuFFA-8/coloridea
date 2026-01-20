@@ -1,0 +1,11 @@
+<span
+  class="px-3 py-1 text-sm rounded-full font-medium"
+  [class.bg-green-100]="status() === 'active'"
+  [class.text-green-700]="status() === 'active'"
+  [class.bg-yellow-100]="status() === 'pending'"
+  [class.text-yellow-700]="status() === 'pending'"
+  [class.bg-blue-100]="status() === 'completed'"
+  [class.text-blue-700]="status() === 'completed'"
+>
+  {{ status() }}
+</span>

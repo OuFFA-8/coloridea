@@ -1,0 +1,15 @@
+<div class="p-6 space-y-6">
+  <h1 class="text-2xl font-semibold">Projects</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    @for (project of projects; track project.id) {
+      <app-project-card
+        [title]="project.name"
+        [client]="project.client"
+        [status]="project.status"
+        [progress]="project.progress"
+        (view)="openDetails(project.id)"
+      />
+    }
+  </div>
+</div>

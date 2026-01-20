@@ -1,0 +1,29 @@
+<div class="min-h-screen flex bg-slate-100">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 text-white flex flex-col">
+    <div class="p-6 text-xl font-bold border-b border-slate-700">Admin Panel</div>
+
+    <nav class="flex-1 p-4 space-y-2">
+      <a
+        routerLink="/admin/dashboard"
+        routerLinkActive="bg-slate-700"
+        class="block px-4 py-2 rounded hover:bg-slate-700 transition"
+      >
+        Dashboard
+      </a>
+
+      <a
+        routerLink="/admin/projects"
+        routerLinkActive="bg-slate-700"
+        class="block px-4 py-2 rounded hover:bg-slate-700 transition"
+      >
+        Projects
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Content -->
+  <main class="flex-1 p-6">
+    <router-outlet />
+  </main>
+</div>
