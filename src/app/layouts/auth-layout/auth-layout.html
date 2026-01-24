@@ -1,16 +1,52 @@
-<div class="min-h-screen flex">
-  <!-- Left Branding -->
+<div class="h-screen w-full flex bg-[#0b0f1a] overflow-hidden border-box">
   <div
-    class="hidden lg:flex w-1/2 bg-gradient-to-br from-slate-900 to-slate-800 text-white items-center justify-center"
+    class="hidden lg:flex w-5/12 h-full relative items-center justify-center border-r border-gray-800/50 flex-shrink-0"
   >
-    <div class="text-center space-y-4 px-10">
-      <h1 class="text-4xl font-bold tracking-wide">ColorIdea</h1>
-      <p class="text-slate-300 text-lg">Visual Production & Project Tracking Platform</p>
+    <div
+      class="absolute top-[-10%] left-[-10%] w-full h-full bg-blue-600/5 blur-[120px] rounded-full pointer-events-none"
+    ></div>
+    <div
+      class="absolute bottom-[-10%] right-[-10%] w-full h-full bg-indigo-600/5 blur-[120px] rounded-full pointer-events-none"
+    ></div>
+
+    <div class="relative z-10 text-center px-12">
+      <div class="inline-block mb-6">
+        <h1 class="text-5xl font-black text-white tracking-tighter italic m-0">
+          Color<span class="text-blue-500">Idea</span>
+        </h1>
+        <div
+          class="h-1 w-full bg-gradient-to-r from-transparent via-blue-500 to-transparent mt-2"
+        ></div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="text-gray-400 text-lg font-light tracking-wide italic m-0">
+          "Where imagination meets execution."
+        </p>
+        <p class="text-[10px] font-bold text-blue-500/50 uppercase tracking-[0.4em] m-0">
+          Next-Gen Visual Production
+        </p>
+      </div>
+
+      <div class="flex gap-3 justify-center mt-12 opacity-40">
+        @for (item of ['Analytics', 'Production', 'Tracking']; track item) {
+          <span
+            class="px-3 py-1 border border-gray-700 rounded-full text-[9px] uppercase font-bold tracking-widest text-gray-500"
+          >
+            {{ item }}
+          </span>
+        }
+      </div>
     </div>
   </div>
 
-  <!-- Right Content -->
-  <div class="w-full lg:w-1/2 flex items-center justify-center bg-slate-50">
-    <router-outlet></router-outlet>
+  <div
+    class="w-full lg:w-7/12 h-full flex items-center justify-center p-6 md:p-8 relative box-border overflow-hidden"
+  >
+    <div class="lg:hidden absolute inset-0 bg-blue-600/5 blur-3xl pointer-events-none"></div>
+
+    <div class="w-full max-w-md relative z-10 flex flex-col justify-center overflow-visible">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>

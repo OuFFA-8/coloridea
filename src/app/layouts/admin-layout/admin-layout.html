@@ -1,29 +1,14 @@
-<div class="min-h-screen flex bg-slate-100">
-  <!-- Sidebar -->
-  <aside class="w-64 bg-slate-900 text-white flex flex-col">
-    <div class="p-6 text-xl font-bold border-b border-slate-700">Admin Panel</div>
+<div class="flex h-screen bg-[#0b0f1a] overflow-hidden font-sans">
+  <app-admin-sidebar class="hidden md:block"></app-admin-sidebar>
 
-    <nav class="flex-1 p-4 space-y-2">
-      <a
-        routerLink="/admin/dashboard"
-        routerLinkActive="bg-slate-700"
-        class="block px-4 py-2 rounded hover:bg-slate-700 transition"
-      >
-        Dashboard
-      </a>
+  <div class="flex-1 flex flex-col min-w-0 relative">
+    <app-header></app-header>
 
-      <a
-        routerLink="/admin/projects"
-        routerLinkActive="bg-slate-700"
-        class="block px-4 py-2 rounded hover:bg-slate-700 transition"
-      >
-        Projects
-      </a>
-    </nav>
-  </aside>
-
-  <!-- Content -->
-  <main class="flex-1 p-6">
-    <router-outlet />
-  </main>
+    <main class="flex-1 overflow-y-auto custom-scrollbar bg-[#0b0f1a]">
+      <div class="max-w-[1600px] mx-auto">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+    <app-footer class="flex-shrink-0"></app-footer>
+  </div>
 </div>

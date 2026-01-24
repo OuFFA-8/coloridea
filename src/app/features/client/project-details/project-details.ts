@@ -1,32 +1,32 @@
+import { ChartCard } from './../../../shared/components/chart-card/chart-card';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Project } from '../../../core/models/project';
+import { ProjectsServices } from '../../../core/services/projects-services';
+import { CommonModule } from '@angular/common';
+import { StatusBadge } from '../../../shared/components/status-badge/status-badge';
+import { ProgressBar } from '../../../shared/components/progress-bar/progress-bar';
 
 @Component({
   selector: 'app-project-details',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, ChartCard],
   templateUrl: './project-details.html',
   styleUrl: './project-details.css',
 })
 export class ProjectDetails implements OnInit {
-  projectId!: number;
+  project!: Project;
 
-  project = {
-    name: 'Website Redesign',
-    client: 'Ahmed',
-    status: 'In Progress',
-    description: 'Redesigning the company website with a modern UI and better UX.',
-  };
+  pieData = [40, 30, 30];
+  lineData = [10, 25, 40, 60, 80];
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    private projectsService: ProjectsServices,
   ) {}
 
-  ngOnInit() {
-    this.projectId = Number(this.route.snapshot.paramMap.get('id'));
-  }
-
-  back() {
-    this.router.navigate(['/admin/projects']);
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.project = this.projectsService.getById(id)!;
   }
 }

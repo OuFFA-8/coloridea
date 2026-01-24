@@ -1,1 +1,119 @@
-<p>settings works!</p>
+<div class="h-full w-full flex flex-col p-6 box-border bg-[#0b0f1a] overflow-hidden">
+  <div class="flex-shrink-0 mb-8">
+    <h1 class="text-3xl font-black text-white tracking-tighter italic">
+      System <span class="text-blue-500">Configuration</span>
+    </h1>
+    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">
+      Control your studio environment
+    </p>
+  </div>
+
+  <div class="flex-1 flex gap-8 min-h-0">
+    <div class="w-64 flex-shrink-0 space-y-2">
+      <button
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white text-xs font-black uppercase tracking-widest border-none shadow-lg shadow-blue-900/20 cursor-pointer"
+      >
+        <span>⚙️</span> General
+      </button>
+      <button
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-gray-800/50 hover:text-gray-300 text-xs font-black uppercase tracking-widest border-none transition-all cursor-pointer bg-transparent"
+      >
+        <span>🔒</span> Security
+      </button>
+      <button
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-gray-800/50 hover:text-gray-300 text-xs font-black uppercase tracking-widest border-none transition-all cursor-pointer bg-transparent"
+      >
+        <span>🔔</span> Notifications
+      </button>
+      <button
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[red]/60 hover:bg-red-500/5 hover:text-red-500 text-xs font-black uppercase tracking-widest border-none transition-all cursor-pointer bg-transparent mt-10"
+      >
+        <span>⚠️</span> Danger Zone
+      </button>
+    </div>
+
+    <div
+      class="flex-1 bg-[#111827] rounded-[2.5rem] border border-gray-800 p-8 overflow-y-auto custom-scrollbar shadow-2xl"
+    >
+      <form class="space-y-10">
+        <section>
+          <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
+            Studio Branding <span class="h-px flex-1 bg-gray-800"></span>
+          </h3>
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1"
+                >Studio Name</label
+              >
+              <input
+                type="text"
+                value="ColorIdea Studio"
+                class="w-full bg-gray-950/50 border border-gray-800 text-white rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 transition-all font-medium"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1"
+                >Support Email</label
+              >
+              <input
+                type="email"
+                value="admin@coloridea.com"
+                class="w-full bg-gray-950/50 border border-gray-800 text-white rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 transition-all font-medium"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
+            System Preferences <span class="h-px flex-1 bg-gray-800"></span>
+          </h3>
+          <div class="space-y-4">
+            <div
+              class="flex items-center justify-between p-4 bg-gray-950/30 rounded-2xl border border-gray-800/50"
+            >
+              <div>
+                <p class="text-sm font-bold text-gray-300">Project Auto-Archive</p>
+                <p class="text-[10px] text-gray-500 uppercase tracking-tighter">
+                  Automatically archive projects after 30 days of completion
+                </p>
+              </div>
+              <div class="w-10 h-5 bg-blue-600 rounded-full relative cursor-pointer">
+                <div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full shadow-sm"></div>
+              </div>
+            </div>
+
+            <div
+              class="flex items-center justify-between p-4 bg-gray-950/30 rounded-2xl border border-gray-800/50"
+            >
+              <div>
+                <p class="text-sm font-bold text-gray-300">Client Notifications</p>
+                <p class="text-[10px] text-gray-500 uppercase tracking-tighter">
+                  Send automated progress updates to clients
+                </p>
+              </div>
+              <div class="w-10 h-5 bg-gray-700 rounded-full relative cursor-pointer">
+                <div class="absolute left-1 top-1 w-3 h-3 bg-gray-400 rounded-full shadow-sm"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="pt-6 border-t border-gray-800 flex justify-end gap-4">
+          <button
+            type="button"
+            class="px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors border-none bg-transparent cursor-pointer"
+          >
+            Discard
+          </button>
+          <button
+            type="submit"
+            class="px-8 py-3 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition-all cursor-pointer"
+          >
+            Update Configuration
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

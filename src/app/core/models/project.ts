@@ -1,10 +1,10 @@
-// core/models/project.ts
-export type ProjectStatus = 'active' | 'pending' | 'completed';
+export type ProjectStatus = 'active' | 'completed' | 'pending';
 
 export interface Project {
   id: number;
   name: string;
-  client: string;
+  description: string;
   status: ProjectStatus;
   progress: number;
+  clientId: number;
 }

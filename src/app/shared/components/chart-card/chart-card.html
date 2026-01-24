@@ -1,1 +1,51 @@
-<p>chart-card works!</p>
+<div
+  class="bg-[#111827] p-6 rounded-[2rem] border border-gray-800 shadow-2xl relative overflow-hidden group"
+>
+  <div
+    class="absolute -top-12 -left-12 w-32 h-32 bg-blue-600/5 blur-[80px] rounded-full pointer-events-none"
+  ></div>
+
+  <div class="flex items-center justify-between mb-8 relative z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-1 h-5 bg-blue-500 rounded-full"></div>
+      <h3 class="font-black text-white text-sm uppercase tracking-[0.2em] leading-none">
+        {{ title }}
+      </h3>
+    </div>
+
+    <span
+      class="px-2.5 py-1 bg-gray-900/80 rounded-lg text-[9px] font-mono font-bold text-gray-500 border border-gray-800 uppercase tracking-tighter"
+    >
+      Mode: {{ type }}
+    </span>
+  </div>
+
+  <div
+    class="h-64 flex flex-col items-center justify-center rounded-[1.5rem] bg-gray-950/50 border border-gray-800/50 relative group-hover:border-blue-500/20 transition-all duration-500"
+  >
+    <div class="flex flex-col items-center gap-4">
+      <div class="relative w-20 h-20 flex items-center justify-center">
+        <span class="absolute inset-0 border-2 border-blue-500/20 rounded-full animate-ping"></span>
+        <span class="text-3xl opacity-40">📊</span>
+      </div>
+      <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">
+        Rendering {{ type }} Engine
+      </p>
+    </div>
+
+    <div
+      class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-blue-600/5 to-transparent pointer-events-none"
+    ></div>
+  </div>
+
+  <div class="mt-6 flex justify-between items-center opacity-40">
+    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500"
+      >Real-time Data Stream</span
+    >
+    <div class="flex gap-1">
+      <span class="w-1 h-1 rounded-full bg-blue-500"></span>
+      <span class="w-1 h-1 rounded-full bg-gray-700"></span>
+      <span class="w-1 h-1 rounded-full bg-gray-700"></span>
+    </div>
+  </div>
+</div>

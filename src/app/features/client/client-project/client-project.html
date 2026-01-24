@@ -1,28 +1,99 @@
-<h1 class="text-2xl font-bold mb-6">My Projects</h1>
-
-<div class="grid grid-cols-3 gap-6">
-  <!-- Project Card -->
-  <div
-    routerLink="/client/projects/1"
-    class="bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer"
-  >
-    <div class="p-4 border-b">
-      <h2 class="font-semibold text-lg">Mall Construction</h2>
-      <p class="text-sm text-gray-500">Cairo</p>
+<div class="p-8 space-y-8 bg-[#0b0f1a] min-h-screen text-gray-300">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-3xl font-black text-white tracking-tight">My Projects</h1>
+      <p class="text-sm text-gray-500 mt-1 font-medium">
+        Track your ongoing ventures and milestones.
+      </p>
     </div>
 
-    <div class="p-4 space-y-3">
-      <div>
-        <p class="text-xs text-gray-500 mb-1">Progress</p>
-        <div class="w-full bg-slate-200 h-2 rounded">
-          <div class="bg-blue-600 h-2 rounded w-2/3"></div>
-        </div>
-      </div>
-
-      <div class="flex justify-between text-sm">
-        <span class="text-gray-500">Status</span>
-        <span class="text-green-600 font-medium">Active</span>
-      </div>
+    <div class="flex bg-[#111827] p-1 rounded-xl border border-gray-800">
+      <button
+        class="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold border-none cursor-pointer shadow-lg shadow-blue-900/20"
+      >
+        All
+      </button>
+      <button
+        class="px-4 py-1.5 text-gray-500 hover:text-white rounded-lg text-xs font-bold border-none bg-transparent cursor-pointer transition-colors"
+      >
+        Active
+      </button>
+      <button
+        class="px-4 py-1.5 text-gray-500 hover:text-white rounded-lg text-xs font-bold border-none bg-transparent cursor-pointer transition-colors"
+      >
+        Completed
+      </button>
     </div>
   </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    @for (project of projects; track project.id) {
+      <div
+        class="group relative bg-[#111827] rounded-[2rem] border border-gray-800/50 hover:border-blue-500/30 transition-all duration-500 p-8 flex flex-col h-full shadow-xl hover:shadow-blue-900/10"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <span
+            class="text-[10px] font-mono font-bold text-gray-600 tracking-tighter uppercase tracking-[0.2em]"
+            >Ref: #PRJ-{{ project.id }}</span
+          >
+          <div
+            class="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+            [class]="
+              project.status.toString().toLowerCase() === 'active'
+                ? 'bg-blue-500'
+                : 'bg-emerald-500'
+            "
+          ></div>
+        </div>
+
+        <div class="flex-1 mb-8">
+          <h2
+            class="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300 tracking-tight"
+          >
+            {{ project.name }}
+          </h2>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none"
+              >Status:</span
+            >
+            <span class="text-[10px] font-black uppercase text-blue-500 tracking-widest">{{
+              project.status
+            }}</span>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex justify-between items-end">
+            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest"
+              >Completion</span
+            >
+            <span class="text-sm font-black text-white italic">{{ project.progress }}%</span>
+          </div>
+          <div class="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden p-[1px]">
+            <div
+              class="h-full bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(37,99,235,0.3)]"
+              [style.width.%]="project.progress"
+            ></div>
+          </div>
+        </div>
+
+        <button
+          class="mt-8 w-full py-4 bg-gray-800/50 hover:bg-blue-600 text-gray-400 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 border-none cursor-pointer shadow-inner no-underline"
+          (click)="openDetails(project.id)"
+        >
+          Project Console →
+        </button>
+      </div>
+    } @empty {
+      <div
+        class="col-span-full py-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-[3rem]"
+      >
+        <div class="text-4xl mb-4 opacity-20 italic font-black text-white">Empty.</div>
+        <p class="text-gray-600 text-sm font-medium tracking-wide">
+          No projects assigned to your account yet.
+        </p>
+      </div>
+    }
+  </div>
 </div>
+]

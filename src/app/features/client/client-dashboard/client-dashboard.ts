@@ -1,26 +1,25 @@
 import { Component } from '@angular/core';
+import { ChartCard } from '../../../shared/components/chart-card/chart-card';
 
 @Component({
   selector: 'app-client-dashboard',
-  imports: [],
+  imports: [ChartCard],
   templateUrl: './client-dashboard.html',
   styleUrl: './client-dashboard.css',
 })
 export class ClientDashboard {
-  kpis = [
-    { title: 'Total Services', value: '7' },
-    { title: 'Completed', value: '3' },
-    { title: 'In Progress', value: '3' },
-    { title: 'Overall Progress', value: '45%' },
-  ];
+  projectName = 'New Capital Compound';
+
+  progress = 72;
 
   services = [
-    { name: 'Aerial Sessions', planned: 4, done: 2, progress: 50, status: 'In Progress', statusColor: 'bg-yellow-500' },
-    { name: 'Ground Sessions', planned: 4, done: 4, progress: 100, status: 'Done', statusColor: 'bg-green-500' },
-    { name: 'Timelapse', planned: 1, done: 1, progress: 100, status: 'Active', statusColor: 'bg-green-500' },
-    { name: 'Monthly Videos', planned: 12, done: 5, progress: 42, status: 'In Progress', statusColor: 'bg-yellow-500' },
-    { name: 'Quarterly Videos', planned: 4, done: 1, progress: 25, status: 'In Progress', statusColor: 'bg-yellow-500' },
-    { name: 'Photography', planned: 12, done: 6, progress: 50, status: 'In Progress', statusColor: 'bg-yellow-500' },
-    { name: 'Final Video', planned: 1, done: 0, progress: 0, status: 'Pending', statusColor: 'bg-gray-500' },
+    { name: 'Aerial Photography Sessions', done: 3, total: 4 },
+    { name: 'Ground Photography Sessions', done: 2, total: 4 },
+    { name: 'Timelapse Camera', done: 1, total: 1 },
+    { name: 'Monthly Update Videos', done: 8, total: 12 },
+    { name: 'Quarterly Edited Videos', done: 2, total: 4 },
+    { name: 'Photo Sessions', done: 10, total: 12 },
   ];
+
+  chartData = [72, 28];
 }

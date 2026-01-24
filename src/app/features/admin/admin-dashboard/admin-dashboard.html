@@ -1,23 +1,108 @@
-<h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
-
-<div class="grid grid-cols-4 gap-6">
-  <div class="bg-white p-4 rounded shadow">
-    <p class="text-sm text-gray-500">Total Clients</p>
-    <p class="text-2xl font-bold">12</p>
+<div class="p-8 space-y-8 bg-[#0b0f1a] min-h-screen text-gray-300">
+  <div class="flex justify-between items-end mb-4">
+    <div>
+      <h1 class="text-2xl font-bold text-white tracking-tight">System Overview</h1>
+      <p class="text-sm text-gray-500">Welcome back, here's what's happening today.</p>
+    </div>
   </div>
 
-  <div class="bg-white p-4 rounded shadow">
-    <p class="text-sm text-gray-500">Active Projects</p>
-    <p class="text-2xl font-bold">27</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div
+      class="bg-[#111827] p-6 rounded-2xl border border-gray-800 hover:border-blue-500/40 transition-all"
+    >
+      <div class="flex justify-between items-center mb-4">
+        <span class="text-2xl">👥</span>
+        <span class="text-green-500 text-xs font-bold">+12%</span>
+      </div>
+      <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Total Clients</p>
+      <h2 class="text-3xl font-bold text-white mt-1">{{ totalClients }}</h2>
+    </div>
+
+    <div
+      class="bg-[#111827] p-6 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all"
+    >
+      <div class="flex justify-between items-center mb-4 text-2xl">💼</div>
+      <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Total Projects</p>
+      <h2 class="text-3xl font-bold text-white mt-1">{{ totalProjects }}</h2>
+    </div>
+
+    <div
+      class="bg-[#111827] p-6 rounded-2xl border border-gray-800 hover:border-amber-500/40 transition-all"
+    >
+      <div class="flex justify-between items-center mb-4 text-2xl">⚡</div>
+      <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Active Projects</p>
+      <h2 class="text-3xl font-bold text-white mt-1">{{ activeProjects }}</h2>
+    </div>
+
+    <div
+      class="bg-[#111827] p-6 rounded-2xl border border-gray-800 hover:border-emerald-500/40 transition-all"
+    >
+      <div class="flex justify-between items-center mb-4 text-2xl">✅</div>
+      <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+        Completed Projects
+      </p>
+      <h2 class="text-3xl font-bold text-white mt-1">{{ completedProjects }}</h2>
+    </div>
   </div>
 
-  <div class="bg-white p-4 rounded shadow">
-    <p class="text-sm text-gray-500">Completed</p>
-    <p class="text-2xl font-bold">8</p>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800">
+      <app-chart-card title="Projects Status" [type]="'doughnut'" [data]="pieData"></app-chart-card>
+    </div>
+    <div class="bg-[#111827] p-6 rounded-2xl border border-gray-800">
+      <app-chart-card title="Progress Over Time" [type]="'line'" [data]="lineData"></app-chart-card>
+    </div>
   </div>
 
-  <div class="bg-white p-4 rounded shadow">
-    <p class="text-sm text-gray-500">Pending</p>
-    <p class="text-2xl font-bold">4</p>
+  <div class="bg-[#111827] rounded-2xl border border-gray-800 overflow-hidden shadow-2xl">
+    <div class="p-6 border-b border-gray-800 flex justify-between items-center">
+      <h3 class="font-bold text-white text-lg">Latest Projects</h3>
+      <a class="text-sm text-blue-400 hover:text-blue-300 no-underline cursor-pointer">View All</a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="bg-gray-900/40 text-gray-500 uppercase text-[10px] tracking-widest font-bold">
+          <tr>
+            <th class="px-6 py-4">Project</th>
+            <th class="px-6 py-4">Client</th>
+            <th class="px-6 py-4">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+          @for (
+            p of [
+              { name: 'Website Design', client: 'Ahmed', status: 'Active' },
+              { name: 'Mobile App', client: 'Sara', status: 'Completed' },
+              { name: 'Dashboard UI', client: 'Mohamed', status: 'Pending' },
+            ];
+            track p.name
+          ) {
+            <tr class="hover:bg-gray-800/40 transition-colors">
+              <td class="px-6 py-4 text-white font-medium">{{ p.name }}</td>
+              <td class="px-6 py-4">{{ p.client }}</td>
+              <td class="px-6 py-4">
+                @if (p.status === 'Active') {
+                  <span
+                    class="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-[11px] font-bold border border-blue-500/20"
+                    >Active</span
+                  >
+                } @else if (p.status === 'Completed') {
+                  <span
+                    class="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-[11px] font-bold border border-emerald-500/20"
+                    >Completed</span
+                  >
+                } @else {
+                  <span
+                    class="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-[11px] font-bold border border-amber-500/20"
+                    >{{ p.status }}</span
+                  >
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

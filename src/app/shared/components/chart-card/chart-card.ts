@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-chart-card',
@@ -7,5 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './chart-card.css',
 })
 export class ChartCard {
-
+  @Input({ required: true }) title!: string;
+  @Input({ required: true }) type!: 'doughnut' | 'line';
+  @Input({ required: true }) data!: number[];
 }

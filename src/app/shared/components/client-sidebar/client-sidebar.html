@@ -1,0 +1,61 @@
+<aside class="w-64 h-screen bg-[#0b0f1a] border-r border-gray-800 p-6 flex flex-col shadow-2xl">
+  <div class="mb-10 px-4">
+    <h2 class="text-xl font-black text-white tracking-tighter italic">
+      Color<span class="text-blue-500 italic">Idea</span>
+      <span
+        class="block text-[10px] not-italic font-bold text-gray-500 uppercase tracking-[0.3em] mt-1"
+        >Client Area</span
+      >
+    </h2>
+  </div>
+
+  <nav class="space-y-1.5 flex-1">
+    <a
+      routerLink="/client/dashboard"
+      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
+    >
+      <span class="text-lg opacity-60 group-[.active-link]:opacity-100">📊</span>
+      Dashboard
+    </a>
+
+    <a
+      routerLink="/client/projects"
+      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
+    >
+      <span class="text-lg opacity-60 group-[.active-link]:opacity-100">💼</span>
+      My Projects
+    </a>
+
+    <a
+      routerLink="/client/files"
+      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
+    >
+      <span class="text-lg opacity-60 group-[.active-link]:opacity-100">📁</span>
+      Files
+    </a>
+
+    <div class="h-px bg-gray-800/50 my-6 mx-4"></div>
+
+    <a
+      routerLink="/client/profile"
+      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
+    >
+      <span class="text-lg opacity-60 group-[.active-link]:opacity-100">👤</span>
+      Profile
+    </a>
+  </nav>
+
+  <div class="mt-auto pt-6 border-t border-gray-800/50">
+    <button
+      class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-400/70 hover:text-red-400 hover:bg-red-400/5 transition-all border-none bg-transparent cursor-pointer"
+    >
+      <span>🚀</span>
+      Log Out
+    </button>
+  </div>
+</aside>

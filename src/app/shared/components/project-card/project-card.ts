@@ -1,18 +1,25 @@
-import { Component, input, output } from '@angular/core';
+import { Component, Input, input, output } from '@angular/core';
 import { StatusBadge } from '../status-badge/status-badge';
 import { ProgressBar } from '../progress-bar/progress-bar';
+import { ProjectStatus } from '../../../core/models/project';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-project-card',
-  imports: [StatusBadge, ProgressBar],
+  imports: [ProgressBar, StatusBadge],
   templateUrl: './project-card.html',
   styleUrl: './project-card.css',
 })
 export class ProjectCard {
-  title = input<string>();
-  client = input<string>();
-  status = input<'active' | 'pending' | 'completed'>('pending');
-  progress = input<number>(0);
+  @Input() id!: number;
+  @Input() name!: string;
+  @Input() status!: ProjectStatus;
+  @Input() progress!: number;
+  @Input() clientId!: number;
 
-  view = output<void>();
+  constructor(private router: Router) {}
+
+  open() {
+    this.router.navigate(['/client/projects', this.id]);
+  }
 }

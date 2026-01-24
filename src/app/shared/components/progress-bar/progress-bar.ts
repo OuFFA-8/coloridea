@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 
 @Component({
   selector: 'app-progress-bar',
@@ -7,5 +7,5 @@ import { Component, input } from '@angular/core';
   styleUrl: './progress-bar.css',
 })
 export class ProgressBar {
-  value = input<number>(0);
+  @Input({ required: true }) value!: number;
 }
