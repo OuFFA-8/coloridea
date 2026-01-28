@@ -1,0 +1,95 @@
+<div class="space-y-8 animate-fadeIn">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div
+      class="bg-[#111827] p-6 rounded-[2rem] border border-gray-800 shadow-xl relative overflow-hidden"
+    >
+      <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">
+        Total Contract Value
+      </p>
+      <h3 class="text-2xl font-black text-white m-0 tracking-tighter">
+        {{ totalAgreedAmount | number }} <span class="text-blue-500 text-xs">{{ currency }}</span>
+      </h3>
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-4xl">💰</div>
+    </div>
+
+    <div
+      class="bg-[#111827] p-6 rounded-[2rem] border border-emerald-500/20 shadow-xl bg-emerald-500/[0.02]"
+    >
+      <p class="text-[9px] font-black text-emerald-500/60 uppercase tracking-widest mb-1">
+        Total Paid Amount
+      </p>
+      <h3 class="text-2xl font-black text-emerald-500 m-0 tracking-tighter">
+        {{ paidAmount | number }} <span class="text-xs">{{ currency }}</span>
+      </h3>
+    </div>
+
+    <div
+      class="bg-[#111827] p-6 rounded-[2rem] border border-amber-500/20 shadow-xl bg-amber-500/[0.02]"
+    >
+      <p class="text-[9px] font-black text-amber-500/60 uppercase tracking-widest mb-1">
+        Remaining Balance
+      </p>
+      <h3 class="text-2xl font-black text-amber-500 m-0 tracking-tighter">
+        {{ remainingAmount | number }} <span class="text-xs">{{ currency }}</span>
+      </h3>
+    </div>
+  </div>
+
+  <div class="bg-[#111827] rounded-[2.5rem] border border-gray-800 overflow-hidden shadow-2xl">
+    <div class="p-7 border-b border-gray-800 flex justify-between items-center bg-gray-950/20">
+      <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-400 m-0">
+        Payment Schedule & Breakdown
+      </h3>
+      <span class="text-[9px] font-bold text-gray-600 uppercase italic"
+        >All amounts are in {{ currency }}</span
+      >
+    </div>
+
+    <div class="divide-y divide-gray-800/50">
+      @for (item of installments; track item.id) {
+        <div
+          class="group flex flex-col md:flex-row md:items-center justify-between p-6 hover:bg-white/[0.02] transition-colors"
+        >
+          <div class="flex items-center gap-5 mb-4 md:mb-0">
+            <div
+              class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center font-black text-xs text-gray-500 group-hover:border-blue-500/30 transition-colors"
+            >
+              0{{ item.id }}
+            </div>
+            <div>
+              <p class="text-white font-bold text-sm m-0">Installment #{{ item.id }}</p>
+              <p class="text-[9px] font-black text-gray-600 uppercase tracking-widest m-0">
+                Due Date: {{ item.dueDate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:items-end">
+            <p
+              class="text-xl font-black {{
+                item.status === 'paid' ? 'text-white' : 'text-gray-500'
+              }} m-0 tracking-tight"
+            >
+              {{ item.amount | number }}
+              <span class="text-[10px] font-bold opacity-50">{{ currency }}</span>
+            </p>
+
+            <div class="flex items-center gap-2 mt-1">
+              @if (item.status === 'paid') {
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span class="text-[8px] font-black text-emerald-500 uppercase tracking-widest"
+                  >Transaction Completed</span
+                >
+              } @else {
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                <span class="text-[8px] font-black text-amber-500 uppercase tracking-widest"
+                  >Awaiting Payment</span
+                >
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

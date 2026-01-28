@@ -1,3 +1,4 @@
+import { Deliverables } from './features/client/deliverables/deliverables';
 import { Projects } from './features/admin/projects/projects';
 import { adminGuard } from './core/guards/admin-guard';
 import { Routes } from '@angular/router';
@@ -17,8 +18,8 @@ import { ClientProject } from './features/client/client-project/client-project';
 import { AdminProjectDetails } from './features/admin/admin-project-details/admin-project-details';
 import { ClientDetails } from './features/admin/client-details/client-details';
 import { Settings } from './features/admin/settings/settings';
-import { Files } from './features/client/files/files';
 import { Profile } from './features/client/profile/profile';
+import { Financials } from './features/client/financials/financials';
 
 export const routes: Routes = [
   {
@@ -34,7 +35,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: ClientDashboard },
       { path: 'projects', component: ClientProject },
-      { path: 'files', component: Files },
+      { path: 'financials', component: Financials },
       { path: 'profile', component: Profile },
       { path: 'projects/:id', component: ProjectDetails },
     ],

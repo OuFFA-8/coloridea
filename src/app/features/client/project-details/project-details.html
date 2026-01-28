@@ -1,5 +1,7 @@
-<div class="p-8 space-y-8 bg-[#0b0f1a] min-h-screen text-gray-300">
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div
+  class="h-full w-full flex flex-col p-8 space-y-8 bg-[#0b0f1a] overflow-y-auto custom-scrollbar text-gray-300 box-border"
+>
+  <div class="flex-shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
     <div>
       <div
         class="flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500"
@@ -10,7 +12,7 @@
         <span>/</span>
         <span class="text-blue-500">Detail View</span>
       </div>
-      <h1 class="text-3xl font-black text-white tracking-tight">{{ project.name }}</h1>
+      <h1 class="text-3xl font-black text-white tracking-tight m-0">{{ project.name }}</h1>
     </div>
 
     <div
@@ -24,15 +26,17 @@
   </div>
 
   <div
-    class="bg-[#111827] p-8 rounded-[2rem] border border-gray-800 shadow-2xl relative overflow-hidden"
+    class="flex-shrink-0 bg-[#111827] p-8 rounded-[2rem] border border-gray-800 shadow-2xl relative overflow-hidden"
   >
     <div
       class="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-[100px] pointer-events-none"
     ></div>
 
     <div class="flex justify-between items-end mb-6 relative z-10">
-      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-500">Project Vitality</h2>
-      <span class="text-3xl font-black text-white"
+      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 m-0">
+        Project Vitality
+      </h2>
+      <span class="text-3xl font-black text-white m-0"
         >{{ project.progress }}<span class="text-blue-500 text-sm">%</span></span
       >
     </div>
@@ -47,7 +51,7 @@
     </div>
   </div>
 
-  <div class="grid lg:grid-cols-2 gap-8">
+  <div class="flex-shrink-0 grid lg:grid-cols-2 gap-8">
     <div class="bg-[#111827] p-8 rounded-[2rem] border border-gray-800 shadow-xl">
       <app-chart-card
         title="Work Distribution"
@@ -60,46 +64,88 @@
     </div>
   </div>
 
-  <div class="grid lg:grid-cols-3 gap-8 text-left">
-    <div class="lg:col-span-2 bg-[#111827] p-8 rounded-[2rem] border border-gray-800">
-      <h2
-        class="text-xs font-black uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2"
+  <div class="flex-shrink-0 bg-[#111827] p-8 rounded-[2rem] border border-gray-800">
+    <h2
+      class="text-xs font-black uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2"
+    >
+      <span class="w-4 h-[1px] bg-blue-500"></span> Description
+    </h2>
+    <p class="text-gray-400 leading-relaxed text-lg font-light italic m-0">
+      "{{ project.description }}"
+    </p>
+  </div>
+
+  <div class="flex-1 space-y-6 pb-12">
+    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-gray-500 px-2">
+      Project Vault & Deliverables
+    </h2>
+
+    @for (item of projectDeliverables; track $index; let first = $first) {
+      <details
+        [attr.open]="first ? '' : null"
+        class="group bg-[#111827]/60 border border-gray-800 rounded-[2.5rem] overflow-hidden transition-all duration-500 open:bg-[#111827] open:border-blue-500/20 shadow-xl"
       >
-        <span class="w-4 h-[1px] bg-blue-500"></span> Description
-      </h2>
-      <p class="text-gray-400 leading-relaxed text-lg font-light italic">
-        "{{ project.description }}"
-      </p>
-    </div>
-
-    <div class="bg-[#111827] p-8 rounded-[2rem] border border-gray-800 flex flex-col">
-      <h2 class="text-xs font-black uppercase tracking-[0.2em] text-gray-500 mb-6">
-        Shared Assets
-      </h2>
-
-      <div class="space-y-3 flex-1">
-        @for (file of [1, 2, 3, 4]; track file) {
-          <a
-            href="https://drive.google.com"
-            target="_blank"
-            class="flex items-center gap-4 p-4 bg-gray-900/50 rounded-2xl border border-gray-800 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all no-underline group"
-          >
+        <summary
+          class="flex items-center justify-between p-7 cursor-pointer list-none outline-none"
+        >
+          <div class="flex items-center gap-5">
             <div
-              class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center text-lg group-hover:bg-blue-600 transition-colors"
+              class="w-12 h-12 bg-gray-950 rounded-2xl flex items-center justify-center text-2xl group-open:text-blue-500 transition-all shadow-inner border border-gray-800/50"
             >
-              📄
+              {{ item.icon }}
             </div>
             <div>
-              <p class="text-[11px] font-bold text-white mb-0.5 tracking-wide">
-                Document_0{{ file }}.pdf
-              </p>
-              <p class="text-[9px] text-gray-600 uppercase font-bold tracking-tighter">
-                Click to download
-              </p>
+              <h3 class="text-white font-bold text-lg tracking-tight m-0">{{ item.title }}</h3>
+              <span
+                class="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] group-open:text-blue-400 transition-colors"
+              >
+                {{ item.files.length }} Dynamic Assets
+              </span>
             </div>
-          </a>
-        }
+          </div>
+          <div
+            class="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center group-open:rotate-180 transition-transform duration-500 border border-gray-800"
+          >
+            <span class="text-gray-600 text-[10px]">▼</span>
+          </div>
+        </summary>
+
+        <div class="p-8 pt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fadeIn">
+          @for (file of item.files; track $index) {
+            <a
+              [href]="file.driveLink"
+              target="_blank"
+              class="group/item relative h-52 bg-gray-950 rounded-3xl overflow-hidden border border-gray-800/30 hover:border-blue-500/40 transition-all duration-500 no-underline block shadow-2xl"
+            >
+              <img
+                [src]="file.image"
+                class="w-full h-full object-cover opacity-20 group-hover/item:scale-110 group-hover/item:opacity-40 transition-all duration-700"
+              />
+
+              <div
+                class="absolute inset-0 p-5 flex flex-col justify-end bg-gradient-to-t from-gray-950 via-transparent to-transparent"
+              >
+                <h4
+                  class="text-xs font-bold text-white tracking-wide group-hover/item:text-blue-400 transition-colors italic m-0"
+                >
+                  {{ file.name }}
+                </h4>
+                <div
+                  class="absolute top-4 right-4 w-9 h-9 bg-white/5 backdrop-blur-xl rounded-xl flex items-center justify-center opacity-0 group-hover/item:opacity-100 group-hover/item:translate-y-0 translate-y-2 transition-all duration-500 border border-white/10"
+                >
+                  <span class="text-[10px]">🔗</span>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      </details>
+    } @empty {
+      <div class="text-center py-10 border border-dashed border-gray-800 rounded-[2.5rem]">
+        <p class="text-gray-600 text-[10px] font-black uppercase tracking-widest">
+          No deliverables registered yet.
+        </p>
       </div>
-    </div>
+    }
   </div>
 </div>

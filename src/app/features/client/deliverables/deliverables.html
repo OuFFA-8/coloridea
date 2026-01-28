@@ -1,0 +1,84 @@
+<div class="h-full w-full flex flex-col p-6 box-border bg-[#0b0f1a] overflow-hidden">
+  <div class="flex-shrink-0 mb-8 px-2">
+    <h1 class="text-3xl font-black text-white tracking-tighter italic m-0">
+      Project <span class="text-blue-500">Deliverables</span>
+    </h1>
+    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">
+      Next-Gen Asset Management System
+    </p>
+  </div>
+
+  <div class="flex-1 overflow-y-auto custom-scrollbar space-y-4 px-2 pb-10">
+    @for (item of projectDeliverables; track item.title; let first = $first) {
+      <details
+        [attr.open]="first ? '' : null"
+        class="group bg-[#111827]/40 border border-gray-800/50 rounded-[2.5rem] overflow-hidden transition-all duration-500 open:bg-[#111827] open:border-blue-500/20 shadow-xl"
+      >
+        <summary
+          class="flex items-center justify-between p-7 cursor-pointer list-none outline-none"
+        >
+          <div class="flex items-center gap-5">
+            <div
+              class="w-12 h-12 bg-gray-950 rounded-2xl flex items-center justify-center text-2xl group-open:text-blue-500 transition-all shadow-inner"
+            >
+              {{ item.icon }}
+            </div>
+            <div>
+              <h3 class="text-white font-bold text-lg tracking-tight m-0">{{ item.title }}</h3>
+              <span
+                class="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] group-open:text-blue-400 transition-colors"
+              >
+                {{ item.files.length }} Premium Assets
+              </span>
+            </div>
+          </div>
+          <div
+            class="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center group-open:rotate-180 transition-transform duration-500 border border-gray-800"
+          >
+            <span class="text-gray-600 text-[10px]">▼</span>
+          </div>
+        </summary>
+
+        <div class="p-8 pt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fadeIn">
+          @for (file of item.files; track $index) {
+            <a
+              [href]="file.driveLink"
+              target="_blank"
+              class="group/item relative h-52 bg-gray-950 rounded-3xl overflow-hidden border border-gray-800/30 hover:border-blue-500/40 transition-all duration-500 no-underline block shadow-2xl"
+            >
+              <img
+                [src]="file.image"
+                class="w-full h-full object-cover opacity-30 group-hover/item:scale-110 group-hover/item:opacity-50 transition-all duration-700"
+              />
+
+              <div
+                class="absolute inset-0 p-5 flex flex-col justify-end bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent"
+              >
+                <h4
+                  class="text-xs font-bold text-white tracking-wide group-hover/item:text-blue-400 transition-colors"
+                >
+                  {{ file.name }}
+                </h4>
+                <div
+                  class="absolute top-4 right-4 w-9 h-9 bg-white/5 backdrop-blur-xl rounded-xl flex items-center justify-center opacity-0 group-hover/item:opacity-100 group-hover/item:translate-y-0 translate-y-2 transition-all duration-500 border border-white/10"
+                >
+                  <span class="text-[10px]">🔗</span>
+                </div>
+              </div>
+            </a>
+          } @empty {
+            <p class="text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+              No assets uploaded for this section.
+            </p>
+          }
+        </div>
+      </details>
+    } @empty {
+      <div class="text-center py-20">
+        <p class="text-gray-600 font-bold uppercase tracking-[0.3em] text-xs">
+          No deliverables found.
+        </p>
+      </div>
+    }
+  </div>
+</div>
