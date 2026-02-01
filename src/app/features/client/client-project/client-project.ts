@@ -1,33 +1,51 @@
 import { ProjectsServices } from './../../../core/services/projects-services';
 import { Project } from './../../../core/models/project';
 import { Component, OnInit } from '@angular/core';
-import { ProjectCard } from '../../../shared/components/project-card/project-card';
-import { Router } from '@angular/router'; // 1. استيراد الـ Router
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common'; // مهم جداً للـ classes والـ pipes
 
 @Component({
   selector: 'app-client-project',
-  standalone: true, // تأكد إنها Standalone لو بتستخدم imports مباشرة
-  imports: [],
+  standalone: true,
+  imports: [CommonModule], // ضفنا CommonModule هنا
   templateUrl: './client-project.html',
   styleUrl: './client-project.css',
 })
 export class ClientProject implements OnInit {
-  projects: Project[] = [];
+  allProjects: Project[] = []; // المصدر الأصلي
+  filteredProjects: Project[] = []; // اللي بيتعرض فعلاً
+  currentFilter: string = 'All';
 
-  // 2. إضافة الـ Router في الـ constructor
   constructor(
     private projectsService: ProjectsServices,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
-    // يفضل الـ ID يجي من الـ Auth service بس حالياً هنثبته زي ما أنت عامل
-    this.projects = this.projectsService.getByClient(1);
+    // تحميل البيانات لأول مرة
+    this.allProjects = this.projectsService.getByClient(1);
+    this.filteredProjects = [...this.allProjects]; // في البداية نعرض الكل
   }
 
-  // 3. تعريف الدالة اللي الـ HTML بيدور عليها
+  setFilter(status: string): void {
+    this.currentFilter = status;
+
+    if (status === 'All') {
+      this.filteredProjects = [...this.allProjects];
+    } else {
+      this.filteredProjects = this.allProjects.filter((p) => {
+        const pStatus = p.status.toLowerCase().trim();
+        const fStatus = status.toLowerCase().trim();
+
+        // لو بنفلتر على Completed، نعتبر الـ Completed بس
+        // لو بنفلتر على Active، نعتبر الـ Active بس
+        // ضفت لك شرط الـ pending عشان يظهر مع الـ Active أو لو حبيت تعمله زرار لوحده
+        return pStatus === fStatus;
+      });
+    }
+  }
+
   openDetails(projectId: number | string): void {
-    // هينقلك لصفحة التفاصيل (تأكد إن المسار ده متعرّف في الـ App Routing)
     this.router.navigate(['/client/projects', projectId]);
   }
 }

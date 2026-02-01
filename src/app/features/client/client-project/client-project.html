@@ -13,17 +13,37 @@
       class="flex p-1 rounded-xl border transition-all bg-white border-slate-200 dark:bg-[#111827] dark:border-gray-800"
     >
       <button
-        class="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-blue-500/20"
+        (click)="setFilter('All')"
+        [class.bg-blue-600]="currentFilter === 'All'"
+        [class.text-white]="currentFilter === 'All'"
+        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
       >
         All
       </button>
+
       <button
-        class="px-4 py-1.5 text-slate-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-white rounded-lg text-xs font-bold transition-colors"
+        (click)="setFilter('active')"
+        [class.bg-blue-600]="currentFilter === 'active'"
+        [class.text-white]="currentFilter === 'active'"
+        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
       >
         Active
       </button>
+
       <button
-        class="px-4 py-1.5 text-slate-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-white rounded-lg text-xs font-bold transition-colors"
+        (click)="setFilter('pending')"
+        [class.bg-blue-600]="currentFilter === 'pending'"
+        [class.text-white]="currentFilter === 'pending'"
+        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
+      >
+        Pending
+      </button>
+
+      <button
+        (click)="setFilter('completed')"
+        [class.bg-blue-600]="currentFilter === 'completed'"
+        [class.text-white]="currentFilter === 'completed'"
+        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
       >
         Completed
       </button>
@@ -31,7 +51,7 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    @for (project of projects; track project.id) {
+    @for (project of filteredProjects; track project.id) {
       <div
         class="group relative rounded-[2rem] border transition-all duration-500 p-8 flex flex-col h-full shadow-xl /* Light Mode */ bg-white border-slate-100 shadow-slate-200/50 hover:border-blue-500/30 hover:shadow-blue-500/10 /* Dark Mode */ dark:bg-[#111827] dark:border-gray-800/50 dark:hover:border-blue-500/30 dark:shadow-black/20 dark:hover:shadow-blue-900/10"
       >

@@ -104,7 +104,7 @@ export class Deliverables {
           type: 'video',
           thumbnail:
             'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?auto=format&fit=crop&w=500&q=80',
-          url: 'https://www.youtube.com/embed/tgbNymZ7vqY',
+          url: 'https://drive.google.com/file/d/1l8oFErSQNmouInRgZV8hFHMz25JjC_nm/preview',
         },
       ],
     },
