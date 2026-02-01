@@ -1,2 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light dark;
+}
+
+*,
+*::before,
+*::after {
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow,
+    outline-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+}
+
+html,
+body {
+  @apply antialiased;
+  transition:
+    background-color 500ms ease,
+    color 500ms ease;
+}
+
+.dark img {
+  filter: brightness(0.8) contrast(1.1);
+}
+
+.active-link {
+  @apply !bg-blue-50 !text-blue-600 dark:!bg-gray-800 dark:!text-white;
+}

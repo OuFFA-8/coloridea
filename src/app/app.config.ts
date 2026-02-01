@@ -20,16 +20,14 @@ export const appConfig: ApplicationConfig = {
 
     importProvidersFrom(
       TranslateModule.forRoot({
-        fallbackLang: 'en',
         loader: {
           provide: TranslateLoader,
           useFactory: HttpLoaderFactory,
-          deps: [], // فاضية تماماً لأننا مابقيناش بنحتاج HttpClient هنا
+          deps: [HttpClient],
         },
       }),
     ),
 
-    // ده السطر اللي هيعرف المكتبة تقرأ منين (بدل الـ arguments)
     {
       provide: TRANSLATE_HTTP_LOADER_CONFIG,
       useValue: {

@@ -1,112 +1,128 @@
 <div
-  class="h-full w-full flex flex-col p-8 space-y-8 bg-[#0b0f1a] overflow-y-auto custom-scrollbar text-gray-300 box-border"
+  class="h-full w-full flex flex-col p-8 space-y-8 overflow-y-auto custom-scrollbar transition-colors duration-500 box-border /* Light Mode */ bg-slate-50 text-slate-600 /* Dark Mode */ dark:bg-[#0b0f1a] dark:text-gray-300"
 >
   <div class="flex-shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
     <div>
       <div
-        class="flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500"
+        class="flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500"
       >
-        <a routerLink="/client/projects" class="hover:text-blue-500 no-underline transition-colors"
+        <a
+          routerLink="/client/projects"
+          class="hover:text-blue-600 no-underline transition-colors uppercase"
           >Projects</a
         >
         <span>/</span>
-        <span class="text-blue-500">Detail View</span>
+        <span class="text-blue-600 dark:text-blue-500">Detail View</span>
       </div>
-      <h1 class="text-3xl font-black text-white tracking-tight m-0">{{ project.name }}</h1>
+      <h1 class="text-3xl font-black tracking-tight m-0 text-slate-900 dark:text-white">
+        {{ project.name }}
+      </h1>
     </div>
 
     <div
-      class="flex items-center gap-3 bg-[#111827] px-4 py-2 rounded-2xl border border-gray-800 shadow-xl"
+      class="flex items-center gap-3 px-4 py-2 rounded-2xl border shadow-xl transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/20"
     >
       <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
-      <span class="text-xs font-black uppercase tracking-widest text-white">{{
-        project.status
-      }}</span>
+      <span class="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">
+        {{ project.status }}
+      </span>
     </div>
   </div>
 
   <div
-    class="flex-shrink-0 bg-[#111827] p-8 rounded-[2rem] border border-gray-800 shadow-2xl relative overflow-hidden"
+    class="flex-shrink-0 p-8 rounded-[2rem] border shadow-2xl relative overflow-hidden transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/40"
   >
     <div
       class="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-[100px] pointer-events-none"
     ></div>
 
     <div class="flex justify-between items-end mb-6 relative z-10">
-      <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 m-0">
+      <h2
+        class="text-sm font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500 m-0"
+      >
         Project Vitality
       </h2>
-      <span class="text-3xl font-black text-white m-0"
-        >{{ project.progress }}<span class="text-blue-500 text-sm">%</span></span
-      >
+      <span class="text-3xl font-black text-slate-900 dark:text-white m-0">
+        {{ project.progress }}<span class="text-blue-600 dark:text-blue-500 text-sm">%</span>
+      </span>
     </div>
 
     <div
-      class="h-3 w-full bg-gray-900 rounded-full overflow-hidden p-[1px] border border-gray-800/50"
+      class="h-3 w-full rounded-full overflow-hidden p-[1px] border bg-slate-100 border-slate-200 dark:bg-gray-900 dark:border-gray-800/50"
     >
       <div
-        class="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(37,99,235,0.3)]"
+        class="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(37,99,235,0.2)]"
         [style.width.%]="project.progress"
       ></div>
     </div>
   </div>
 
   <div class="flex-shrink-0 grid lg:grid-cols-2 gap-8">
-    <div class="bg-[#111827] p-8 rounded-[2rem] border border-gray-800 shadow-xl">
+    <div
+      class="p-8 rounded-[2rem] border shadow-xl bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+    >
       <app-chart-card
         title="Work Distribution"
         [type]="'doughnut'"
         [data]="pieData"
       ></app-chart-card>
     </div>
-    <div class="bg-[#111827] p-8 rounded-[2rem] border border-gray-800 shadow-xl">
+    <div
+      class="p-8 rounded-[2rem] border shadow-xl bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+    >
       <app-chart-card title="Monthly Progress" [type]="'line'" [data]="lineData"></app-chart-card>
     </div>
   </div>
 
-  <div class="flex-shrink-0 bg-[#111827] p-8 rounded-[2rem] border border-gray-800">
+  <div
+    class="flex-shrink-0 p-8 rounded-[2rem] border bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+  >
     <h2
-      class="text-xs font-black uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2"
+      class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500 mb-6 flex items-center gap-2"
     >
-      <span class="w-4 h-[1px] bg-blue-500"></span> Description
+      <span class="w-4 h-[1px] bg-blue-600"></span> Description
     </h2>
-    <p class="text-gray-400 leading-relaxed text-lg font-light italic m-0">
+    <p class="leading-relaxed text-lg font-light italic m-0 text-slate-700 dark:text-gray-400">
       "{{ project.description }}"
     </p>
   </div>
 
   <div class="flex-1 space-y-6 pb-12">
-    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-gray-500 px-2">
+    <h2
+      class="text-xs font-black uppercase tracking-[0.4em] text-slate-400 dark:text-gray-500 px-2"
+    >
       Project Vault & Deliverables
     </h2>
 
     @for (item of projectDeliverables; track $index; let first = $first) {
       <details
         [attr.open]="first ? '' : null"
-        class="group bg-[#111827]/60 border border-gray-800 rounded-[2.5rem] overflow-hidden transition-all duration-500 open:bg-[#111827] open:border-blue-500/20 shadow-xl"
+        class="group border rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-xl bg-white border-slate-100 open:bg-slate-50/30 open:border-blue-500/20 dark:bg-[#111827]/60 dark:border-gray-800 dark:open:bg-[#111827] dark:open:border-blue-500/20"
       >
         <summary
           class="flex items-center justify-between p-7 cursor-pointer list-none outline-none"
         >
           <div class="flex items-center gap-5">
             <div
-              class="w-12 h-12 bg-gray-950 rounded-2xl flex items-center justify-center text-2xl group-open:text-blue-500 transition-all shadow-inner border border-gray-800/50"
+              class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl transition-all shadow-inner border bg-slate-50 border-slate-200 group-open:text-blue-600 dark:bg-gray-950 dark:border-gray-800/50 dark:group-open:text-blue-500"
             >
               {{ item.icon }}
             </div>
             <div>
-              <h3 class="text-white font-bold text-lg tracking-tight m-0">{{ item.title }}</h3>
+              <h3 class="font-bold text-lg tracking-tight m-0 text-slate-900 dark:text-white">
+                {{ item.title }}
+              </h3>
               <span
-                class="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] group-open:text-blue-400 transition-colors"
+                class="text-[9px] font-black uppercase tracking-[0.2em] transition-colors text-slate-400 group-open:text-blue-600 dark:text-gray-600 dark:group-open:text-blue-400"
               >
                 {{ item.files.length }} Dynamic Assets
               </span>
             </div>
           </div>
           <div
-            class="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center group-open:rotate-180 transition-transform duration-500 border border-gray-800"
+            class="w-8 h-8 rounded-full flex items-center justify-center group-open:rotate-180 transition-transform duration-500 border bg-slate-50 border-slate-200 dark:bg-gray-900 dark:border-gray-800"
           >
-            <span class="text-gray-600 text-[10px]">▼</span>
+            <span class="text-slate-400 dark:text-gray-600 text-[10px]">▼</span>
           </div>
         </summary>
 
@@ -115,15 +131,15 @@
             <a
               [href]="file.driveLink"
               target="_blank"
-              class="group/item relative h-52 bg-gray-950 rounded-3xl overflow-hidden border border-gray-800/30 hover:border-blue-500/40 transition-all duration-500 no-underline block shadow-2xl"
+              class="group/item relative h-52 rounded-3xl overflow-hidden border transition-all duration-500 no-underline block shadow-2xl bg-white border-slate-200 hover:border-blue-500/40 dark:bg-gray-950 dark:border-gray-800/30 dark:hover:border-blue-500/40"
             >
               <img
                 [src]="file.image"
-                class="w-full h-full object-cover opacity-20 group-hover/item:scale-110 group-hover/item:opacity-40 transition-all duration-700"
+                class="w-full h-full object-cover transition-all duration-700 opacity-80 group-hover/item:scale-110 group-hover/item:opacity-100 dark:opacity-20 dark:group-hover/item:opacity-40"
               />
 
               <div
-                class="absolute inset-0 p-5 flex flex-col justify-end bg-gradient-to-t from-gray-950 via-transparent to-transparent"
+                class="absolute inset-0 p-5 flex flex-col justify-end bg-gradient-to-t from-slate-900/90 via-transparent to-transparent dark:from-gray-950 dark:via-transparent"
               >
                 <h4
                   class="text-xs font-bold text-white tracking-wide group-hover/item:text-blue-400 transition-colors italic m-0"
@@ -131,7 +147,7 @@
                   {{ file.name }}
                 </h4>
                 <div
-                  class="absolute top-4 right-4 w-9 h-9 bg-white/5 backdrop-blur-xl rounded-xl flex items-center justify-center opacity-0 group-hover/item:opacity-100 group-hover/item:translate-y-0 translate-y-2 transition-all duration-500 border border-white/10"
+                  class="absolute top-4 right-4 w-9 h-9 backdrop-blur-xl rounded-xl flex items-center justify-center opacity-0 group-hover/item:opacity-100 group-hover/item:translate-y-0 translate-y-2 transition-all duration-500 border bg-white/20 border-white/30 dark:bg-white/5 dark:border-white/10"
                 >
                   <span class="text-[10px]">🔗</span>
                 </div>
@@ -141,8 +157,12 @@
         </div>
       </details>
     } @empty {
-      <div class="text-center py-10 border border-dashed border-gray-800 rounded-[2.5rem]">
-        <p class="text-gray-600 text-[10px] font-black uppercase tracking-widest">
+      <div
+        class="text-center py-10 border border-dashed rounded-[2.5rem] border-slate-200 dark:border-gray-800"
+      >
+        <p
+          class="text-slate-400 dark:text-gray-600 text-[10px] font-black uppercase tracking-widest"
+        >
           No deliverables registered yet.
         </p>
       </div>

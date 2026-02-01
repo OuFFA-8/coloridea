@@ -1,89 +1,98 @@
-<div class="h-full w-full flex flex-col p-6 box-border bg-[#0b0f1a] overflow-hidden">
-  <div class="flex-1 flex gap-8 min-h-0 items-start justify-center pt-10">
+<div
+  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 overflow-hidden /* Light Mode */ bg-slate-50 /* Dark Mode */ dark:bg-[#0b0f1a]"
+>
+  <div class="flex-1 flex gap-8 min-h-0 items-start justify-center pt-10 flex-wrap lg:flex-nowrap">
     <div
-      class="w-80 bg-[#111827] rounded-[2.5rem] border border-gray-800 p-8 flex flex-col items-center text-center shadow-2xl relative overflow-hidden"
+      class="w-80 p-8 flex flex-col items-center text-center shadow-2xl relative overflow-hidden rounded-[2.5rem] border transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/20"
     >
       <div
         class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-500"
       ></div>
 
       <div
-        class="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl mb-6 flex items-center justify-center text-4xl shadow-xl shadow-blue-900/20"
+        class="w-24 h-24 rounded-3xl mb-6 flex items-center justify-center text-4xl shadow-xl transition-all bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/20"
       >
         👤
       </div>
 
-      <h2 class="text-xl font-black text-white tracking-tight mb-1">Ahmed Mansour</h2>
-      <p class="text-blue-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+      <h2 class="text-xl font-black tracking-tight mb-1 text-slate-900 dark:text-white">
+        Ahmed Mansour
+      </h2>
+      <p
+        class="text-blue-600 dark:text-blue-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6"
+      >
         Premium Client
       </p>
 
-      <div class="w-full space-y-4 pt-6 border-t border-gray-800/50">
+      <div class="w-full space-y-4 pt-6 border-t border-slate-100 dark:border-gray-800/50">
         <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-          <span class="text-gray-600">Active Projects</span>
-          <span class="text-white">04</span>
+          <span class="text-slate-400 dark:text-gray-600">Active Projects</span>
+          <span class="text-slate-900 dark:text-white">04</span>
         </div>
         <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-          <span class="text-gray-600">Member Since</span>
-          <span class="text-white">2024</span>
+          <span class="text-slate-400 dark:text-gray-600">Member Since</span>
+          <span class="text-slate-900 dark:text-white">2024</span>
         </div>
       </div>
     </div>
 
     <div
-      class="flex-1 max-w-2xl bg-[#111827] rounded-[2.5rem] border border-gray-800 p-10 shadow-2xl overflow-y-auto custom-scrollbar h-fit"
+      class="flex-1 max-w-2xl p-10 shadow-2xl overflow-y-auto custom-scrollbar h-fit rounded-[2.5rem] border transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/20"
     >
       <h3
-        class="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-8 flex items-center gap-4"
+        class="text-xs font-black uppercase tracking-[0.3em] mb-8 flex items-center gap-4 text-slate-400 dark:text-gray-500"
       >
-        Account Identity <span class="h-px flex-1 bg-gray-800"></span>
+        Account Identity <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
       </h3>
 
       <form class="space-y-8">
-        <div class="grid grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
-            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1"
+            <label
+              class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
               >Full Name</label
             >
             <input
               type="text"
               value="Ahmed Mansour"
-              class="w-full bg-gray-950/50 border border-gray-800 text-white rounded-xl px-5 py-3.5 outline-none focus:border-blue-500/50 transition-all font-medium"
+              class="w-full px-5 py-3.5 outline-none rounded-xl transition-all font-medium border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
             />
           </div>
           <div class="space-y-2">
-            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1"
+            <label
+              class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
               >Email Address</label
             >
             <input
               type="email"
               value="ahmed.m@coloridea.com"
-              class="w-full bg-gray-950/50 border border-gray-800 text-white rounded-xl px-5 py-3.5 outline-none focus:border-blue-500/50 transition-all font-medium"
+              class="w-full px-5 py-3.5 outline-none rounded-xl transition-all font-medium border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
             />
           </div>
         </div>
 
         <h3
-          class="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-8 pt-4 flex items-center gap-4"
+          class="text-xs font-black uppercase tracking-[0.3em] mb-8 pt-4 flex items-center gap-4 text-slate-400 dark:text-gray-500"
         >
-          Security Key <span class="h-px flex-1 bg-gray-800"></span>
+          Security Key <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
         </h3>
 
         <div class="space-y-2">
-          <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1"
+          <label
+            class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
             >New Password</label
           >
           <input
             type="password"
             placeholder="••••••••"
-            class="w-full bg-gray-950/50 border border-gray-800 text-white rounded-xl px-5 py-3.5 outline-none focus:border-blue-500/50 transition-all"
+            class="w-full px-5 py-3.5 outline-none rounded-xl transition-all border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
           />
         </div>
 
         <div class="pt-6 flex justify-end">
           <button
             type="submit"
-            class="px-10 py-4 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl border-none shadow-lg shadow-blue-900/20 hover:bg-blue-500 active:scale-95 transition-all cursor-pointer"
+            class="px-10 py-4 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl border-none shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all cursor-pointer"
           >
             Update Profile
           </button>

@@ -7,17 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   selector: 'app-root',
   standalone: true,
   imports: [TranslateModule, RouterOutlet],
-  template: `
-    <div class="fixed top-4 right-4 z-50">
-      <button
-        (click)="toggleLanguage()"
-        class="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-lg"
-      >
-        {{ translate.currentLang === 'en' ? 'العربية' : 'English' }}
-      </button>
-    </div>
-    <router-outlet></router-outlet>
-  `,
+  template: ` <router-outlet></router-outlet> `,
 })
 export class App {
   constructor(

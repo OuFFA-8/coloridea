@@ -1,14 +1,14 @@
 <div
-  class="w-full bg-gray-900/50 rounded-full h-2.5 p-[1px] border border-gray-800 shadow-inner overflow-hidden"
+  class="w-full rounded-full h-2.5 p-[1px] border shadow-inner overflow-hidden transition-all duration-300 /* Light Mode: خلفية فاتحة جداً وحدود ناعمة */ bg-slate-200/50 border-slate-200 /* Dark Mode: يرجع لأصله الغامق */ dark:bg-gray-900/50 dark:border-gray-800"
 >
   @if (value === 100) {
     <div
-      class="h-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-400 transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(16,185,129,0.3)]"
+      class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(16,185,129,0.3)] dark:from-emerald-600 dark:to-teal-400"
       [style.width.%]="value"
     ></div>
   } @else {
     <div
-      class="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-400 transition-all duration-700 ease-in-out shadow-[0_0_12px_rgba(37,99,235,0.2)]"
+      class="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-400 transition-all duration-700 ease-in-out shadow-[0_0_8px_rgba(37,99,235,0.2)] dark:from-blue-600 dark:to-indigo-400"
       [style.width.%]="value"
     ></div>
   }

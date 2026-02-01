@@ -1,25 +1,31 @@
-<div class="w-full flex items-center justify-center relative overflow-hidden">
+<div
+  class="w-full flex items-center justify-center relative overflow-hidden transition-colors duration-500"
+>
   <div
-    class="absolute top-[-20%] left-[-20%] w-[100%] h-[100%] bg-blue-600/5 blur-[100px] rounded-full pointer-events-none"
+    class="absolute top-[-20%] left-[-20%] w-[100%] h-[100%] bg-blue-500/5 dark:bg-blue-600/5 blur-[100px] rounded-full pointer-events-none"
   ></div>
   <div
-    class="absolute bottom-[-20%] right-[-20%] w-[100%] h-[100%] bg-indigo-600/5 blur-[100px] rounded-full pointer-events-none"
+    class="absolute bottom-[-20%] right-[-20%] w-[100%] h-[100%] bg-indigo-500/5 dark:bg-indigo-600/5 blur-[100px] rounded-full pointer-events-none"
   ></div>
 
   <div
-    class="w-full max-w-md bg-[#111827]/40 backdrop-blur-2xl rounded-[2.5rem] border border-gray-800/50 shadow-2xl p-8 md:p-10 relative z-10 box-border"
+    class="w-full max-w-md backdrop-blur-2xl rounded-[2.5rem] border shadow-2xl p-8 md:p-10 relative z-10 box-border transition-all duration-300 bg-white/70 border-slate-200 shadow-slate-200/50 dark:bg-[#111827]/40 dark:border-gray-800/50 dark:shadow-black/20"
   >
     <div class="mb-10 text-center">
       <div class="inline-block mb-4">
-        <div class="text-3xl font-black text-white tracking-tighter italic m-0">
+        <div class="text-3xl font-black tracking-tighter italic m-0 text-slate-900 dark:text-white">
           Color<span class="text-blue-500">Idea</span>
         </div>
         <div
           class="h-1 w-full bg-gradient-to-r from-transparent via-blue-500 to-transparent mt-1"
         ></div>
       </div>
-      <h2 class="text-xl font-bold text-white tracking-tight mt-4 m-0">Welcome Back</h2>
-      <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2 m-0">
+      <h2 class="text-xl font-bold tracking-tight mt-4 m-0 text-slate-800 dark:text-white">
+        Welcome Back
+      </h2>
+      <p
+        class="text-slate-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2 m-0"
+      >
         Secure Access Portal
       </p>
     </div>
@@ -27,7 +33,7 @@
     <form class="space-y-6">
       <div>
         <label
-          class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 ml-1"
+          class="block text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-2 ml-1"
         >
           Email Identity
         </label>
@@ -35,40 +41,44 @@
           <input
             type="email"
             placeholder="name@company.com"
-            class="w-full bg-gray-950/50 border border-gray-800 text-white rounded-2xl px-5 py-3.5 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-gray-700 font-medium box-border"
+            class="w-full rounded-2xl px-5 py-3.5 outline-none transition-all font-medium box-border border bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:placeholder:text-gray-700"
           />
         </div>
       </div>
 
       <div>
         <div class="flex justify-between items-center mb-2 ml-1">
-          <label class="text-[10px] font-black uppercase tracking-widest text-gray-500">
+          <label
+            class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500"
+          >
             Password Key
           </label>
           <a
             href="#"
-            class="text-[10px] font-bold text-blue-500 no-underline hover:text-blue-400 transition-colors uppercase tracking-tighter"
+            class="text-[10px] font-bold text-blue-600 dark:text-blue-500 no-underline hover:text-blue-400 transition-colors uppercase tracking-tighter"
             >Lost Access?</a
           >
         </div>
         <input
           type="password"
           placeholder="••••••••"
-          class="w-full bg-gray-950/50 border border-gray-800 text-white rounded-2xl px-5 py-3.5 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-gray-700 box-border"
+          class="w-full rounded-2xl px-5 py-3.5 outline-none transition-all box-border border bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:placeholder:text-gray-700"
         />
       </div>
 
       <button
         type="button"
-        class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-blue-900/20 uppercase tracking-[0.2em] text-xs border-none cursor-pointer active:scale-[0.98]"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-blue-200 dark:shadow-blue-900/20 uppercase tracking-[0.2em] text-xs border-none cursor-pointer active:scale-[0.98]"
       >
         Initialize Session
       </button>
     </form>
 
-    <div class="mt-10 text-center border-t border-gray-800/50 pt-6">
-      <p class="text-[9px] text-gray-600 font-bold uppercase tracking-widest m-0">
-        &copy; 2026 ColorIdea Studio. <span class="text-gray-800 tracking-tighter">v2.0.4</span>
+    <div class="mt-10 text-center border-t border-slate-100 dark:border-gray-800/50 pt-6">
+      <p
+        class="text-[9px] font-bold uppercase tracking-widest m-0 text-slate-400 dark:text-gray-600"
+      >
+        &copy; 2026 ColorIdea Studio.
       </p>
     </div>
   </div>

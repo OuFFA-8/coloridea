@@ -1,58 +1,49 @@
-<aside class="w-64 h-screen bg-[#0b0f1a] border-r border-gray-800 p-6 flex flex-col shadow-2xl">
+<aside
+  class="w-64 h-screen transition-all duration-500 p-6 flex flex-col shadow-[10px_0_30px_-15px_rgba(0,0,0,0.05)] bg-slate-50 border-r border-slate-200 dark:bg-[#0b0f1a] dark:border-gray-800 dark:shadow-2xl"
+>
   <div class="mb-10 px-4">
-    <h2 class="text-xl font-black text-white tracking-tighter italic">
-      Color<span class="text-blue-500 italic">Idea</span>
+    <h2 class="text-xl font-black tracking-tighter italic text-slate-800 dark:text-white">
+      Color<span class="text-blue-600 dark:text-blue-500 italic">Idea</span>
       <span
-        class="block text-[10px] not-italic font-bold text-gray-500 uppercase tracking-[0.3em] mt-1"
-        >Client Area</span
+        class="block text-[10px] not-italic font-bold text-slate-400 dark:text-gray-500 uppercase tracking-[0.3em] mt-1"
       >
+        Client Area
+      </span>
     </h2>
   </div>
 
-  <nav class="space-y-1.5 flex-1">
+  <nav class="space-y-2 flex-1">
     <a
       routerLink="/client/dashboard"
-      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
+      routerLinkActive="bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-sm dark:shadow-lg dark:shadow-blue-900/20 active-link"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold no-underline transition-all group text-slate-500 hover:bg-white hover:text-blue-600 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-white dark:hover:shadow-none"
     >
-      <span class="text-lg opacity-60 group-[.active-link]:opacity-100"></span>
       Dashboard
     </a>
 
     <a
       routerLink="/client/projects"
-      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
-      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
+      routerLinkActive="bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-sm dark:shadow-lg dark:shadow-blue-900/20 active-link"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold no-underline transition-all group text-slate-500 hover:bg-white hover:text-blue-600 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-white"
     >
-      <span class="text-lg opacity-60 group-[.active-link]:opacity-100"></span>
       My Projects
     </a>
 
-    <a
-      routerLink="/client/financials"
-      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
-      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
-    >
-      <span class="text-lg opacity-60 group-[.active-link]:opacity-100"></span>
-      Financials
-    </a>
-
-    <div class="h-px bg-gray-800/50 my-6 mx-4"></div>
+    <div class="h-px bg-slate-200 dark:bg-gray-800/50 my-6 mx-4"></div>
 
     <a
       routerLink="/client/profile"
-      routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/20 active-link"
-      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 no-underline hover:bg-gray-800/50 hover:text-white transition-all group"
+      routerLinkActive="bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-sm dark:shadow-lg dark:shadow-blue-900/20 active-link"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold no-underline transition-all group text-slate-500 hover:bg-white hover:text-blue-600 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-white"
     >
-      <span class="text-lg opacity-60 group-[.active-link]:opacity-100"></span>
       Profile
     </a>
   </nav>
 
-  <div class="mt-auto pt-6 border-t border-gray-800/50">
+  <div class="mt-auto pt-6 border-t border-slate-200 dark:border-gray-800/50">
     <button
-      class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-400/70 hover:text-red-400 hover:bg-red-400/5 transition-all border-none bg-transparent cursor-pointer"
+      class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all border-none bg-transparent cursor-pointer text-rose-500 hover:bg-rose-50 dark:text-red-400/70 dark:hover:text-red-400 dark:hover:bg-red-400/5"
     >
       <span>🚀</span>
       Log Out

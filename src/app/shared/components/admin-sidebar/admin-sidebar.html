@@ -1,55 +1,78 @@
-<aside class="w-64 h-screen bg-[#111827] text-gray-400 flex flex-col border-r border-gray-800">
+<aside
+  class="w-64 h-screen flex flex-col border-r transition-colors duration-500 /* Light Mode */ bg-white border-slate-100 text-slate-500 /* Dark Mode */ dark:bg-[#111827] dark:border-gray-800 dark:text-gray-400"
+>
   <div class="p-8">
-    <h2 class="text-white text-xl font-bold tracking-tight">
-      Admin<span class="text-blue-500">.</span>
+    <h2 class="text-xl font-black tracking-tight transition-colors text-slate-900 dark:text-white">
+      Admin<span class="text-blue-600 dark:text-blue-500">.</span>
     </h2>
   </div>
 
   <nav class="flex-1 px-4 space-y-1">
     <a
       routerLink="/admin/dashboard"
-      routerLinkActive="bg-gray-800 text-white"
+      routerLinkActive="active-link"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all no-underline hover:text-white hover:bg-gray-800/50 group"
+      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
     >
-      <span class="mr-3 text-lg opacity-70 group-hover:opacity-100">▤</span>
+      <span
+        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
+        >▤</span
+      >
       Dashboard
     </a>
 
     <a
       routerLink="/admin/clients"
-      routerLinkActive="bg-gray-800 text-white"
-      class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all no-underline hover:text-white hover:bg-gray-800/50 group"
+      routerLinkActive="active-link"
+      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
     >
-      <span class="mr-3 text-lg opacity-70 group-hover:opacity-100">👥</span>
+      <span
+        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
+        >👥</span
+      >
       Clients
     </a>
 
     <a
       routerLink="/admin/projects"
-      routerLinkActive="bg-gray-800 text-white"
-      class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all no-underline hover:text-white hover:bg-gray-800/50 group"
+      routerLinkActive="active-link"
+      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
     >
-      <span class="mr-3 text-lg opacity-70 group-hover:opacity-100">💼</span>
+      <span
+        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
+        >💼</span
+      >
       Projects
     </a>
 
-    <div class="h-px bg-gray-800 my-4 mx-4"></div>
+    <div class="h-px my-4 mx-4 bg-slate-100 dark:bg-gray-800"></div>
 
     <a
       routerLink="/admin/settings"
-      routerLinkActive="bg-gray-800 text-white"
-      class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all no-underline hover:text-white hover:bg-gray-800/50 group"
+      routerLinkActive="active-link"
+      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
     >
-      <span class="mr-3 text-lg opacity-70 group-hover:opacity-100">⚙️</span>
+      <span
+        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
+        >⚙️</span
+      >
       Settings
     </a>
   </nav>
 
-  <div class="p-4 border-t border-gray-800">
-    <div class="flex items-center gap-3 px-2 py-2">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500"></div>
-      <span class="text-xs font-medium text-gray-300">Admin User</span>
+  <div class="p-4 border-t border-slate-100 dark:border-gray-800">
+    <div
+      class="flex items-center gap-3 px-3 py-3 rounded-2xl transition-colors hover:bg-slate-50 dark:hover:bg-gray-800/40 cursor-pointer"
+    >
+      <div
+        class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 shadow-md border-2 border-white dark:border-gray-700"
+      ></div>
+      <div class="flex flex-col">
+        <span class="text-xs font-black text-slate-900 dark:text-gray-200">Admin User</span>
+        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter"
+          >Super Admin</span
+        >
+      </div>
     </div>
   </div>
 </aside>
