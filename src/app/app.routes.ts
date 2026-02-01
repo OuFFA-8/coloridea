@@ -20,6 +20,7 @@ import { ClientDetails } from './features/admin/client-details/client-details';
 import { Settings } from './features/admin/settings/settings';
 import { Profile } from './features/client/profile/profile';
 import { Financials } from './features/client/financials/financials';
+import { Files } from './features/client/files/files';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: ClientDashboard },
       { path: 'projects', component: ClientProject },
       { path: 'financials', component: Financials },
+      { path: 'files', component: Files },
+      { path: 'deliverables', component: Deliverables },
       { path: 'profile', component: Profile },
       { path: 'projects/:id', component: ProjectDetails },
     ],

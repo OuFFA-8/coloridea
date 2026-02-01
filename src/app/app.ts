@@ -1,28 +1,40 @@
-import { Component, signal, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common'; // استيراد التأكد من المنصة
-import { RouterOutlet } from '@angular/router';
+import { Component, Inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router'; // أضفنا Router و NavigationEnd
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { initFlowbite } from 'flowbite';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [TranslateModule, RouterOutlet],
-  template: ` <router-outlet></router-outlet> `,
+  template: `<router-outlet></router-outlet>`,
 })
-export class App {
+export class App implements OnInit {
   constructor(
     public translate: TranslateService,
-    @Inject(PLATFORM_ID) private platformId: Object, // حقن معرف المنصة
+    private router: Router, // حقن الـ Router
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.translate.setDefaultLang('en');
-
-    // بنخلي السيرفر يختار اللغة، بس المتصفح هو اللي يغير الـ DOM
     const initialLang = 'en';
     this.translate.use(initialLang);
 
-    // التأكد إننا في المتصفح قبل ما نغير اتجاه الصفحة
     if (isPlatformBrowser(this.platformId)) {
       this.updateHtmlAttributes(initialLang);
+
+      // حل مشكلة الـ Routing: إعادة تفعيل فلو بايت مع كل تغيير صفحة
+      this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+        setTimeout(() => initFlowbite(), 100);
+      });
+    }
+  }
+
+  ngOnInit(): void {
+    // التفعيل الأول عند تحميل التطبيق
+    if (isPlatformBrowser(this.platformId)) {
+      initFlowbite();
     }
   }
 
@@ -32,12 +44,15 @@ export class App {
 
     if (isPlatformBrowser(this.platformId)) {
       this.updateHtmlAttributes(nextLang);
+      // إعادة التفعيل لأن تغيير الـ DIR قد يؤثر على أماكن الـ Tooltips والدروب داونز
+      setTimeout(() => initFlowbite(), 50);
     }
   }
 
-  // فصلنا كود الـ document في دالة لوحدها
   private updateHtmlAttributes(lang: string) {
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
+    if (isPlatformBrowser(this.platformId)) {
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang;
+    }
   }
 }

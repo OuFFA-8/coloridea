@@ -1,15 +1,21 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // مهم جداً للفيديو
 
-interface FileAsset {
-  name: string;
-  image: string;
-  driveLink: string;
+export interface ProjectFile {
+  id: string; // رقم الملف للعرض (#01)
+  title: string; // عنوان الملف
+  date: string; // تاريخ الرفع
+  type: 'image' | 'video'; // نوع الملف لتحديد طريقة العرض في المودال
+  thumbnail: string; // رابط الصورة المصغرة للكارت
+  url: string; // الرابط الأصلي (صورة كبيرة أو رابط فيديو Embed)
 }
 
-interface Deliverable {
-  title: string;
-  icon: string;
-  files: FileAsset[];
+// 2. تعريف السكشن الرئيسي (الأكورديون)
+export interface ProjectDeliverable {
+  title: string; // عنوان المرحلة (Phase 1, Phase 2...)
+  icon: string; // الأيقونة (Emoji)
+  files: ProjectFile[]; // قائمة الملفات اللي جوا السكشن ده
 }
 
 @Component({
@@ -19,30 +25,47 @@ interface Deliverable {
   styleUrl: './deliverables.css',
 })
 export class Deliverables {
-  projectDeliverables = [
+  selectedMedia: any = null;
+
+  constructor(private sanitizer: DomSanitizer) {}
+
+  // دالة لفتح المودال
+  openMedia(file: any) {
+    this.selectedMedia = file;
+  }
+
+  // دالة لغلق المودال
+  closeModal() {
+    this.selectedMedia = null;
+  }
+
+  // دالة عشان أنجولر يثق في لينك الفيديو
+  getSafeUrl(url: string): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  projectDeliverables: ProjectDeliverable[] = [
     {
       title: 'Aerial Photography Sessions',
       icon: '🚁',
       files: [
         {
-          name: 'North View - High Res',
-          image: 'https://picsum.photos/400/300?random=11',
-          driveLink: '#',
+          id: 'A-01',
+          title: 'Site Overview - North Angle',
+          date: '01 Feb 2026',
+          type: 'image',
+          thumbnail:
+            'https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=500&q=80',
+          url: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1920&q=80',
         },
         {
-          name: 'Horizon Panorama',
-          image: 'https://picsum.photos/400/300?random=12',
-          driveLink: '#',
-        },
-        {
-          name: 'Top Down Detail',
-          image: 'https://picsum.photos/400/300?random=13',
-          driveLink: '#',
-        },
-        {
-          name: 'Sunset Session',
-          image: 'https://picsum.photos/400/300?random=14',
-          driveLink: '#',
+          id: 'A-02',
+          title: 'Drone Flyover Video',
+          date: '05 Feb 2026',
+          type: 'video',
+          thumbnail:
+            'https://images.unsplash.com/photo-1506947411487-a56738267384?auto=format&fit=crop&w=500&q=80',
+          url: 'https://www.youtube.com/embed/LXb3EKWsInQ',
         },
       ],
     },
@@ -51,53 +74,67 @@ export class Deliverables {
       icon: '📸',
       files: [
         {
-          name: 'Main Entrance Exterior',
-          image: 'https://picsum.photos/400/300?random=21',
-          driveLink: '#',
+          id: 'G-01',
+          title: 'Foundation Inspection',
+          date: '10 Feb 2026',
+          type: 'image',
+          thumbnail:
+            'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=500&q=80',
+          url: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1920&q=80',
         },
         {
-          name: 'Landscape Detail',
-          image: 'https://picsum.photos/400/300?random=22',
-          driveLink: '#',
+          id: 'G-02',
+          title: 'Interior Detail Shots',
+          date: '12 Feb 2026',
+          type: 'image',
+          thumbnail:
+            'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=500&q=80',
+          url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1920&q=80',
         },
       ],
     },
     {
       title: 'Timelapse Camera',
-      icon: '⏳',
+      icon: '⏱️',
       files: [
-        { name: 'Week 01 Recap', image: 'https://picsum.photos/400/300?random=31', driveLink: '#' },
         {
-          name: 'Full Month Sequence',
-          image: 'https://picsum.photos/400/300?random=32',
-          driveLink: '#',
+          id: 'T-01',
+          title: 'Construction Week 1-4',
+          date: '28 Feb 2026',
+          type: 'video',
+          thumbnail:
+            'https://images.unsplash.com/photo-1590959651373-a3db0f38a961?auto=format&fit=crop&w=500&q=80',
+          url: 'https://www.youtube.com/embed/tgbNymZ7vqY',
         },
       ],
     },
     {
       title: 'Monthly Update Videos',
-      icon: '🎬',
+      icon: '📅',
       files: [
         {
-          name: 'January Progress Film',
-          image: 'https://picsum.photos/400/300?random=41',
-          driveLink: '#',
-        },
-        {
-          name: 'Site Walkthrough - Feb',
-          image: 'https://picsum.photos/400/300?random=42',
-          driveLink: '#',
+          id: 'M-01',
+          title: 'January Progress Report',
+          date: '31 Jan 2026',
+          type: 'video',
+          thumbnail:
+            'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=500&q=80',
+          url: 'https://www.youtube.com/embed/EngW7tLk6R8',
         },
       ],
     },
     {
       title: 'Quarterly Edited Videos',
-      icon: '🎞️',
+      icon: '🎬',
       files: [
         {
-          name: 'Q1 Master Montage',
-          image: 'https://picsum.photos/400/300?random=51',
-          driveLink: '#',
+          id: 'Q-01',
+          title: 'Q1 Highlights Reel',
+          date: '31 Mar 2026',
+          type: 'video',
+          thumbnail:
+            'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=500&q=80',
+          url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
         },
       ],
     },
@@ -106,27 +143,14 @@ export class Deliverables {
       icon: '🖼️',
       files: [
         {
-          name: 'Architectural Shots',
-          image: 'https://picsum.photos/400/300?random=61',
-          driveLink: '#',
+          id: 'P-01',
+          title: 'Team Safety Event',
+          date: '15 Mar 2026',
+          type: 'image',
+          thumbnail:
+            'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=500&q=80',
+          url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80',
         },
-        {
-          name: 'Interior Design Session',
-          image: 'https://picsum.photos/400/300?random=62',
-          driveLink: '#',
-        },
-        { name: 'Team on Site', image: 'https://picsum.photos/400/300?random=63', driveLink: '#' },
-        {
-          name: 'Architectural Shots',
-          image: 'https://picsum.photos/400/300?random=61',
-          driveLink: '#',
-        },
-        {
-          name: 'Interior Design Session',
-          image: 'https://picsum.photos/400/300?random=62',
-          driveLink: '#',
-        },
-        { name: 'Team on Site', image: 'https://picsum.photos/400/300?random=63', driveLink: '#' },
       ],
     },
   ];

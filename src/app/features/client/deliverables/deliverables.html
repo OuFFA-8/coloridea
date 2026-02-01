@@ -1,5 +1,5 @@
 <div
-  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 overflow-hidden /* Light Mode */ bg-slate-50 /* Dark Mode */ dark:bg-[#0b0f1a]"
+  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 overflow-hidden bg-transparent"
 >
   <div class="flex-shrink-0 mb-8 px-2">
     <h1 class="text-3xl font-black tracking-tighter italic m-0 text-slate-900 dark:text-white">
@@ -16,7 +16,7 @@
     @for (item of projectDeliverables; track item.title; let first = $first) {
       <details
         [attr.open]="first ? '' : null"
-        class="group rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-xl border /* Light Mode */ bg-white border-slate-200 open:bg-slate-50/50 open:border-blue-500/20 shadow-slate-200/50 /* Dark Mode */ dark:bg-[#111827]/40 dark:border-gray-800/50 dark:open:bg-[#111827] dark:open:border-blue-500/20 dark:shadow-black/20"
+        class="group rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-xl border bg-white border-slate-200 open:bg-slate-50/50 open:border-blue-500/20 shadow-slate-200/50 dark:bg-[#111827]/40 dark:border-gray-800/50 dark:open:bg-[#111827] dark:open:border-blue-500/20 dark:shadow-black/20"
       >
         <summary
           class="flex items-center justify-between p-7 cursor-pointer list-none outline-none"
@@ -34,7 +34,7 @@
               <span
                 class="text-[9px] font-black uppercase tracking-[0.2em] transition-colors text-slate-400 group-open:text-blue-600 dark:text-gray-600 dark:group-open:text-blue-400"
               >
-                {{ item.files.length }} Premium Assets
+                {{ item.files.length }} Assets Included
               </span>
             </div>
           </div>
@@ -45,48 +45,116 @@
           </div>
         </summary>
 
-        <div class="p-8 pt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fadeIn">
+        <div
+          class="p-8 pt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fadeIn"
+        >
           @for (file of item.files; track $index) {
-            <a
-              [href]="file.driveLink"
-              target="_blank"
-              class="group/item relative h-52 rounded-3xl overflow-hidden border transition-all duration-500 no-underline block shadow-2xl bg-white border-slate-200 hover:border-blue-500/40 dark:bg-gray-950 dark:border-gray-800/30 dark:hover:border-blue-500/40"
+            <div
+              (click)="openMedia(file)"
+              class="group/item cursor-pointer relative h-72 rounded-[2.5rem] overflow-hidden border bg-white border-slate-200 dark:bg-gray-950 dark:border-gray-800/30"
+              style="
+                transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+                will-change: transform, box-shadow;
+              "
+              onmouseover="
+                this.style.transform = 'translateY(-15px)';
+                this.style.boxShadow = '0 40px 60px -15px rgba(0, 0, 0, 0.2)';
+              "
+              onmouseout="
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+              "
             >
               <img
-                [src]="file.image"
-                class="w-full h-full object-cover transition-all duration-700 opacity-70 group-hover/item:scale-110 group-hover/item:opacity-100 dark:opacity-30 dark:group-hover/item:opacity-50"
+                [src]="file.thumbnail"
+                class="w-full h-full object-cover opacity-90 group-hover/item:opacity-100"
+                style="transition: transform 2s ease-out"
+                [style.transform]="'scale(1)'"
+                onmouseover="this.style.transform = 'scale(1.05)'"
+                onmouseout="this.style.transform = 'scale(1)'"
               />
 
               <div
-                class="absolute inset-0 p-5 flex flex-col justify-end bg-gradient-to-t from-slate-900/80 via-transparent to-transparent dark:from-gray-950 dark:via-gray-950/20"
-              >
-                <h4
-                  class="text-xs font-bold text-white tracking-wide group-hover/item:text-blue-400 transition-colors"
-                >
-                  {{ file.name }}
-                </h4>
+                class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent transition-opacity duration-[1500ms] opacity-70 group-hover/item:opacity-90"
+              ></div>
+
+              <div class="absolute inset-0 flex items-center justify-center z-10">
                 <div
-                  class="absolute top-4 right-4 w-9 h-9 backdrop-blur-xl rounded-xl flex items-center justify-center opacity-0 group-hover/item:opacity-100 group-hover/item:translate-y-0 translate-y-2 transition-all duration-500 border bg-white/20 border-white/30 dark:bg-white/5 dark:border-white/10"
+                  class="w-16 h-16 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all duration-[1000ms] scale-50 group-hover/item:scale-100"
                 >
-                  <span class="text-[10px]">🔗</span>
+                  <span class="text-3xl text-white">
+                    {{ file.type === 'video' ? '▶' : '👁️' }}
+                  </span>
                 </div>
               </div>
-            </a>
-          } @empty {
-            <p
-              class="text-slate-400 dark:text-gray-600 text-[10px] font-bold uppercase tracking-widest"
-            >
-              No assets uploaded for this section.
-            </p>
+
+              <div class="absolute inset-x-0 bottom-0 p-8">
+                <h4
+                  class="text-base font-bold text-white transition-colors duration-[1000ms] group-hover/item:text-blue-400"
+                >
+                  {{ file.title }}
+                </h4>
+              </div>
+            </div>
           }
         </div>
       </details>
-    } @empty {
-      <div class="text-center py-20">
-        <p class="text-slate-400 dark:text-gray-600 font-bold uppercase tracking-[0.3em] text-xs">
-          No deliverables found.
-        </p>
-      </div>
     }
   </div>
 </div>
+
+@if (selectedMedia) {
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 animate-fadeIn"
+    role="dialog"
+  >
+    <div
+      (click)="closeModal()"
+      class="absolute inset-0 bg-slate-900/80 backdrop-blur-xl transition-opacity"
+    ></div>
+
+    <div
+      class="relative w-full max-w-5xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
+    >
+      <div
+        class="flex items-center justify-between p-4 px-6 bg-white/5 border-b border-white/10 backdrop-blur-sm z-20"
+      >
+        <div>
+          <h3 class="text-white font-bold text-lg">{{ selectedMedia.title }}</h3>
+          <p class="text-gray-400 text-xs">{{ selectedMedia.date }} • ID: {{ selectedMedia.id }}</p>
+        </div>
+        <button
+          (click)="closeModal()"
+          class="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-rose-500 hover:text-white transition-colors"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        class="flex-1 bg-black flex items-center justify-center relative min-h-[300px] md:min-h-[500px]"
+      >
+        @if (selectedMedia.type === 'video') {
+          <iframe
+            [src]="getSafeUrl(selectedMedia.url)"
+            class="w-full h-full absolute inset-0"
+            frameborder="0"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
+            allowfullscreen
+          ></iframe>
+        }
+
+        @if (selectedMedia.type === 'image') {
+          <img [src]="selectedMedia.url" class="max-w-full max-h-[80vh] object-contain p-4" />
+        }
+      </div>
+    </div>
+  </div>
+}
