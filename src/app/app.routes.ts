@@ -21,18 +21,24 @@ import { Settings } from './features/admin/settings/settings';
 import { Profile } from './features/client/profile/profile';
 import { Financials } from './features/client/financials/financials';
 import { Files } from './features/client/files/files';
+import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
+import { ResetPassword } from './features/auth/reset-password/reset-password';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: AuthLayout,
-    children: [{ path: '', component: Login }],
+    children: [
+      { path: '', component: Login },
+      { path: 'forget-password', component: ForgotPassword },
+      { path: 'reset-password/:token', component: ResetPassword },
+    ],
   },
 
   {
     path: 'client',
     component: ClientLayout,
-    // canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: ClientDashboard },
       { path: 'projects', component: ClientProject },
@@ -47,7 +53,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayout,
-    // canActivate: [authGuard, adminGuard],
+    canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: AdminDashboard },
       { path: 'clients', component: Clients },

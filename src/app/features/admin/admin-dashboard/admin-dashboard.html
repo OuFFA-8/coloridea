@@ -1,137 +1,344 @@
-<div
-  class="p-8 space-y-8 min-h-screen transition-colors duration-500 /* Light Mode */ bg-slate-50 text-slate-600 /* Dark Mode */ dark:bg-[#0b0f1a] dark:text-gray-300"
->
-  <div class="flex justify-between items-end mb-4">
-    <div>
-      <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-        System Overview
-      </h1>
-      <p class="text-sm text-slate-400 dark:text-gray-500">
-        Welcome back, here's what's happening today.
-      </p>
+<!-- Loading -->
+@if (isLoading) {
+  <div class="p-8 min-h-screen bg-slate-50 dark:bg-[#0b0f1a] animate-pulse">
+    <div class="h-8 w-56 bg-slate-200 dark:bg-gray-800 rounded-full mb-2"></div>
+    <div class="h-4 w-72 bg-slate-100 dark:bg-gray-800 rounded-full mb-10"></div>
+    <div class="grid grid-cols-4 gap-5 mb-8">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="h-32 bg-white dark:bg-gray-800 rounded-2xl"></div>
+      }
     </div>
+    <div class="grid grid-cols-2 gap-5 mb-8">
+      <div class="h-64 bg-white dark:bg-gray-800 rounded-2xl"></div>
+      <div class="h-64 bg-white dark:bg-gray-800 rounded-2xl"></div>
+    </div>
+    <div class="h-64 bg-white dark:bg-gray-800 rounded-2xl"></div>
   </div>
+}
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div
-      class="group p-6 rounded-2xl border transition-all duration-300 shadow-sm bg-white border-slate-100 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5 dark:bg-[#111827] dark:border-gray-800 dark:hover:border-blue-500/40 dark:shadow-none"
-    >
-      <div class="flex justify-between items-center mb-4">
-        <span class="text-2xl">👥</span>
-        <span class="text-green-500 text-xs font-bold">+12%</span>
-      </div>
-      <p class="text-slate-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-        Total Clients
-      </p>
-      <h2 class="text-3xl font-black mt-1 text-slate-900 dark:text-white">{{ totalClients }}</h2>
-    </div>
-
-    <div
-      class="p-6 rounded-2xl border transition-all duration-300 shadow-sm bg-white border-slate-100 hover:border-purple-500/40 hover:shadow-xl hover:shadow-purple-500/5 dark:bg-[#111827] dark:border-gray-800 dark:hover:border-purple-500/40"
-    >
-      <div class="flex justify-between items-center mb-4 text-2xl">💼</div>
-      <p class="text-slate-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-        Total Projects
-      </p>
-      <h2 class="text-3xl font-black mt-1 text-slate-900 dark:text-white">{{ totalProjects }}</h2>
-    </div>
-
-    <div
-      class="p-6 rounded-2xl border transition-all duration-300 shadow-sm bg-white border-slate-100 hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/5 dark:bg-[#111827] dark:border-gray-800 dark:hover:border-amber-500/40"
-    >
-      <div class="flex justify-between items-center mb-4 text-2xl">⚡</div>
-      <p class="text-slate-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-        Active Projects
-      </p>
-      <h2 class="text-3xl font-black mt-1 text-slate-900 dark:text-white">{{ activeProjects }}</h2>
-    </div>
-
-    <div
-      class="p-6 rounded-2xl border transition-all duration-300 shadow-sm bg-white border-slate-100 hover:border-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/5 dark:bg-[#111827] dark:border-gray-800 dark:hover:border-emerald-500/40"
-    >
-      <div class="flex justify-between items-center mb-4 text-2xl">✅</div>
-      <p class="text-slate-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-        Completed Projects
-      </p>
-      <h2 class="text-3xl font-black mt-1 text-slate-900 dark:text-white">
-        {{ completedProjects }}
-      </h2>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div
-      class="p-6 rounded-2xl border shadow-sm bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
-    >
-      <app-chart-card title="Projects Status" [type]="'doughnut'" [data]="pieData"></app-chart-card>
-    </div>
-    <div
-      class="p-6 rounded-2xl border shadow-sm bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
-    >
-      <app-chart-card title="Progress Over Time" [type]="'line'" [data]="lineData"></app-chart-card>
-    </div>
-  </div>
-
+@if (!isLoading) {
   <div
-    class="rounded-2xl border overflow-hidden shadow-2xl transition-all bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+    class="p-8 min-h-screen bg-slate-50 dark:bg-[#0b0f1a] space-y-6 transition-colors duration-500"
   >
-    <div
-      class="p-6 border-b flex justify-between items-center bg-slate-50/50 dark:bg-gray-950/20 border-slate-100 dark:border-gray-800"
-    >
-      <h3 class="font-black text-slate-900 dark:text-white text-lg m-0">Latest Projects</h3>
-      <a
-        class="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 no-underline cursor-pointer transition-colors"
-        >View All</a
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+          System Overview
+        </h1>
+        <p class="text-sm text-slate-400 dark:text-gray-500 mt-0.5">
+          Welcome back — here's what's happening today.
+        </p>
+      </div>
+      <button
+        (click)="loadDashboard()"
+        class="px-4 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-gray-800 text-slate-500 dark:text-gray-400 text-xs font-bold hover:border-blue-400 hover:text-blue-600 cursor-pointer border-solid transition-all"
       >
+        ↻ Refresh
+      </button>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm text-left">
-        <thead
-          class="bg-slate-50 dark:bg-gray-900/40 text-slate-400 dark:text-gray-500 uppercase text-[10px] tracking-widest font-black"
+    <!-- ===== STAT CARDS ===== -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- Clients -->
+      <div
+        routerLink="/admin/clients"
+        class="group p-6 rounded-2xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+      >
+        <div class="flex items-center justify-between mb-5">
+          <div
+            class="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-xl"
+          >
+            👥
+          </div>
+          <span
+            class="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg"
+            >Clients</span
+          >
+        </div>
+        <p
+          class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1"
         >
-          <tr>
-            <th class="px-6 py-4">Project</th>
-            <th class="px-6 py-4">Client</th>
-            <th class="px-6 py-4">Status</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-gray-800">
-          @for (
-            p of [
-              { name: 'Website Design', client: 'Ahmed', status: 'Active' },
-              { name: 'Mobile App', client: 'Sara', status: 'Completed' },
-              { name: 'Dashboard UI', client: 'Mohamed', status: 'Pending' },
-            ];
-            track p.name
-          ) {
-            <tr class="hover:bg-slate-50 dark:hover:bg-gray-800/40 transition-colors">
-              <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">{{ p.name }}</td>
-              <td class="px-6 py-4 text-slate-600 dark:text-gray-400 font-medium">
-                {{ p.client }}
-              </td>
-              <td class="px-6 py-4">
-                @if (p.status === 'Active') {
-                  <span
-                    class="px-3 py-1 rounded-full text-[11px] font-black border bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-500 dark:border-blue-500/20"
-                    >Active</span
-                  >
-                } @else if (p.status === 'Completed') {
-                  <span
-                    class="px-3 py-1 rounded-full text-[11px] font-black border bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:border-emerald-500/20"
-                    >Completed</span
-                  >
-                } @else {
-                  <span
-                    class="px-3 py-1 rounded-full text-[11px] font-black border bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-500 dark:border-amber-500/20"
-                    >{{ p.status }}</span
-                  >
-                }
-              </td>
+          Total Clients
+        </p>
+        <h2 class="text-4xl font-black text-slate-900 dark:text-white">{{ totalClients }}</h2>
+      </div>
+
+      <!-- Total Projects -->
+      <div
+        routerLink="/admin/projects"
+        class="group p-6 rounded-2xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-300 dark:hover:border-purple-600 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+      >
+        <div class="flex items-center justify-between mb-5">
+          <div
+            class="w-11 h-11 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-xl"
+          >
+            💼
+          </div>
+          <span
+            class="text-[9px] font-black uppercase tracking-widest text-purple-500 bg-purple-50 dark:bg-purple-900/20 px-2.5 py-1 rounded-lg"
+            >Projects</span
+          >
+        </div>
+        <p
+          class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1"
+        >
+          Total Projects
+        </p>
+        <h2 class="text-4xl font-black text-slate-900 dark:text-white">{{ totalProjects }}</h2>
+      </div>
+
+      <!-- Active -->
+      <div
+        class="group p-6 rounded-2xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-amber-500/10 hover:border-amber-300 dark:hover:border-amber-600 hover:-translate-y-1 transition-all duration-300"
+      >
+        <div class="flex items-center justify-between mb-5">
+          <div
+            class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-xl"
+          >
+            ⚡
+          </div>
+          <span
+            class="text-[9px] font-black uppercase tracking-widest text-amber-500 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-lg"
+            >Live</span
+          >
+        </div>
+        <p
+          class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1"
+        >
+          Active Projects
+        </p>
+        <h2 class="text-4xl font-black text-slate-900 dark:text-white">{{ activeProjects }}</h2>
+      </div>
+
+      <!-- Completed -->
+      <div
+        class="group p-6 rounded-2xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-600 hover:-translate-y-1 transition-all duration-300"
+      >
+        <div class="flex items-center justify-between mb-5">
+          <div
+            class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-xl"
+          >
+            ✅
+          </div>
+          <div class="text-right">
+            <span
+              class="text-[9px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg"
+              >{{ completionRate }}%</span
+            >
+          </div>
+        </div>
+        <p
+          class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1"
+        >
+          Completed
+        </p>
+        <h2 class="text-4xl font-black text-slate-900 dark:text-white">{{ completedProjects }}</h2>
+      </div>
+    </div>
+
+    <!-- ===== CHARTS + SUMMARY ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <!-- Charts -->
+      <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div
+          class="p-6 rounded-2xl border shadow-sm bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+        >
+          <app-chart-card
+            title="Projects Status"
+            [type]="'doughnut'"
+            [data]="pieData"
+          ></app-chart-card>
+        </div>
+        <div
+          class="p-6 rounded-2xl border shadow-sm bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+        >
+          <app-chart-card
+            title="Progress Over Time"
+            [type]="'line'"
+            [data]="lineData"
+          ></app-chart-card>
+        </div>
+      </div>
+
+      <!-- Quick Summary -->
+      <div
+        class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-gray-800 shadow-sm p-6 flex flex-col justify-between"
+      >
+        <div>
+          <h3
+            class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500 mb-6"
+          >
+            Project Breakdown
+          </h3>
+          <div class="space-y-4">
+            <!-- Pending -->
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400"
+                  >Pending</span
+                >
+                <span class="text-[10px] font-black text-slate-600 dark:text-gray-300">{{
+                  pendingProjects
+                }}</span>
+              </div>
+              <div class="h-2 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-slate-400 dark:bg-gray-500 rounded-full transition-all duration-700"
+                  [style.width.%]="totalProjects ? (pendingProjects / totalProjects) * 100 : 0"
+                ></div>
+              </div>
+            </div>
+            <!-- Active -->
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <span class="text-[10px] font-black uppercase tracking-widest text-amber-500"
+                  >Active</span
+                >
+                <span class="text-[10px] font-black text-slate-600 dark:text-gray-300">{{
+                  activeProjects
+                }}</span>
+              </div>
+              <div class="h-2 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-amber-400 rounded-full transition-all duration-700"
+                  [style.width.%]="totalProjects ? (activeProjects / totalProjects) * 100 : 0"
+                ></div>
+              </div>
+            </div>
+            <!-- Completed -->
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <span class="text-[10px] font-black uppercase tracking-widest text-emerald-500"
+                  >Completed</span
+                >
+                <span class="text-[10px] font-black text-slate-600 dark:text-gray-300">{{
+                  completedProjects
+                }}</span>
+              </div>
+              <div class="h-2 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                  [style.width.%]="totalProjects ? (completedProjects / totalProjects) * 100 : 0"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completion Rate -->
+        <div class="mt-8 pt-6 border-t border-slate-50 dark:border-gray-800">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
+            Overall Completion Rate
+          </p>
+          <div class="flex items-end gap-3">
+            <span class="text-5xl font-black text-slate-900 dark:text-white">{{
+              completionRate
+            }}</span>
+            <span class="text-2xl font-black text-slate-300 dark:text-gray-600 mb-1">%</span>
+          </div>
+          <div class="h-2 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden mt-3">
+            <div
+              class="h-full bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full transition-all duration-1000"
+              [style.width.%]="completionRate"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LATEST PROJECTS TABLE ===== -->
+    <div
+      class="rounded-2xl border overflow-hidden shadow-sm bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+    >
+      <div
+        class="px-6 py-5 border-b border-slate-100 dark:border-gray-800 flex justify-between items-center"
+      >
+        <h3 class="font-black text-slate-900 dark:text-white">Latest Projects</h3>
+        <a
+          routerLink="/admin/projects"
+          class="text-xs font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 no-underline cursor-pointer transition-colors uppercase tracking-widest"
+        >
+          View All →
+        </a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead
+            class="bg-slate-50 dark:bg-gray-900/40 text-slate-400 dark:text-gray-500 uppercase text-[10px] tracking-widest font-black"
+          >
+            <tr>
+              <th class="px-6 py-4">Project</th>
+              <th class="px-6 py-4">Client</th>
+              <th class="px-6 py-4">Status</th>
+              <th class="px-6 py-4">Outputs</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody class="divide-y divide-slate-50 dark:divide-gray-800">
+            @for (p of latestProjects; track p._id) {
+              <tr
+                class="hover:bg-slate-50/80 dark:hover:bg-gray-800/40 transition-colors cursor-pointer"
+                [routerLink]="['/admin/projects', p._id]"
+              >
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    @if (p.photo) {
+                      <div
+                        class="w-9 h-9 rounded-xl overflow-hidden bg-slate-100 dark:bg-gray-800 flex-shrink-0"
+                      >
+                        <img
+                          [src]="'https://api.coloridea.co/' + p.photo.replace(/\\/g, '/')"
+                          [alt]="p.name"
+                          class="w-full h-full object-cover"
+                          (error)="$any($event.target).style.display = 'none'"
+                        />
+                      </div>
+                    }
+                    <span
+                      class="font-black text-slate-900 dark:text-white truncate max-w-[180px]"
+                      >{{ p.name }}</span
+                    >
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-slate-500 dark:text-gray-400 font-bold">
+                  {{ p.user?.name }}
+                </td>
+                <td class="px-6 py-4">
+                  @if (p.status === 'active') {
+                    <span
+                      class="px-3 py-1 rounded-lg text-[10px] font-black bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
+                      >Active</span
+                    >
+                  } @else if (p.status === 'completed') {
+                    <span
+                      class="px-3 py-1 rounded-lg text-[10px] font-black bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+                      >Completed</span
+                    >
+                  } @else {
+                    <span
+                      class="px-3 py-1 rounded-lg text-[10px] font-black bg-slate-100 text-slate-500 dark:bg-gray-800 dark:text-gray-400"
+                      >Pending</span
+                    >
+                  }
+                </td>
+                <td class="px-6 py-4 text-slate-500 dark:text-gray-400 font-bold">
+                  {{ p.outputs?.length || 0 }}
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td
+                  colspan="4"
+                  class="px-6 py-12 text-center text-[10px] font-black uppercase text-slate-400"
+                >
+                  No projects yet
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
+}

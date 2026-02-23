@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Project } from '../../../core/models/project';
-import { ProjectsServices } from '../../../core/services/projects-services';
 import { ChartCard } from './../../../shared/components/chart-card/chart-card';
 
 @Component({
@@ -11,7 +10,7 @@ import { ChartCard } from './../../../shared/components/chart-card/chart-card';
   templateUrl: './project-details.html',
   styleUrl: './project-details.css',
 })
-export class ProjectDetails implements OnInit {
+export class ProjectDetails {
   project!: Project;
   projectId!: number;
 
@@ -71,17 +70,4 @@ export class ProjectDetails implements OnInit {
       ],
     },
   ];
-
-  constructor(
-    private route: ActivatedRoute,
-    private projectsService: ProjectsServices,
-  ) {}
-
-  ngOnInit(): void {
-    this.projectId = Number(this.route.snapshot.paramMap.get('id'));
-    const foundProject = this.projectsService.getById(this.projectId);
-    if (foundProject) {
-      this.project = foundProject;
-    }
-  }
 }

@@ -1,135 +1,206 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ProjectsServices } from '../../../core/services/projects-services';
-// 1. استيراد FormArray
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  PLATFORM_ID,
+  TransferState,
+  inject,
+  makeStateKey,
+} from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { UsersService } from '../../../core/services/users-service/users-service';
+import { AlertService } from '../../../core/services/alert-service/alert-service';
+import { environment } from '../../../../environments/environment';
+import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
 @Component({
   selector: 'app-client-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CurrencyPipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './client-details.html',
   styleUrl: './client-details.css',
 })
 export class ClientDetails implements OnInit {
-  client: any;
-  clientProjects: any[] = [];
-
+  client: any = null;
+  isLoading = true;
+  isSaving = false;
+  baseUrl = environment.baseUrl;
   showProjectModal = false;
   projectForm: FormGroup;
+  projectPhotoFile: File | null = null;
+  projectPhotoPreview: string | null = null;
+
+  private cdr = inject(ChangeDetectorRef);
+  private platformId = inject(PLATFORM_ID);
 
   constructor(
     private route: ActivatedRoute,
-    private projectsService: ProjectsServices,
+    private usersService: UsersService,
+    private projectsService: ProjectsService,
+    private alert: AlertService,
+    private transferState: TransferState,
     private fb: FormBuilder,
+    private router: Router,
   ) {
-    // 2. تعريف الفورم مع مصفوفة Items فارغة
     this.projectForm = this.fb.group({
-      // القسم الأول: البيانات الأساسية
-      name: ['', [Validators.required, Validators.minLength(5)]],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required],
-
-      // القسم الثاني: البنود (Dynamic Array)
-      items: this.fb.array([]),
-      // القسم الثالث: الماليات
       totalAmount: [null, [Validators.required, Validators.min(1)]],
-      installmentsCount: [1, [Validators.required, Validators.min(1)]],
-      paidInstallments: [0, [Validators.required, Validators.min(0)]],
+      totalInstallments: [1, [Validators.required, Validators.min(1)]],
+      installments: this.fb.array([]),
+      agreedItems: this.fb.array([]),
     });
   }
 
   ngOnInit() {
-    this.refreshData();
-  }
+    if (!isPlatformBrowser(this.platformId)) return;
 
-  refreshData() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.client = this.projectsService.getClientById(id);
-    this.clientProjects = this.projectsService.getByClient(id);
-  }
+    const id = this.route.snapshot.paramMap.get('id');
 
-  get itemsControls() {
-    const controls = (this.projectForm?.get('items') as FormArray)?.controls;
-    return controls || []; // لو مفيش controls رجع مصفوفة فاضية فوراً
-  }
+    if (this.transferState.hasKey(CLIENTS_KEY)) {
+      const clients = this.transferState.get(CLIENTS_KEY, []);
+      this.client = clients.find((c: any) => c._id === id) || null;
+      if (this.client) {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+    }
 
-  createItem(): FormGroup {
-    return this.fb.group({
-      itemName: ['', Validators.required], // حقل اسم البند
-      count: [1, [Validators.required, Validators.min(1)]], // حقل العدد
+    this.usersService.getAllUsers().subscribe({
+      next: (res) => {
+        this.client = res.data.find((c: any) => c._id === id) || null;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        if (!this.client) this.alert.error('Client not found');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        this.alert.error(err.error?.message || 'Failed to load client');
+      },
     });
   }
 
-  // زرار Add Item بينادي دي
-  addItem() {
-    const items = this.projectForm.get('items') as FormArray;
-    items.push(
+  openProject(id: string) {
+    this.router.navigate(['/admin/projects', id]);
+  }
+
+  getPhotoUrl(path: string | null): string {
+    if (!path) return '';
+    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
+  }
+
+  // ===== Installments FormArray =====
+  get installmentsControls() {
+    return (this.projectForm.get('installments') as FormArray).controls;
+  }
+
+  addInstallment() {
+    (this.projectForm.get('installments') as FormArray).push(
       this.fb.group({
-        itemName: ['', Validators.required],
-        count: [1, [Validators.required, Validators.min(1)]],
+        amount: [null, [Validators.required, Validators.min(1)]],
+        createdAt: ['', Validators.required],
       }),
     );
   }
 
-  // زرار الحذف (X)
-  removeItem(index: number) {
-    const items = this.projectForm.get('items') as FormArray;
-    items.removeAt(index);
+  removeInstallment(index: number) {
+    (this.projectForm.get('installments') as FormArray).removeAt(index);
   }
-  // ==================================
 
+  // ===== Agreed Items FormArray =====
+  get agreedItemsControls() {
+    return (this.projectForm.get('agreedItems') as FormArray).controls;
+  }
+
+  addAgreedItem() {
+    (this.projectForm.get('agreedItems') as FormArray).push(
+      this.fb.group({
+        name: ['', Validators.required],
+        numberOfItems: [1, [Validators.required, Validators.min(1)]],
+      }),
+    );
+  }
+
+  removeAgreedItem(index: number) {
+    (this.projectForm.get('agreedItems') as FormArray).removeAt(index);
+  }
+
+  // ===== Photo =====
+  onProjectPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+    this.projectPhotoFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.projectPhotoPreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ===== Modal =====
   toggleProjectModal() {
     this.showProjectModal = !this.showProjectModal;
-
     if (this.showProjectModal) {
-      // لو فتحنا المودال والبنود فاضية، حط سطر واحد فاضي عشان العميل يفهم
-      const items = this.projectForm.get('items') as FormArray;
-      if (items.length === 0) {
-        this.addItem();
-      }
-    } else {
-      // لو قفلنا، صفر الفورم وامسح البنود عشان المرة الجاية
-      this.projectForm.reset({ installmentsCount: 1, paidInstallments: 0 });
-      (this.projectForm.get('items') as FormArray).clear();
+      this.projectForm.reset({ totalInstallments: 1 });
+      (this.projectForm.get('installments') as FormArray).clear();
+      (this.projectForm.get('agreedItems') as FormArray).clear();
+      this.addInstallment();
+      this.addAgreedItem();
+      this.projectPhotoFile = null;
+      this.projectPhotoPreview = null;
     }
   }
 
-  // === 4. دالة الحفظ النهائية ===
+  // ===== Save =====
   saveProject() {
-    if (this.projectForm.valid) {
-      const formVal = this.projectForm.value;
-      const clientId = Number(this.route.snapshot.paramMap.get('id'));
-
-      // حساب المبلغ المتبقي أوتوماتيك
-      const remaining = formVal.totalAmount - (formVal.paidInstallments || 0); // (توضيح: هنا بنفترض paidInstallments مبلغ مش عدد أقساط، لو عدد أقساط هنحتاج معادلة تانية)
-
-      // تجهيز الاوبجكت النهائي
-      const newProject = {
-        clientId: clientId,
-        name: formVal.name,
-        description: formVal.description,
-        status: 'active',
-        progress: 0,
-
-        // الداتا الجديدة
-        items: formVal.items, // دي هترجع مصفوفة فيها كل البنود
-        financials: {
-          total: formVal.totalAmount,
-          installments: formVal.installmentsCount,
-          paid: formVal.paidInstallments,
-          remaining: remaining > 0 ? remaining : 0,
-        },
-      };
-
-      console.log('Sending to Service:', newProject); // للتجربة
-
-      this.projectsService.addProject(newProject);
-      this.refreshData();
-      this.toggleProjectModal();
-    } else {
-      // لو الفورم فيه غلطة، علم عليها
+    if (this.projectForm.invalid) {
       this.projectForm.markAllAsTouched();
+      return;
     }
+
+    this.isSaving = true;
+    const formData = new FormData();
+    const val = this.projectForm.value;
+
+    formData.append('name', val.name);
+    formData.append('description', val.description);
+    formData.append('user', this.client._id);
+    formData.append('totalAmount', val.totalAmount);
+    formData.append('totalInstallments', val.totalInstallments);
+
+    if (this.projectPhotoFile) {
+      formData.append('photo', this.projectPhotoFile);
+    }
+
+    val.installments.forEach((inst: any, i: number) => {
+      formData.append(`installments[${i}][amount]`, inst.amount);
+      formData.append(`installments[${i}][createdAt]`, inst.createdAt);
+    });
+
+    val.agreedItems.forEach((item: any, i: number) => {
+      formData.append(`agreedItems[${i}][name]`, item.name);
+      formData.append(`agreedItems[${i}][numberOfItems]`, item.numberOfItems);
+    });
+
+    this.projectsService.createProject(formData).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        this.client.projects = [...(this.client.projects || []), res.data];
+        this.client.projectsCount = (this.client.projectsCount || 0) + 1;
+        this.toggleProjectModal();
+        this.cdr.detectChanges();
+        this.alert.success(`Project "${res.data.name}" created successfully!`);
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.alert.error(err.error?.message || 'Failed to create project');
+      },
+    });
   }
 }

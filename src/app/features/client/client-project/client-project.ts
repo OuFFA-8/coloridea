@@ -1,4 +1,3 @@
-import { ProjectsServices } from './../../../core/services/projects-services';
 import { Project } from './../../../core/models/project';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -11,21 +10,10 @@ import { CommonModule } from '@angular/common'; // مهم جداً للـ classe
   templateUrl: './client-project.html',
   styleUrl: './client-project.css',
 })
-export class ClientProject implements OnInit {
+export class ClientProject {
   allProjects: Project[] = []; // المصدر الأصلي
   filteredProjects: Project[] = []; // اللي بيتعرض فعلاً
   currentFilter: string = 'All';
-
-  constructor(
-    private projectsService: ProjectsServices,
-    private router: Router,
-  ) {}
-
-  ngOnInit(): void {
-    // تحميل البيانات لأول مرة
-    this.allProjects = this.projectsService.getByClient(1);
-    this.filteredProjects = [...this.allProjects]; // في البداية نعرض الكل
-  }
 
   setFilter(status: string): void {
     this.currentFilter = status;
@@ -43,9 +31,5 @@ export class ClientProject implements OnInit {
         return pStatus === fStatus;
       });
     }
-  }
-
-  openDetails(projectId: number | string): void {
-    this.router.navigate(['/client/projects', projectId]);
   }
 }

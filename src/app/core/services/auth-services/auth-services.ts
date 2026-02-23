@@ -13,7 +13,6 @@ export class AuthServices {
 
   // 1. POST Login
   login(credentials: any): Observable<any> {
-    // الهيدر Content-Type: application/json بيتحط تلقائياً في Angular مع الـ HttpClient
     return this.http.post(`${this.apiUrl}/login`, credentials);
   }
 
@@ -28,7 +27,10 @@ export class AuthServices {
   }
 
   // 4. PATCH Reset Password
-  resetPassword(data: any): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/reset-password`, data);
+  resetPassword(
+    token: string,
+    data: { password: string; confirmPassword: string },
+  ): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/reset-password/${token}`, data);
   }
 }
