@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ClientLayout } from './client-layout';
+import { ProjectSelect } from './project-select';
 
-describe('ClientLayout', () => {
-  let component: ClientLayout;
-  let fixture: ComponentFixture<ClientLayout>;
+describe('ProjectSelect', () => {
+  let component: ProjectSelect;
+  let fixture: ComponentFixture<ProjectSelect>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ClientLayout]
+      imports: [ProjectSelect]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ClientLayout);
+    fixture = TestBed.createComponent(ProjectSelect);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

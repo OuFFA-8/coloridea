@@ -1,119 +1,152 @@
-<div class="space-y-8 animate-fadeIn transition-colors duration-500 bg-transparent">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Loading -->
+@if (isLoading) {
+  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0f1a]">
     <div
-      class="p-6 rounded-[2rem] border shadow-xl relative overflow-hidden transition-all duration-500 /* Light Mode: أبيض شفاف مع بلر */ bg-white/70 backdrop-blur-md border-white/40 shadow-slate-200/50 /* Dark Mode: غامق شفاف مع بلر */ dark:bg-[#111827]/60 dark:backdrop-blur-xl dark:border-gray-800/50 dark:shadow-black/20 /* Hover Effect: الكارت يوضح أكتر لما نلمسه */ hover:bg-white/90 dark:hover:bg-[#111827]/80 hover:scale-[1.01]"
-    >
-      <p
-        class="text-[9px] font-black uppercase tracking-widest mb-1 text-slate-400 dark:text-gray-500"
-      >
-        Total Contract Value
-      </p>
-      <h3 class="text-2xl font-black m-0 tracking-tighter text-slate-900 dark:text-white">
-        {{ totalAgreedAmount | number }}
-        <span class="text-blue-600 dark:text-blue-500 text-xs">{{ currency }}</span>
-      </h3>
-      <div class="absolute -right-2 -bottom-2 opacity-10 dark:opacity-5 text-4xl">💰</div>
-    </div>
-
-    <div
-      class="p-6 rounded-[2rem] border shadow-xl transition-all bg-emerald-50/50 border-emerald-100 dark:bg-emerald-500/[0.02] dark:border-emerald-500/20"
-    >
-      <p
-        class="text-[9px] font-black uppercase tracking-widest mb-1 text-emerald-600 dark:text-emerald-500/60"
-      >
-        Total Paid Amount
-      </p>
-      <h3 class="text-2xl font-black m-0 tracking-tighter text-emerald-700 dark:text-emerald-500">
-        {{ paidAmount | number }} <span class="text-xs">{{ currency }}</span>
-      </h3>
-    </div>
-
-    <div
-      class="p-6 rounded-[2rem] border shadow-xl transition-all bg-amber-50/50 border-amber-100 dark:bg-amber-500/[0.02] dark:border-amber-500/20"
-    >
-      <p
-        class="text-[9px] font-black uppercase tracking-widest mb-1 text-amber-600 dark:text-amber-500/60"
-      >
-        Remaining Balance
-      </p>
-      <h3 class="text-2xl font-black m-0 tracking-tighter text-amber-700 dark:text-amber-500">
-        {{ remainingAmount | number }} <span class="text-xs">{{ currency }}</span>
-      </h3>
-    </div>
+      class="w-10 h-10 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin"
+    ></div>
   </div>
+}
 
-  <div
-    class="rounded-[2.5rem] border overflow-hidden shadow-2xl transition-all bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
-  >
-    <div
-      class="p-7 border-b flex justify-between items-center bg-slate-50/50 dark:bg-gray-950/20 border-slate-100 dark:border-gray-800"
-    >
-      <h3
-        class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 dark:text-gray-400 m-0"
+@if (!isLoading) {
+  <div class="p-8 space-y-8 min-h-screen bg-transparent transition-colors duration-500">
+    <!-- Header -->
+    <div>
+      <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Financials</h1>
+      <p
+        class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500 mt-1"
       >
-        Payment Schedule & Breakdown
-      </h3>
-      <span class="text-[9px] font-bold uppercase italic text-slate-400 dark:text-gray-600">
-        All amounts are in {{ currency }}
-      </span>
+        Payment schedule & breakdown
+      </p>
     </div>
 
-    <div class="divide-y divide-slate-50 dark:divide-gray-800/50">
-      @for (item of installments; track item.id) {
-        <div
-          class="group flex flex-col md:flex-row md:items-center justify-between p-6 transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.02]"
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <div
+        class="p-7 rounded-3xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm relative overflow-hidden"
+      >
+        <div class="absolute -right-3 -bottom-3 text-5xl opacity-5">💰</div>
+        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">
+          Total Contract
+        </p>
+        <p class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+          ${{ totalAmount | number }}
+        </p>
+      </div>
+
+      <div
+        class="p-7 rounded-3xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30 shadow-sm relative overflow-hidden"
+      >
+        <div class="absolute -right-3 -bottom-3 text-5xl opacity-10">✅</div>
+        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-2">
+          Total Paid
+        </p>
+        <p class="text-4xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+          ${{ paidAmount | number }}
+        </p>
+      </div>
+
+      <div
+        class="p-7 rounded-3xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 shadow-sm relative overflow-hidden"
+      >
+        <div class="absolute -right-3 -bottom-3 text-5xl opacity-10">⏳</div>
+        <p class="text-[9px] font-black uppercase tracking-widest text-red-400 mb-2">Remaining</p>
+        <p class="text-4xl font-black text-red-500 dark:text-red-400 tracking-tight">
+          ${{ remainingAmount | number }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div
+      class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm p-7"
+    >
+      <div class="flex justify-between items-center mb-4">
+        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          Payment Progress
+        </p>
+        <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400"
+          >{{ paymentProgress }}%</span
         >
-          <div class="flex items-center gap-5 mb-4 md:mb-0">
-            <div
-              class="w-10 h-10 rounded-xl border flex items-center justify-center font-black text-xs transition-colors bg-white border-slate-200 text-slate-400 group-hover:border-blue-500/30 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-500"
-            >
-              0{{ item.id }}
-            </div>
-            <div>
-              <p class="font-bold text-sm m-0 text-slate-900 dark:text-white">
-                Installment #{{ item.id }}
-              </p>
-              <p
-                class="text-[9px] font-black uppercase tracking-widest m-0 text-slate-400 dark:text-gray-600"
-              >
-                Due Date: {{ item.dueDate }}
-              </p>
-            </div>
-          </div>
+      </div>
+      <div class="h-4 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+        <div
+          class="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full transition-all duration-1000"
+          [style.width.%]="paymentProgress"
+        ></div>
+      </div>
+      <div class="flex justify-between mt-3">
+        <span class="text-[10px] font-bold text-slate-400">
+          {{ financialDetails.paidInstallments || 0 }} of
+          {{ financialDetails.totalInstallments || 0 }} installments paid
+        </span>
+        <span class="text-[10px] font-bold text-red-400"
+          >{{ financialDetails.remainingInstallments || 0 }} remaining</span
+        >
+      </div>
+    </div>
 
-          <div class="flex flex-col md:items-end">
-            <p
-              class="text-xl font-black m-0 tracking-tight transition-colors
-                      {{
-                item.status === 'paid'
-                  ? 'text-slate-900 dark:text-white'
-                  : 'text-slate-400 dark:text-gray-500'
-              }}"
-            >
-              {{ item.amount | number }}
-              <span class="text-[10px] font-bold opacity-50">{{ currency }}</span>
-            </p>
+    <!-- Installments Table -->
+    <div
+      class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm overflow-hidden"
+    >
+      <div
+        class="px-7 py-5 border-b border-slate-50 dark:border-gray-800 flex justify-between items-center"
+      >
+        <h2 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500">
+          Payment Schedule
+        </h2>
+        <span class="text-[9px] font-bold text-slate-400 italic">All amounts in USD</span>
+      </div>
 
-            <div class="flex items-center gap-2 mt-1">
-              @if (item.status === 'paid') {
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span
-                  class="text-[8px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500"
-                >
-                  Transaction Completed
-                </span>
-              } @else {
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                <span
-                  class="text-[8px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-500"
-                >
-                  Awaiting Payment
-                </span>
-              }
-            </div>
-          </div>
+      @if (installments.length === 0) {
+        <div class="py-16 text-center">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            No payments recorded yet
+          </p>
         </div>
       }
+
+      <div class="divide-y divide-slate-50 dark:divide-gray-800">
+        @for (inst of installments; track inst._id; let i = $index) {
+          <div
+            class="group flex items-center justify-between px-7 py-5 hover:bg-slate-50 dark:hover:bg-gray-800/40 transition-colors"
+          >
+            <div class="flex items-center gap-5">
+              <!-- Index Badge -->
+              <div
+                class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 flex-shrink-0"
+              >
+                {{ i + 1 }}
+              </div>
+              <div>
+                <p class="font-black text-sm text-slate-900 dark:text-white">
+                  Installment #{{ i + 1 }}
+                </p>
+                <p
+                  class="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest"
+                >
+                  {{ inst.createdAt | date: 'dd MMM yyyy' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <div class="text-right">
+                <p class="text-xl font-black text-emerald-600 dark:text-emerald-400">
+                  ${{ inst.amount | number }}
+                </p>
+                <div class="flex items-center gap-1.5 justify-end mt-0.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span
+                    class="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500"
+                    >Paid</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </div>
-</div>
+}

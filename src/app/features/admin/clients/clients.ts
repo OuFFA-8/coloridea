@@ -13,6 +13,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UsersService } from '../../../core/services/users-service/users-service';
 import { environment } from '../../../../environments/environment';
 import { AlertService } from '../../../core/services/alert-service/alert-service';
+import { LoadingService } from '../../../core/services/loading-service/loading-service';
 const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
 @Component({
@@ -25,6 +26,7 @@ const CLIENTS_KEY = makeStateKey<any[]>('clients');
 export class Clients implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
+  private loadingService = inject(LoadingService);
 
   showModal = false;
   isLoading = true;
@@ -32,7 +34,6 @@ export class Clients implements OnInit {
   clientForm: FormGroup;
   clients: any[] = [];
   baseUrl = environment.baseUrl;
-
   logoFile: File | null = null;
   patternFile: File | null = null;
   photoFile: File | null = null;
@@ -53,37 +54,35 @@ export class Clients implements OnInit {
   }
 
   ngOnInit() {
-    // نعمل الـ request على الـ browser بس — مش على الـ SSR
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadClients();
-    }
+    if (isPlatformBrowser(this.platformId)) this.loadClients();
   }
 
   loadClients() {
     this.isLoading = true;
+    this.loadingService.show('Loading clients...');
     this.usersService.getAllUsers().subscribe({
       next: (res) => {
         this.clients = [...res.data];
         this.isLoading = false;
-        this.cdr.detectChanges(); // 👈 وده
+        this.loadingService.hide();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
-        this.cdr.detectChanges(); // 👈 وده
+        this.loadingService.hide();
+        this.cdr.detectChanges();
         this.alert.error(err.error?.message || 'Failed to load clients');
       },
     });
   }
-  getPhotoUrl(path: string | null): string {
-    if (!path) return 'images/default-avatar.png';
-    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
-  }
 
+  getPhotoUrl(path: string | null): string {
+    return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : 'images/default-avatar.png';
+  }
   toggleModal() {
     this.showModal = !this.showModal;
     if (!this.showModal) this.resetForm();
   }
-
   openClient(id: string) {
     this.router.navigate(['/admin/clients', id]);
   }
@@ -93,12 +92,11 @@ export class Clients implements OnInit {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      const result = reader.result as string;
       if (type === 'logo') {
-        this.logoPreview = result;
+        this.logoPreview = reader.result as string;
         this.logoFile = file;
       } else if (type === 'pattern') {
-        this.patternPreview = result;
+        this.patternPreview = reader.result as string;
         this.patternFile = file;
       } else {
         this.photoFile = file;
@@ -110,6 +108,7 @@ export class Clients implements OnInit {
   saveClient() {
     if (this.clientForm.invalid) return;
     this.isSaving = true;
+    this.loadingService.show('Creating client...');
     const formData = new FormData();
     formData.append('name', this.clientForm.value.name);
     formData.append('email', this.clientForm.value.email);
@@ -121,12 +120,14 @@ export class Clients implements OnInit {
     this.usersService.createUser(formData).subscribe({
       next: (res) => {
         this.isSaving = false;
+        this.loadingService.hide();
         this.clients.unshift(res.data);
         this.toggleModal();
         this.alert.success(`"${res.data.name}" has been added successfully`);
       },
       error: (err) => {
         this.isSaving = false;
+        this.loadingService.hide();
         this.alert.error(err.error?.message || 'Failed to create client');
       },
     });
@@ -136,12 +137,15 @@ export class Clients implements OnInit {
     event.stopPropagation();
     this.alert.confirm(`Are you sure you want to delete "${name}"?`).then((result: any) => {
       if (result.isConfirmed) {
+        this.loadingService.show('Deleting client...');
         this.usersService.deleteUser(id).subscribe({
           next: () => {
+            this.loadingService.hide();
             this.clients = this.clients.filter((c) => c._id !== id);
             this.alert.success(`"${name}" deleted successfully`);
           },
           error: (err) => {
+            this.loadingService.hide();
             this.alert.error(err.error?.message || 'Failed to delete client');
           },
         });
@@ -151,10 +155,7 @@ export class Clients implements OnInit {
 
   resetForm() {
     this.clientForm.reset();
-    this.logoFile = null;
-    this.patternFile = null;
-    this.photoFile = null;
-    this.logoPreview = null;
-    this.patternPreview = null;
+    this.logoFile = this.patternFile = this.photoFile = null;
+    this.logoPreview = this.patternPreview = null;
   }
 }

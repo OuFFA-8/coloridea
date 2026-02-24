@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { UsersService } from '../../../core/services/users-service/users-service';
+import { LoadingService } from '../../../core/services/loading-service/loading-service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -15,17 +16,15 @@ import { UsersService } from '../../../core/services/users-service/users-service
 export class AdminDashboard implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
+  private loadingService = inject(LoadingService);
 
   isLoading = true;
-
   totalClients = 0;
   totalProjects = 0;
   activeProjects = 0;
   completedProjects = 0;
   pendingProjects = 0;
-
   latestProjects: any[] = [];
-
   pieData: number[] = [];
   lineData: number[] = [];
 
@@ -35,15 +34,13 @@ export class AdminDashboard implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadDashboard();
-    }
+    if (isPlatformBrowser(this.platformId)) this.loadDashboard();
   }
 
   loadDashboard() {
     this.isLoading = true;
+    this.loadingService.show('Loading dashboard...');
 
-    // Load clients count
     this.usersService.getAllUsers().subscribe({
       next: (res) => {
         this.totalClients = res.totalCount || res.data?.length || 0;
@@ -52,7 +49,6 @@ export class AdminDashboard implements OnInit {
       error: () => {},
     });
 
-    // Load projects
     this.projectsService.getAllProjects(1, 100).subscribe({
       next: (res) => {
         const projects = res.data || [];
@@ -61,38 +57,33 @@ export class AdminDashboard implements OnInit {
         this.completedProjects = projects.filter((p: any) => p.status === 'completed').length;
         this.pendingProjects = projects.filter((p: any) => p.status === 'pending').length;
         this.latestProjects = projects.slice(0, 5);
-
-        // Chart data
         this.pieData = [this.activeProjects, this.completedProjects, this.pendingProjects];
         this.lineData = this.buildLineData(projects);
-
         this.isLoading = false;
+        this.loadingService.hide();
         this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
+        this.loadingService.hide();
         this.cdr.detectChanges();
       },
     });
   }
 
   buildLineData(projects: any[]): number[] {
-    // Group by month (last 6 months)
     const months: number[] = new Array(6).fill(0);
     const now = new Date();
     projects.forEach((p: any) => {
       const date = new Date(p.createdAt);
       const diff =
         (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
-      if (diff >= 0 && diff < 6) {
-        months[5 - diff]++;
-      }
+      if (diff >= 0 && diff < 6) months[5 - diff]++;
     });
     return months;
   }
 
   get completionRate(): number {
-    if (!this.totalProjects) return 0;
-    return Math.round((this.completedProjects / this.totalProjects) * 100);
+    return this.totalProjects ? Math.round((this.completedProjects / this.totalProjects) * 100) : 0;
   }
 }

@@ -1,103 +1,281 @@
-<div
-  class="p-8 space-y-8 min-h-screen transition-colors duration-500 bg-transparent text-slate-600 dark:bg-transparent dark:text-gray-300"
->
-  <div
-    class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8 border-slate-200 dark:border-gray-800/50"
-  >
-    <div>
-      <h1 class="text-4xl font-black tracking-tight mb-2 text-slate-900 dark:text-white">
-        {{ projectName }}
-      </h1>
-      <p class="text-sm font-medium uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500">
-        Project Real-time Monitoring
-      </p>
-    </div>
-
-    <div
-      class="px-6 py-4 rounded-2xl border flex items-center gap-4 shadow-xl transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/20"
-    >
-      <div class="text-right">
-        <p
-          class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500"
-        >
-          Global Status
-        </p>
-        <p class="text-xl font-black text-blue-600 dark:text-blue-500">{{ progress }}%</p>
-      </div>
+<!-- Loading -->
+@if (isLoading) {
+  <div class="min-h-screen bg-slate-50 dark:bg-[#0b0f1a] flex items-center justify-center">
+    <div class="text-center">
       <div
-        class="w-12 h-12 rounded-full border-4 flex items-center justify-center text-[10px] font-bold border-slate-100 border-t-blue-600 text-slate-900 dark:border-gray-800 dark:border-t-blue-500 dark:text-white"
-      >
-        GO
-      </div>
+        class="w-12 h-12 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"
+      ></div>
+      <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading...</p>
     </div>
   </div>
+}
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+@if (!isLoading) {
+  <div class="min-h-screen bg-slate-50 dark:bg-[#0b0f1a] transition-colors duration-500">
+    <!-- ===== HERO HEADER ===== -->
     <div
-      class="p-8 rounded-3xl border shadow-2xl relative overflow-hidden group transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/40"
+      class="relative bg-white dark:bg-[#111827] border-b border-slate-100 dark:border-gray-800 px-8 py-10"
     >
-      <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full"></div>
-      <app-chart-card title="Success Metrics" [type]="'doughnut'" [data]="chartData">
-      </app-chart-card>
-    </div>
-
-    <div
-      class="p-8 rounded-3xl border shadow-2xl transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/40"
-    >
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Services Progress
-        </h2>
-        <span
-          class="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-        >
-          In Progress
-        </span>
-      </div>
-
-      <div class="space-y-8">
-        @for (s of services; track s.name) {
-          <div class="group">
-            <div class="flex justify-between items-end mb-3">
-              <div>
-                <span
-                  class="text-sm font-bold uppercase tracking-wide transition-colors text-slate-800 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
-                >
-                  {{ s.name }}
-                </span>
-                <p
-                  class="text-[10px] mt-0.5 tracking-tight font-medium text-slate-400 dark:text-gray-500"
-                >
-                  Completed milestones: {{ s.done }} of {{ s.total }}
-                </p>
-              </div>
-              <span
-                class="text-xs font-mono font-bold px-2 py-1 rounded bg-blue-50 text-blue-600 dark:bg-blue-500/5 dark:text-blue-500"
-              >
-                {{ ((s.done / s.total) * 100).toFixed(0) }}%
-              </span>
-            </div>
-
+      <div class="max-w-6xl mx-auto flex items-center justify-between gap-6">
+        <div class="flex items-center gap-5">
+          @if (user?.logo || user?.photo) {
             <div
-              class="h-1.5 w-full rounded-full overflow-hidden p-[1px] bg-slate-100 dark:bg-gray-900"
+              class="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-100 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800 flex-shrink-0"
             >
-              <div
-                class="h-full bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(37,99,235,0.2)]"
-                [style.width.%]="(s.done / s.total) * 100"
-              ></div>
+              <img
+                [src]="getPhotoUrl(user.logo || user.photo)"
+                [alt]="user.name"
+                class="w-full h-full object-contain"
+                (error)="$any($event.target).style.display = 'none'"
+              />
+            </div>
+          }
+          <div>
+            <p
+              class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1"
+            >
+              Welcome back
+            </p>
+            <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              {{ user?.name }}
+            </h1>
+            <p class="text-sm text-slate-400 dark:text-gray-500 mt-1">
+              {{
+                projects.length === 0
+                  ? 'No projects assigned yet.'
+                  : projects.length +
+                    ' project' +
+                    (projects.length > 1 ? 's' : '') +
+                    ' assigned to you.'
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        @if (projects.length > 0) {
+          <div class="hidden md:flex items-center gap-4">
+            <div
+              class="text-center px-6 py-3 bg-slate-50 dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-gray-800"
+            >
+              <p class="text-2xl font-black text-slate-900 dark:text-white">
+                {{ projects.length }}
+              </p>
+              <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-0.5">
+                Projects
+              </p>
+            </div>
+            <div
+              class="text-center px-6 py-3 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100 dark:border-amber-800/30"
+            >
+              <p class="text-2xl font-black text-amber-600 dark:text-amber-400">
+                {{ activeCount }}
+              </p>
+              <p class="text-[9px] font-black uppercase tracking-widest text-amber-500 mt-0.5">
+                Active
+              </p>
+            </div>
+            <div
+              class="text-center px-6 py-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-100 dark:border-emerald-800/30"
+            >
+              <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                {{ completedCount }}
+              </p>
+              <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500 mt-0.5">
+                Done
+              </p>
             </div>
           </div>
         }
       </div>
     </div>
-  </div>
 
-  <div
-    class="p-4 rounded-2xl flex items-center gap-4 border transition-all bg-blue-50/50 border-blue-100 dark:bg-blue-500/5 dark:border-blue-500/20"
-  >
-    <span class="text-xl">ℹ️</span>
-    <p class="text-xs font-medium tracking-wide text-blue-700 dark:text-blue-300">
-      Data is updated every 24 hours. For urgent inquiries, please contact your project manager.
-    </p>
+    <div class="max-w-6xl mx-auto px-8 py-10">
+      <!-- No Projects -->
+      @if (projects.length === 0) {
+        <div
+          class="py-32 text-center border-2 border-dashed border-slate-200 dark:border-gray-800 rounded-3xl"
+        >
+          <div class="text-5xl mb-4">📂</div>
+          <h2
+            class="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-gray-300 mb-2"
+          >
+            No Projects Yet
+          </h2>
+          <p class="text-xs text-slate-400 dark:text-gray-500">
+            Your projects will appear here once assigned.
+          </p>
+        </div>
+      }
+
+      <!-- Projects -->
+      @if (projects.length > 0) {
+        <div class="space-y-6">
+          @for (project of projects; track project._id) {
+            <div
+              (click)="openProject(project._id)"
+              class="group bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden"
+            >
+              <div class="flex flex-col md:flex-row">
+                <!-- Project Image -->
+                <div
+                  class="md:w-64 h-48 md:h-auto bg-slate-100 dark:bg-gray-800 overflow-hidden relative flex-shrink-0"
+                >
+                  @if (project.photo) {
+                    <img
+                      [src]="getPhotoUrl(project.photo)"
+                      [alt]="project.name"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  } @else {
+                    <div class="w-full h-full flex items-center justify-center">
+                      <span class="text-5xl opacity-10">🏗️</span>
+                    </div>
+                  }
+                  <!-- Status Badge -->
+                  <div class="absolute top-4 left-4">
+                    <span
+                      class="px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest backdrop-blur-sm"
+                      [class.bg-emerald-500/90]="project.status === 'active'"
+                      [class.text-white]="project.status === 'active'"
+                      [class.bg-blue-500/90]="project.status === 'completed'"
+                      [class.text-white]="project.status === 'completed'"
+                      [class.bg-black/50]="project.status === 'pending'"
+                      [class.text-white/80]="project.status === 'pending'"
+                    >
+                      {{ project.status || 'pending' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Card Content -->
+                <div class="flex-1 p-7 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                      <h3
+                        class="text-xl font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                      >
+                        {{ project.name }}
+                      </h3>
+                      <span
+                        class="text-[10px] font-black text-blue-500 group-hover:text-blue-600 flex-shrink-0 mt-1"
+                        >Open →</span
+                      >
+                    </div>
+                    @if (project.description) {
+                      <p class="text-sm text-slate-400 dark:text-gray-500 mb-5 line-clamp-2">
+                        "{{ project.description }}"
+                      </p>
+                    }
+                  </div>
+
+                  <!-- Outputs -->
+                  @if (project.outputs?.length > 0) {
+                    <div class="mb-5">
+                      <p
+                        class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-3"
+                      >
+                        Deliverables
+                      </p>
+                      <div class="flex flex-wrap gap-2">
+                        @for (output of project.outputs; track output._id) {
+                          <div
+                            class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-gray-900 rounded-xl border border-slate-100 dark:border-gray-800"
+                          >
+                            <div
+                              class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                              [class.bg-emerald-500]="output.items?.length >= output.numberOfItems"
+                              [class.bg-blue-500]="
+                                output.items?.length < output.numberOfItems &&
+                                output.items?.length > 0
+                              "
+                              [class.bg-slate-300]="!output.items?.length"
+                            ></div>
+                            <span class="text-[10px] font-bold text-slate-600 dark:text-gray-400">{{
+                              output.name
+                            }}</span>
+                            <span class="text-[9px] font-black text-slate-400"
+                              >{{ output.items?.length || 0 }}/{{ output.numberOfItems }}</span
+                            >
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Footer Row -->
+                  <div
+                    class="flex items-center justify-between pt-4 border-t border-slate-50 dark:border-gray-800 gap-4"
+                  >
+                    <!-- Financial -->
+                    @if (project.financialDetails) {
+                      <div class="flex items-center gap-4">
+                        <div>
+                          <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                            Total
+                          </p>
+                          <p class="text-base font-black text-slate-900 dark:text-white">
+                            ${{ project.financialDetails.totalAmount }}
+                          </p>
+                        </div>
+                        <div class="w-px h-8 bg-slate-100 dark:bg-gray-800"></div>
+                        <div>
+                          <p
+                            class="text-[9px] font-black uppercase tracking-widest text-emerald-500"
+                          >
+                            Paid
+                          </p>
+                          <p class="text-base font-black text-emerald-600 dark:text-emerald-400">
+                            {{ project.financialDetails.paidInstallments }}/{{
+                              project.financialDetails.totalInstallments
+                            }}
+                          </p>
+                        </div>
+                        <div class="w-px h-8 bg-slate-100 dark:bg-gray-800"></div>
+                        <!-- Payment Progress -->
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="w-24 h-1.5 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden"
+                          >
+                            <div
+                              class="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                              [style.width.%]="
+                                project.financialDetails.totalInstallments
+                                  ? (project.financialDetails.paidInstallments /
+                                      project.financialDetails.totalInstallments) *
+                                    100
+                                  : 0
+                              "
+                            ></div>
+                          </div>
+                          <span class="text-[9px] font-black text-slate-400">
+                            {{
+                              project.financialDetails.totalInstallments
+                                ? (
+                                    (project.financialDetails.paidInstallments /
+                                      project.financialDetails.totalInstallments) *
+                                    100
+                                  ).toFixed(0)
+                                : 0
+                            }}%
+                          </span>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Outputs Count -->
+                    <span
+                      class="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-gray-700 ml-auto"
+                    >
+                      {{ project.outputs?.length || 0 }} outputs
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
   </div>
-</div>
+}

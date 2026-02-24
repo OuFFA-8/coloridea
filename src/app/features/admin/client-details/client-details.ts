@@ -14,6 +14,7 @@ import { UsersService } from '../../../core/services/users-service/users-service
 import { AlertService } from '../../../core/services/alert-service/alert-service';
 import { environment } from '../../../../environments/environment';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+import { LoadingService } from '../../../core/services/loading-service/loading-service';
 const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
 @Component({
@@ -35,6 +36,7 @@ export class ClientDetails implements OnInit {
 
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
+  private loadingService = inject(LoadingService);
 
   constructor(
     private route: ActivatedRoute,
@@ -57,7 +59,6 @@ export class ClientDetails implements OnInit {
 
   ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) return;
-
     const id = this.route.snapshot.paramMap.get('id');
 
     if (this.transferState.hasKey(CLIENTS_KEY)) {
@@ -70,15 +71,18 @@ export class ClientDetails implements OnInit {
       }
     }
 
+    this.loadingService.show('Loading client...');
     this.usersService.getAllUsers().subscribe({
       next: (res) => {
         this.client = res.data.find((c: any) => c._id === id) || null;
         this.isLoading = false;
+        this.loadingService.hide();
         this.cdr.detectChanges();
         if (!this.client) this.alert.error('Client not found');
       },
       error: (err) => {
         this.isLoading = false;
+        this.loadingService.hide();
         this.cdr.detectChanges();
         this.alert.error(err.error?.message || 'Failed to load client');
       },
@@ -88,17 +92,13 @@ export class ClientDetails implements OnInit {
   openProject(id: string) {
     this.router.navigate(['/admin/projects', id]);
   }
-
   getPhotoUrl(path: string | null): string {
-    if (!path) return '';
-    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
+    return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
   }
 
-  // ===== Installments FormArray =====
   get installmentsControls() {
     return (this.projectForm.get('installments') as FormArray).controls;
   }
-
   addInstallment() {
     (this.projectForm.get('installments') as FormArray).push(
       this.fb.group({
@@ -107,16 +107,13 @@ export class ClientDetails implements OnInit {
       }),
     );
   }
-
   removeInstallment(index: number) {
     (this.projectForm.get('installments') as FormArray).removeAt(index);
   }
 
-  // ===== Agreed Items FormArray =====
   get agreedItemsControls() {
     return (this.projectForm.get('agreedItems') as FormArray).controls;
   }
-
   addAgreedItem() {
     (this.projectForm.get('agreedItems') as FormArray).push(
       this.fb.group({
@@ -125,12 +122,10 @@ export class ClientDetails implements OnInit {
       }),
     );
   }
-
   removeAgreedItem(index: number) {
     (this.projectForm.get('agreedItems') as FormArray).removeAt(index);
   }
 
-  // ===== Photo =====
   onProjectPhotoSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -143,7 +138,6 @@ export class ClientDetails implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  // ===== Modal =====
   toggleProjectModal() {
     this.showProjectModal = !this.showProjectModal;
     if (this.showProjectModal) {
@@ -157,32 +151,25 @@ export class ClientDetails implements OnInit {
     }
   }
 
-  // ===== Save =====
   saveProject() {
     if (this.projectForm.invalid) {
       this.projectForm.markAllAsTouched();
       return;
     }
-
     this.isSaving = true;
+    this.loadingService.show('Creating project...');
     const formData = new FormData();
     const val = this.projectForm.value;
-
     formData.append('name', val.name);
     formData.append('description', val.description);
     formData.append('user', this.client._id);
     formData.append('totalAmount', val.totalAmount);
     formData.append('totalInstallments', val.totalInstallments);
-
-    if (this.projectPhotoFile) {
-      formData.append('photo', this.projectPhotoFile);
-    }
-
+    if (this.projectPhotoFile) formData.append('photo', this.projectPhotoFile);
     val.installments.forEach((inst: any, i: number) => {
       formData.append(`installments[${i}][amount]`, inst.amount);
       formData.append(`installments[${i}][createdAt]`, inst.createdAt);
     });
-
     val.agreedItems.forEach((item: any, i: number) => {
       formData.append(`agreedItems[${i}][name]`, item.name);
       formData.append(`agreedItems[${i}][numberOfItems]`, item.numberOfItems);
@@ -191,6 +178,7 @@ export class ClientDetails implements OnInit {
     this.projectsService.createProject(formData).subscribe({
       next: (res) => {
         this.isSaving = false;
+        this.loadingService.hide();
         this.client.projects = [...(this.client.projects || []), res.data];
         this.client.projectsCount = (this.client.projectsCount || 0) + 1;
         this.toggleProjectModal();
@@ -199,6 +187,7 @@ export class ClientDetails implements OnInit {
       },
       error: (err) => {
         this.isSaving = false;
+        this.loadingService.hide();
         this.alert.error(err.error?.message || 'Failed to create project');
       },
     });

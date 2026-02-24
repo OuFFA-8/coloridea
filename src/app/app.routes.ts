@@ -12,9 +12,7 @@ import { Login } from './features/auth/login/login';
 import { Clients } from './features/admin/clients/clients';
 import { authGuard } from './core/guards/auth-guard';
 import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
-import { ClientDashboard } from './features/client/client-dashboard/client-dashboard';
 import { ProjectDetails } from './features/client/project-details/project-details';
-import { ClientProject } from './features/client/client-project/client-project';
 import { AdminProjectDetails } from './features/admin/admin-project-details/admin-project-details';
 import { ClientDetails } from './features/admin/client-details/client-details';
 import { Settings } from './features/admin/settings/settings';
@@ -23,8 +21,11 @@ import { Financials } from './features/client/financials/financials';
 import { Files } from './features/client/files/files';
 import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
 import { ResetPassword } from './features/auth/reset-password/reset-password';
+import { VerifyEmail } from './features/client/verify-email/verify-email';
+import { ProjectSelect } from './features/client/project-select/project-select';
 
 export const routes: Routes = [
+  // ===== AUTH =====
   {
     path: 'login',
     component: AuthLayout,
@@ -35,32 +36,50 @@ export const routes: Routes = [
     ],
   },
 
+  // ===== SELECT PROJECT (standalone - بدون ClientLayout) =====
+  {
+    path: 'select-project',
+    component: ProjectSelect,
+    canActivate: [authGuard],
+  },
+
+  // ===== CLIENT =====
   {
     path: 'client',
     component: ClientLayout,
     canActivate: [authGuard],
     children: [
-      { path: 'dashboard', component: ClientDashboard },
-      { path: 'projects', component: ClientProject },
-      { path: 'financials', component: Financials },
-      { path: 'files', component: Files },
-      { path: 'deliverables', component: Deliverables },
       { path: 'profile', component: Profile },
-      { path: 'projects/:id', component: ProjectDetails },
+      { path: 'verify-email/:token', component: VerifyEmail },
+      { path: 'files', component: Files },
+
+      // nested project routes — الـ sidebar بيقرأ الـ :id من الـ URL
+      {
+        path: 'projects/:id',
+        children: [
+          { path: '', component: ProjectDetails },
+          { path: 'deliverables', component: Deliverables },
+          { path: 'financials', component: Financials },
+        ],
+      },
+
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
     ],
   },
 
+  // ===== ADMIN =====
   {
     path: 'admin',
     component: AdminLayout,
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboard },
       { path: 'clients', component: Clients },
       { path: 'clients/:id', component: ClientDetails },
       { path: 'projects', component: Projects },
-      { path: 'settings', component: Settings },
       { path: 'projects/:id', component: AdminProjectDetails },
+      { path: 'settings', component: Settings },
     ],
   },
 

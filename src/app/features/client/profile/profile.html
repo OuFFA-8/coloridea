@@ -1,103 +1,386 @@
-<div
-  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 overflow-hidden bg-transparent"
->
-  <div class="flex-1 flex gap-8 min-h-0 items-start justify-center pt-10 flex-wrap lg:flex-nowrap">
-    <div
-      class="w-80 p-8 flex flex-col items-center text-center shadow-2xl relative overflow-hidden rounded-[2.5rem] border transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/20"
+<div class="min-h-screen bg-slate-50 dark:bg-[#0b0f1a] transition-colors duration-500">
+  <!-- ===== HERO ===== -->
+  <div
+    class="relative h-52 overflow-hidden bg-gradient-to-br from-blue-900 to-indigo-900"
+    [style.backgroundImage]="
+      patternPreview || (user?.pattern ? 'url(' + getPhotoUrl(user.pattern) + ')' : 'none')
+    "
+    style="background-size: cover; background-position: center"
+  >
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+
+    <!-- Pattern Upload -->
+    <label
+      class="absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all flex items-center gap-2"
     >
-      <div
-        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-500"
-      ></div>
+      🖼 Change Cover
+      <input
+        type="file"
+        class="hidden"
+        accept="image/*"
+        (change)="onFileSelected($event, 'pattern')"
+      />
+    </label>
+  </div>
 
-      <div
-        class="w-24 h-24 rounded-3xl mb-6 flex items-center justify-center text-4xl shadow-xl transition-all bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/20"
-      >
-        👤
-      </div>
-
-      <h2 class="text-xl font-black tracking-tight mb-1 text-slate-900 dark:text-white">
-        Ahmed Mansour
-      </h2>
-      <p
-        class="text-blue-600 dark:text-blue-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6"
-      >
-        Premium Client
-      </p>
-
-      <div class="w-full space-y-4 pt-6 border-t border-slate-100 dark:border-gray-800/50">
-        <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-          <span class="text-slate-400 dark:text-gray-600">Active Projects</span>
-          <span class="text-slate-900 dark:text-white">04</span>
-        </div>
-        <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-          <span class="text-slate-400 dark:text-gray-600">Member Since</span>
-          <span class="text-slate-900 dark:text-white">2024</span>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="flex-1 max-w-2xl p-10 shadow-2xl overflow-y-auto custom-scrollbar h-fit rounded-[2.5rem] border transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/20"
-    >
-      <h3
-        class="text-xs font-black uppercase tracking-[0.3em] mb-8 flex items-center gap-4 text-slate-400 dark:text-gray-500"
-      >
-        Account Identity <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-      </h3>
-
-      <form class="space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label
-              class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
-              >Full Name</label
-            >
-            <input
-              type="text"
-              value="Ahmed Mansour"
-              class="w-full px-5 py-3.5 outline-none rounded-xl transition-all font-medium border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
-            />
-          </div>
-          <div class="space-y-2">
-            <label
-              class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
-              >Email Address</label
-            >
-            <input
-              type="email"
-              value="ahmed.m@coloridea.com"
-              class="w-full px-5 py-3.5 outline-none rounded-xl transition-all font-medium border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
-            />
-          </div>
-        </div>
-
-        <h3
-          class="text-xs font-black uppercase tracking-[0.3em] mb-8 pt-4 flex items-center gap-4 text-slate-400 dark:text-gray-500"
+  <!-- ===== PROFILE PHOTO + NAME ===== -->
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="flex items-end justify-between -mt-16 mb-8">
+      <!-- Avatar -->
+      <div class="relative flex-shrink-0">
+        <div
+          class="w-28 h-28 rounded-3xl border-4 border-white dark:border-[#0b0f1a] overflow-hidden bg-white dark:bg-gray-800 shadow-xl"
         >
-          Security Key <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-        </h3>
-
-        <div class="space-y-2">
-          <label
-            class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
-            >New Password</label
-          >
+          @if (photoPreview) {
+            <img [src]="photoPreview" class="w-full h-full object-cover" />
+          } @else if (user?.photo) {
+            <img
+              [src]="getPhotoUrl(user.photo)"
+              class="w-full h-full object-cover"
+              (error)="$any($event.target).style.display = 'none'"
+            />
+          } @else {
+            <div class="w-full h-full flex items-center justify-center">
+              <span class="text-4xl font-black text-slate-300">{{ user?.name?.charAt(0) }}</span>
+            </div>
+          }
+        </div>
+        <label
+          class="absolute -bottom-2 -right-2 w-8 h-8 rounded-xl bg-blue-600 hover:bg-blue-700 flex items-center justify-center cursor-pointer shadow-lg transition-all"
+        >
+          <span class="text-white text-sm">📷</span>
           <input
-            type="password"
-            placeholder="••••••••"
-            class="w-full px-5 py-3.5 outline-none rounded-xl transition-all border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
+            type="file"
+            class="hidden"
+            accept="image/*"
+            (change)="onFileSelected($event, 'photo')"
           />
+        </label>
+      </div>
+
+      <!-- Name + email -->
+      <div class="ml-4 mb-2 flex-1">
+        <h1 class="text-2xl font-black text-slate-900 dark:text-white">{{ user?.name }}</h1>
+        <p class="text-sm text-slate-400 dark:text-gray-500">{{ user?.email }}</p>
+        <span
+          class="inline-block mt-1 px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest"
+          [class.bg-emerald-100]="user?.isActive"
+          [class.text-emerald-700]="user?.isActive"
+          [class.dark:bg-emerald-900/30]="user?.isActive"
+          [class.dark:text-emerald-400]="user?.isActive"
+          [class.bg-slate-100]="!user?.isActive"
+          [class.text-slate-500]="!user?.isActive"
+        >
+          {{ user?.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Toast Messages -->
+    @if (successMsg) {
+      <div
+        class="mb-6 px-5 py-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40 flex items-center gap-3"
+      >
+        <span class="text-emerald-500 text-lg">✓</span>
+        <p class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ successMsg }}</p>
+      </div>
+    }
+    @if (errorMsg) {
+      <div
+        class="mb-6 px-5 py-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 flex items-center gap-3"
+      >
+        <span class="text-red-500 text-lg">✕</span>
+        <p class="text-sm font-bold text-red-700 dark:text-red-400">{{ errorMsg }}</p>
+      </div>
+    }
+
+    <!-- ===== TABS ===== -->
+    <div
+      class="flex gap-1 p-1 bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-gray-800 shadow-sm mb-8"
+    >
+      @for (
+        tab of [
+          { id: 'profile', label: 'Profile', icon: '👤' },
+          { id: 'password', label: 'Password', icon: '🔒' },
+          { id: 'email', label: 'Email', icon: '✉️' },
+        ];
+        track tab.id
+      ) {
+        <button
+          (click)="activeTab = $any(tab.id)"
+          class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer"
+          [class.bg-blue-600]="activeTab === tab.id"
+          [class.text-white]="activeTab === tab.id"
+          [class.shadow-lg]="activeTab === tab.id"
+          [class.text-slate-400]="activeTab !== tab.id"
+          [class.dark:text-gray-500]="activeTab !== tab.id"
+          [class.bg-transparent]="activeTab !== tab.id"
+        >
+          <span>{{ tab.icon }}</span>
+          <span class="hidden sm:inline">{{ tab.label }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- ===== TAB: PROFILE ===== -->
+    @if (activeTab === 'profile') {
+      <form [formGroup]="profileForm" class="space-y-8 pb-16">
+        <!-- Basic Info -->
+        <div
+          class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm p-7"
+        >
+          <h2
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500 mb-6 flex items-center gap-2"
+          >
+            <span class="w-4 h-[1px] bg-blue-600"></span> Basic Info
+          </h2>
+          <div class="space-y-4">
+            <div class="space-y-1.5">
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                >Full Name</label
+              >
+              <input
+                formControlName="name"
+                type="text"
+                class="w-full px-5 py-3.5 rounded-2xl bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 font-bold text-sm outline-none focus:border-blue-400 text-slate-900 dark:text-white transition-colors"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                >Email</label
+              >
+              <input
+                [value]="user?.email"
+                disabled
+                type="text"
+                class="w-full px-5 py-3.5 rounded-2xl bg-slate-100 dark:bg-gray-800 border border-slate-200 dark:border-gray-800 font-bold text-sm text-slate-400 dark:text-gray-500 cursor-not-allowed"
+              />
+              <p class="text-[9px] text-slate-400">To change your email, use the Email tab</p>
+            </div>
+          </div>
         </div>
 
-        <div class="pt-6 flex justify-end">
-          <button
-            type="submit"
-            class="px-10 py-4 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl border-none shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all cursor-pointer"
+        <!-- Logo Upload -->
+        <div
+          class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm p-7"
+        >
+          <h2
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500 mb-6 flex items-center gap-2"
           >
-            Update Profile
-          </button>
+            <span class="w-4 h-[1px] bg-blue-600"></span> Brand Assets
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Logo -->
+            <div class="space-y-2">
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                >Logo</label
+              >
+              <label
+                class="relative flex flex-col items-center justify-center h-36 rounded-2xl border-2 border-dashed border-slate-200 dark:border-gray-700 hover:border-blue-400 transition-colors cursor-pointer overflow-hidden bg-slate-50 dark:bg-gray-900"
+              >
+                @if (logoPreview) {
+                  <img [src]="logoPreview" class="w-full h-full object-contain p-3" />
+                } @else if (user?.logo) {
+                  <img
+                    [src]="getPhotoUrl(user.logo)"
+                    class="w-full h-full object-contain p-3"
+                    (error)="$any($event.target).style.display = 'none'"
+                  />
+                } @else {
+                  <div class="text-center opacity-40">
+                    <span class="text-3xl">🏢</span>
+                    <p class="text-[9px] font-black uppercase mt-1">Upload Logo</p>
+                  </div>
+                }
+                <input
+                  type="file"
+                  class="hidden"
+                  accept="image/*"
+                  (change)="onFileSelected($event, 'logo')"
+                />
+                <div
+                  class="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-[8px] font-black text-slate-500"
+                >
+                  Click to change
+                </div>
+              </label>
+            </div>
+
+            <!-- Pattern -->
+            <div class="space-y-2">
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                >Background Pattern</label
+              >
+              <label
+                class="relative flex flex-col items-center justify-center h-36 rounded-2xl border-2 border-dashed border-slate-200 dark:border-gray-700 hover:border-blue-400 transition-colors cursor-pointer overflow-hidden bg-slate-50 dark:bg-gray-900"
+              >
+                @if (patternPreview) {
+                  <img [src]="patternPreview" class="w-full h-full object-cover" />
+                } @else if (user?.pattern) {
+                  <img
+                    [src]="getPhotoUrl(user.pattern)"
+                    class="w-full h-full object-cover"
+                    (error)="$any($event.target).style.display = 'none'"
+                  />
+                } @else {
+                  <div class="text-center opacity-40">
+                    <span class="text-3xl">🎨</span>
+                    <p class="text-[9px] font-black uppercase mt-1">Upload Pattern</p>
+                  </div>
+                }
+                <input
+                  type="file"
+                  class="hidden"
+                  accept="image/*"
+                  (change)="onFileSelected($event, 'pattern')"
+                />
+                <div
+                  class="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-[8px] font-black text-slate-500"
+                >
+                  Click to change
+                </div>
+              </label>
+            </div>
+          </div>
         </div>
+
+        <!-- Save -->
+        <button
+          type="button"
+          (click)="saveProfile()"
+          [disabled]="profileForm.invalid || isSavingProfile"
+          class="w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 border-none cursor-pointer shadow-xl shadow-blue-500/20 transition-all"
+        >
+          {{ isSavingProfile ? 'Saving...' : 'Save Changes' }}
+        </button>
       </form>
-    </div>
+    }
+
+    <!-- ===== TAB: PASSWORD ===== -->
+    @if (activeTab === 'password') {
+      <form [formGroup]="passwordForm" class="space-y-6 pb-16">
+        <div
+          class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm p-7 space-y-5"
+        >
+          <h2
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500 flex items-center gap-2"
+          >
+            <span class="w-4 h-[1px] bg-blue-600"></span> Change Password
+          </h2>
+
+          @for (
+            field of [
+              { name: 'currentPassword', label: 'Current Password' },
+              { name: 'password', label: 'New Password' },
+              { name: 'confirmPassword', label: 'Confirm New Password' },
+            ];
+            track field.name
+          ) {
+            <div class="space-y-1.5">
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">{{
+                field.label
+              }}</label>
+              <input
+                [formControlName]="field.name"
+                type="password"
+                class="w-full px-5 py-3.5 rounded-2xl bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 font-bold text-sm outline-none focus:border-blue-400 text-slate-900 dark:text-white transition-colors"
+              />
+            </div>
+          }
+        </div>
+
+        <button
+          type="button"
+          (click)="savePassword()"
+          [disabled]="passwordForm.invalid || isSavingPassword"
+          class="w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 border-none cursor-pointer shadow-xl shadow-blue-500/20 transition-all"
+        >
+          {{ isSavingPassword ? 'Updating...' : 'Update Password' }}
+        </button>
+      </form>
+    }
+
+    <!-- ===== TAB: EMAIL ===== -->
+    @if (activeTab === 'email') {
+      <div class="space-y-6 pb-16">
+        <div
+          class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm p-7"
+        >
+          <h2
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500 mb-1 flex items-center gap-2"
+          >
+            <span class="w-4 h-[1px] bg-blue-600"></span> Change Email
+          </h2>
+          <p class="text-xs text-slate-400 dark:text-gray-500 mb-6">
+            We'll send a verification link to your new email address.
+          </p>
+
+          @if (!emailRequestSent) {
+            <form [formGroup]="emailRequestForm" class="space-y-4">
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  >Current Email</label
+                >
+                <input
+                  [value]="user?.email"
+                  disabled
+                  type="text"
+                  class="w-full px-5 py-3.5 rounded-2xl bg-slate-100 dark:bg-gray-800 border border-slate-200 dark:border-gray-800 font-bold text-sm text-slate-400 cursor-not-allowed"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  >New Email Address</label
+                >
+                <input
+                  formControlName="email"
+                  type="email"
+                  placeholder="new@email.com"
+                  class="w-full px-5 py-3.5 rounded-2xl bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 font-bold text-sm outline-none focus:border-blue-400 text-slate-900 dark:text-white transition-colors"
+                />
+              </div>
+              <button
+                type="button"
+                (click)="requestEmailChange()"
+                [disabled]="emailRequestForm.invalid || isSendingEmail"
+                class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 border-none cursor-pointer transition-all"
+              >
+                {{ isSendingEmail ? 'Sending...' : 'Send Verification Link' }}
+              </button>
+            </form>
+          } @else {
+            <!-- Sent State -->
+            <div class="text-center py-6">
+              <div
+                class="w-16 h-16 rounded-3xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mx-auto mb-4"
+              >
+                <span class="text-3xl">✉️</span>
+              </div>
+              <h3 class="text-base font-black text-slate-900 dark:text-white mb-2">
+                Check your inbox
+              </h3>
+              <p class="text-xs text-slate-400 dark:text-gray-500 mb-1">
+                We sent a verification link to
+              </p>
+              <p class="text-sm font-black text-blue-600 dark:text-blue-400 mb-6">
+                {{ emailRequestForm.value.email }}
+              </p>
+              <p
+                class="text-[10px] text-slate-300 dark:text-gray-600 font-bold uppercase tracking-widest mb-4"
+              >
+                Click the link in the email to confirm the change
+              </p>
+              <button
+                type="button"
+                (click)="emailRequestSent = false"
+                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase text-slate-400 bg-slate-50 dark:bg-gray-800 border-none cursor-pointer hover:bg-slate-100 transition-all"
+              >
+                ← Try different email
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
   </div>
 </div>

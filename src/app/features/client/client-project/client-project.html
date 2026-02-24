@@ -1,131 +1,153 @@
-<!-- <div
-  class="p-8 space-y-8 min-h-screen transition-colors duration-500 bg-transparent text-slate-600 dark:text-gray-300"
->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-    <div>
-      <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">My Projects</h1>
-      <p class="text-sm mt-1 font-medium text-slate-400 dark:text-gray-500">
-        Track your ongoing ventures and milestones.
-      </p>
-    </div>
-
+<!-- Loading -->
+@if (isLoading) {
+  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0f1a]">
     <div
-      class="flex p-1 rounded-xl border transition-all bg-white border-slate-200 dark:bg-[#111827] dark:border-gray-800"
-    >
-      <button
-        (click)="setFilter('All')"
-        [class.bg-blue-600]="currentFilter === 'All'"
-        [class.text-white]="currentFilter === 'All'"
-        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
-      >
-        All
-      </button>
-
-      <button
-        (click)="setFilter('active')"
-        [class.bg-blue-600]="currentFilter === 'active'"
-        [class.text-white]="currentFilter === 'active'"
-        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
-      >
-        Active
-      </button>
-
-      <button
-        (click)="setFilter('pending')"
-        [class.bg-blue-600]="currentFilter === 'pending'"
-        [class.text-white]="currentFilter === 'pending'"
-        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
-      >
-        Pending
-      </button>
-
-      <button
-        (click)="setFilter('completed')"
-        [class.bg-blue-600]="currentFilter === 'completed'"
-        [class.text-white]="currentFilter === 'completed'"
-        class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
-      >
-        Completed
-      </button>
-    </div>
+      class="w-10 h-10 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin"
+    ></div>
   </div>
+}
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    @for (project of filteredProjects; track project.id) {
-      <div
-        class="group relative rounded-[2rem] border transition-all duration-500 p-8 flex flex-col h-full shadow-xl /* Light Mode */ bg-white border-slate-100 shadow-slate-200/50 hover:border-blue-500/30 hover:shadow-blue-500/10 /* Dark Mode */ dark:bg-[#111827] dark:border-gray-800/50 dark:hover:border-blue-500/30 dark:shadow-black/20 dark:hover:shadow-blue-900/10"
-      >
-        <div class="flex justify-between items-center mb-6">
-          <span
-            class="text-[10px] font-mono font-bold tracking-tighter uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600"
-            >Ref: #PRJ-{{ project.id }}</span
-          >
-          <div
-            class="w-2 h-2 rounded-full transition-all duration-500"
-            [class]="
-              project.status.toString().toLowerCase() === 'active'
-                ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]'
-                : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
-            "
-          ></div>
-        </div>
-
-        <div class="flex-1 mb-8">
-          <h2
-            class="text-2xl font-bold mb-2 transition-colors duration-300 tracking-tight text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
-          >
-            {{ project.name }}
-          </h2>
-          <div class="flex items-center gap-2">
-            <span
-              class="text-[10px] font-bold uppercase tracking-widest leading-none text-slate-400 dark:text-gray-500"
-              >Status:</span
-            >
-            <span
-              class="text-[10px] font-black uppercase text-blue-600 dark:text-blue-500 tracking-widest"
-              >{{ project.status }}</span
-            >
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <div class="flex justify-between items-end">
-            <span
-              class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500"
-              >Completion</span
-            >
-            <span class="text-sm font-black italic text-slate-900 dark:text-white"
-              >{{ project.progress }}%</span
-            >
-          </div>
-          <div
-            class="h-1.5 w-full rounded-full overflow-hidden p-[1px] bg-slate-100 dark:bg-gray-900"
-          >
-            <div
-              class="h-full bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(37,99,235,0.2)]"
-              [style.width.%]="project.progress"
-            ></div>
-          </div>
-        </div>
-
-        <button
-          class="mt-8 w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 cursor-pointer /* Light Mode */ bg-slate-50 text-slate-400 hover:bg-blue-600 hover:text-white hover:shadow-lg /* Dark Mode */ dark:bg-gray-800/50 dark:text-gray-400 dark:hover:bg-blue-600 dark:hover:text-white"
-          (click)="openDetails(project.id)"
-        >
-          Project Console →
-        </button>
-      </div>
-    } @empty {
-      <div
-        class="col-span-full py-24 flex flex-col items-center justify-center border-2 border-dashed rounded-[3rem] border-slate-200 dark:border-gray-800"
-      >
-        <div class="text-4xl mb-4 opacity-20 italic font-black text-slate-300 dark:text-white">
-          Empty.
-        </div>
-        <p class="text-slate-400 dark:text-gray-600 text-sm font-medium tracking-wide">
-          No projects assigned to your account yet.
+@if (!isLoading) {
+  <div
+    class="p-8 space-y-8 min-h-screen bg-transparent text-slate-600 dark:text-gray-300 transition-colors duration-500"
+  >
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div>
+        <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+          My Projects
+        </h1>
+        <p class="text-sm mt-1 font-medium text-slate-400 dark:text-gray-500">
+          {{ allProjects.length }} project{{ allProjects.length !== 1 ? 's' : '' }} assigned to you
         </p>
       </div>
-    }
+
+      <!-- Filter Tabs -->
+      <div
+        class="flex p-1 rounded-xl border transition-all bg-white border-slate-200 dark:bg-[#111827] dark:border-gray-800"
+      >
+        @for (f of ['All', 'active', 'pending', 'completed']; track f) {
+          <button
+            (click)="setFilter(f)"
+            class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all capitalize"
+            [class.bg-blue-600]="currentFilter === f"
+            [class.text-white]="currentFilter === f"
+            [class.text-slate-500]="currentFilter !== f"
+            [class.dark:text-gray-400]="currentFilter !== f"
+          >
+            {{ f }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (project of filteredProjects; track project._id) {
+        <div
+          class="group relative rounded-3xl border transition-all duration-500 flex flex-col shadow-xl bg-white border-slate-100 hover:border-blue-500/30 hover:shadow-blue-500/10 hover:-translate-y-1 dark:bg-[#111827] dark:border-gray-800/50 dark:hover:border-blue-500/30 overflow-hidden"
+        >
+          <!-- Image -->
+          <div class="w-full h-44 bg-slate-100 dark:bg-gray-800 overflow-hidden relative">
+            @if (project.photo) {
+              <img
+                [src]="getPhotoUrl(project.photo)"
+                [alt]="project.name"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                (error)="$any($event.target).style.display = 'none'"
+              />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center">
+                <span class="text-5xl opacity-10">🏗️</span>
+              </div>
+            }
+            <!-- Status dot -->
+            <div
+              class="absolute top-4 right-4 flex items-center gap-2 px-3 py-1 rounded-xl backdrop-blur-sm bg-black/30"
+            >
+              <div
+                class="w-1.5 h-1.5 rounded-full"
+                [class.bg-amber-400]="project.status === 'active'"
+                [class.bg-emerald-400]="project.status === 'completed'"
+                [class.bg-slate-400]="project.status === 'pending'"
+              ></div>
+              <span class="text-[9px] font-black uppercase tracking-widest text-white">{{
+                project.status || 'pending'
+              }}</span>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="p-6 flex flex-col flex-1">
+            <h2
+              class="text-xl font-black tracking-tight text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1 truncate"
+            >
+              {{ project.name }}
+            </h2>
+            @if (project.description) {
+              <p class="text-xs text-slate-400 dark:text-gray-500 mb-4 line-clamp-2">
+                {{ project.description }}
+              </p>
+            }
+
+            <!-- Outputs progress -->
+            <div class="mt-auto space-y-3">
+              <div class="flex justify-between items-end">
+                <span
+                  class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500"
+                  >Completion</span
+                >
+                <span class="text-sm font-black text-slate-900 dark:text-white"
+                  >{{ getOutputsProgress(project) }}%</span
+                >
+              </div>
+              <div class="h-1.5 w-full rounded-full overflow-hidden bg-slate-100 dark:bg-gray-900">
+                <div
+                  class="h-full bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full transition-all duration-1000"
+                  [style.width.%]="getOutputsProgress(project)"
+                ></div>
+              </div>
+
+              <!-- Outputs tags -->
+              @if (project.outputs?.length > 0) {
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                  @for (output of project.outputs.slice(0, 3); track output._id) {
+                    <span
+                      class="text-[9px] font-bold px-2 py-1 rounded-lg bg-slate-50 dark:bg-gray-900 border border-slate-100 dark:border-gray-800 text-slate-500 dark:text-gray-400 truncate max-w-[120px]"
+                    >
+                      {{ output.name }}
+                    </span>
+                  }
+                  @if (project.outputs.length > 3) {
+                    <span
+                      class="text-[9px] font-bold px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                    >
+                      +{{ project.outputs.length - 3 }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+            <button
+              (click)="openDetails(project._id)"
+              class="mt-5 w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer bg-slate-50 text-slate-400 hover:bg-blue-600 hover:text-white hover:shadow-lg dark:bg-gray-800/50 dark:text-gray-400 dark:hover:bg-blue-600 dark:hover:text-white border-none"
+            >
+              Project Console →
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div
+          class="col-span-full py-24 flex flex-col items-center justify-center border-2 border-dashed rounded-3xl border-slate-200 dark:border-gray-800"
+        >
+          <p
+            class="text-slate-400 dark:text-gray-600 text-[10px] font-black uppercase tracking-widest"
+          >
+            No projects found.
+          </p>
+        </div>
+      }
+    </div>
   </div>
-</div> -->
+}

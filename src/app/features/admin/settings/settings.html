@@ -1,6 +1,7 @@
 <div
-  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 /* Light Mode */ bg-slate-50 text-slate-600 /* Dark Mode */ dark:bg-[#0b0f1a] dark:text-gray-300 overflow-hidden"
+  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 bg-slate-50 text-slate-600 dark:bg-[#0b0f1a] dark:text-gray-300 overflow-hidden"
 >
+  <!-- Header -->
   <div class="flex-shrink-0 mb-8">
     <h1 class="text-3xl font-black tracking-tighter italic text-slate-900 dark:text-white">
       System <span class="text-blue-600 dark:text-blue-500">Configuration</span>
@@ -12,131 +13,417 @@
     </p>
   </div>
 
-  <div class="flex-1 flex gap-8 min-h-0">
-    <div class="w-64 flex-shrink-0 space-y-2">
-      <button
-        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border-none shadow-lg cursor-pointer transition-all bg-blue-600 text-white shadow-blue-500/20 dark:shadow-blue-900/20"
-      >
-        <span>⚙️</span> General
-      </button>
-
-      <button
-        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border-none transition-all cursor-pointer bg-transparent text-slate-400 hover:bg-slate-200 hover:text-slate-900 dark:text-gray-500 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
-      >
-        <span>🔒</span> Security
-      </button>
-
-      <button
-        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border-none transition-all cursor-pointer bg-transparent text-slate-400 hover:bg-slate-200 hover:text-slate-900 dark:text-gray-500 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
-      >
-        <span>🔔</span> Notifications
-      </button>
-
-      <button
-        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border-none transition-all cursor-pointer bg-transparent mt-10 text-red-400/60 hover:bg-red-50 hover:text-red-600 dark:text-[red]/60 dark:hover:bg-red-500/5 dark:hover:text-red-500"
-      >
-        <span>⚠️</span> Danger Zone
-      </button>
+  <div class="flex-1 flex gap-6 min-h-0">
+    <!-- Sidebar Tabs -->
+    <div class="w-56 flex-shrink-0 space-y-1.5">
+      @for (tab of tabs; track tab.id) {
+        <button
+          (click)="activeTab = $any(tab.id)"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border-none cursor-pointer transition-all"
+          [class.bg-blue-600]="activeTab === tab.id"
+          [class.text-white]="activeTab === tab.id"
+          [class.shadow-lg]="activeTab === tab.id"
+          [class.shadow-blue-500/20]="activeTab === tab.id"
+          [class.bg-transparent]="activeTab !== tab.id"
+          [class.text-slate-400]="activeTab !== tab.id && tab.id !== 'danger'"
+          [class.dark:text-gray-500]="activeTab !== tab.id && tab.id !== 'danger'"
+          [class.hover:bg-slate-200]="activeTab !== tab.id && tab.id !== 'danger'"
+          [class.text-red-400]="tab.id === 'danger' && activeTab !== tab.id"
+          [class.hover:bg-red-50]="tab.id === 'danger'"
+          [class.dark:hover:bg-red-500/5]="tab.id === 'danger'"
+        >
+          <span>{{ tab.icon }}</span> {{ tab.label }}
+        </button>
+      }
     </div>
 
+    <!-- Content Panel -->
     <div
-      class="flex-1 rounded-[2.5rem] border p-8 overflow-y-auto custom-scrollbar shadow-2xl transition-all bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/40"
+      class="flex-1 rounded-3xl border p-8 overflow-y-auto shadow-2xl bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/40"
     >
-      <form class="space-y-10">
-        <section>
-          <h3
-            class="font-black text-lg mb-6 flex items-center gap-2 text-slate-900 dark:text-white"
-          >
-            Studio Branding <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-          </h3>
-          <div class="grid grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <label
-                class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
-                >Studio Name</label
-              >
-              <input
-                type="text"
-                value="ColorIdea Studio"
-                class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-100 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
-              />
-            </div>
-            <div class="space-y-2">
-              <label
-                class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 ml-1"
-                >Support Email</label
-              >
-              <input
-                type="email"
-                value="admin@coloridea.com"
-                class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-100 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-950/50 dark:border-gray-800 dark:text-white dark:focus:border-blue-500/50"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h3
-            class="font-black text-lg mb-6 flex items-center gap-2 text-slate-900 dark:text-white"
-          >
-            System Preferences <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-          </h3>
-          <div class="space-y-4">
+      <!-- ===== GENERAL ===== -->
+      @if (activeTab === 'general') {
+        <div class="space-y-10">
+          <!-- Saved toast -->
+          @if (saved) {
             <div
-              class="flex items-center justify-between p-4 rounded-2xl border transition-all bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
+              class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40"
             >
-              <div>
-                <p class="text-sm font-black text-slate-700 dark:text-gray-300">
-                  Project Auto-Archive
-                </p>
-                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-tighter">
-                  Automatically archive projects after 30 days of completion
-                </p>
+              <span class="text-emerald-500">✓</span>
+              <p class="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                Configuration saved successfully
+              </p>
+            </div>
+          }
+
+          <!-- Branding -->
+          <section>
+            <h3
+              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
+            >
+              Studio Branding
+              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
+            </h3>
+            <div class="grid grid-cols-2 gap-5">
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  >Studio Name</label
+                >
+                <input
+                  type="text"
+                  [(ngModel)]="studioName"
+                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-900 dark:border-gray-800 dark:text-white"
+                />
               </div>
-              <div
-                class="w-10 h-5 rounded-full relative cursor-pointer transition-colors bg-blue-600"
-              >
-                <div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full shadow-sm"></div>
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  >Support Email</label
+                >
+                <input
+                  type="email"
+                  [(ngModel)]="supportEmail"
+                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-900 dark:border-gray-800 dark:text-white"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  >Timezone</label
+                >
+                <select
+                  [(ngModel)]="timezone"
+                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 dark:bg-gray-900 dark:border-gray-800 dark:text-white"
+                >
+                  <option value="Africa/Cairo">Cairo (GMT+2)</option>
+                  <option value="Europe/London">London (GMT+0)</option>
+                  <option value="America/New_York">New York (GMT-5)</option>
+                  <option value="Asia/Dubai">Dubai (GMT+4)</option>
+                </select>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  >Language</label
+                >
+                <select
+                  [(ngModel)]="language"
+                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 dark:bg-gray-900 dark:border-gray-800 dark:text-white"
+                >
+                  <option value="en">English</option>
+                  <option value="ar">العربية</option>
+                </select>
               </div>
             </div>
+          </section>
 
-            <div
-              class="flex items-center justify-between p-4 rounded-2xl border transition-all bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
+          <!-- System Preferences -->
+          <section>
+            <h3
+              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
             >
-              <div>
-                <p class="text-sm font-black text-slate-700 dark:text-gray-300">
-                  Client Notifications
-                </p>
-                <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase tracking-tighter">
-                  Send automated progress updates to clients
-                </p>
-              </div>
-              <div
-                class="w-10 h-5 rounded-full relative cursor-pointer transition-colors bg-slate-200 dark:bg-gray-700"
-              >
+              System Preferences
+              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
+            </h3>
+            <div class="space-y-3">
+              @for (
+                toggle of [
+                  {
+                    model: 'autoArchive',
+                    label: 'Project Auto-Archive',
+                    desc: 'Automatically archive projects after 30 days of completion',
+                  },
+                  {
+                    model: 'clientNotifications',
+                    label: 'Client Notifications',
+                    desc: 'Send automated progress updates to clients',
+                  },
+                  {
+                    model: 'weeklyReports',
+                    label: 'Weekly Reports',
+                    desc: 'Generate weekly performance reports automatically',
+                  },
+                  {
+                    model: 'maintenanceMode',
+                    label: 'Maintenance Mode',
+                    desc: 'Put the system in maintenance mode for all clients',
+                  },
+                ];
+                track toggle.model
+              ) {
                 <div
-                  class="absolute left-1 top-1 w-3 h-3 rounded-full shadow-sm bg-slate-400 dark:bg-gray-400"
-                ></div>
+                  class="flex items-center justify-between p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50 transition-all"
+                >
+                  <div>
+                    <p class="text-sm font-black text-slate-700 dark:text-gray-300">
+                      {{ toggle.label }}
+                    </p>
+                    <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">
+                      {{ toggle.desc }}
+                    </p>
+                  </div>
+                  <!-- Toggle Switch -->
+                  <button
+                    type="button"
+                    (click)="$any(this)[toggle.model] = !$any(this)[toggle.model]"
+                    class="w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-300 border-none flex-shrink-0"
+                    [class.bg-blue-600]="$any(this)[toggle.model]"
+                    [class.bg-slate-200]="!$any(this)[toggle.model]"
+                    [class.dark:bg-gray-700]="!$any(this)[toggle.model]"
+                  >
+                    <div
+                      class="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300"
+                      [class.left-1]="!$any(this)[toggle.model]"
+                      [class.left-6]="$any(this)[toggle.model]"
+                    ></div>
+                  </button>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Actions -->
+          <div class="pt-4 border-t border-slate-100 dark:border-gray-800 flex justify-end gap-3">
+            <button
+              type="button"
+              class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-transparent border-none cursor-pointer text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            >
+              Discard
+            </button>
+            <button
+              type="button"
+              (click)="saveGeneral()"
+              class="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
+            >
+              Save Configuration
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- ===== SECURITY ===== -->
+      @if (activeTab === 'security') {
+        <div class="space-y-10">
+          <section>
+            <h3
+              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
+            >
+              Authentication
+              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
+            </h3>
+            <div class="space-y-3">
+              <div
+                class="flex items-center justify-between p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
+              >
+                <div>
+                  <p class="text-sm font-black text-slate-700 dark:text-gray-300">
+                    Two-Factor Authentication
+                  </p>
+                  <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">
+                    Require 2FA for all admin accounts
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  (click)="twoFactor = !twoFactor"
+                  class="w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-300 border-none flex-shrink-0"
+                  [class.bg-blue-600]="twoFactor"
+                  [class.bg-slate-200]="!twoFactor"
+                  [class.dark:bg-gray-700]="!twoFactor"
+                >
+                  <div
+                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300"
+                    [class.left-1]="!twoFactor"
+                    [class.left-6]="twoFactor"
+                  ></div>
+                </button>
+              </div>
+
+              <div
+                class="p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
+              >
+                <p class="text-sm font-black text-slate-700 dark:text-gray-300 mb-3">
+                  Session Timeout
+                </p>
+                <div class="flex items-center gap-4">
+                  @for (opt of ['15', '30', '60', '120']; track opt) {
+                    <button
+                      type="button"
+                      (click)="sessionTimeout = opt"
+                      class="px-4 py-2 rounded-xl text-xs font-black border-none cursor-pointer transition-all"
+                      [class.bg-blue-600]="sessionTimeout === opt"
+                      [class.text-white]="sessionTimeout === opt"
+                      [class.bg-slate-100]="sessionTimeout !== opt"
+                      [class.text-slate-500]="sessionTimeout !== opt"
+                      [class.dark:bg-gray-800]="sessionTimeout !== opt"
+                      [class.dark:text-gray-400]="sessionTimeout !== opt"
+                    >
+                      {{ opt }}m
+                    </button>
+                  }
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <div class="pt-6 border-t flex justify-end gap-4 border-slate-100 dark:border-gray-800">
-          <button
-            type="button"
-            class="px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors border-none bg-transparent cursor-pointer text-slate-400 hover:text-slate-900 dark:text-gray-500 dark:hover:text-white"
-          >
-            Discard
-          </button>
-          <button
-            type="submit"
-            class="px-8 py-3 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition-all cursor-pointer active:scale-95"
-          >
-            Update Configuration
-          </button>
+          <div class="pt-4 border-t border-slate-100 dark:border-gray-800 flex justify-end">
+            <button
+              type="button"
+              (click)="saveGeneral()"
+              class="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
+            >
+              Save Security Settings
+            </button>
+          </div>
         </div>
-      </form>
+      }
+
+      <!-- ===== NOTIFICATIONS ===== -->
+      @if (activeTab === 'notifications') {
+        <div class="space-y-10">
+          <section>
+            <h3
+              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
+            >
+              Email Notifications
+              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
+            </h3>
+            <div class="space-y-3">
+              @for (
+                n of [
+                  {
+                    model: 'emailOnNewProject',
+                    label: 'New Project Created',
+                    desc: 'Notify when a new project is assigned',
+                  },
+                  {
+                    model: 'emailOnPayment',
+                    label: 'Payment Received',
+                    desc: 'Notify when an installment is paid',
+                  },
+                  {
+                    model: 'emailOnDeliverable',
+                    label: 'Deliverable Uploaded',
+                    desc: 'Notify when a new deliverable is added',
+                  },
+                  {
+                    model: 'browserPush',
+                    label: 'Browser Push Notifications',
+                    desc: 'Enable push notifications in browser',
+                  },
+                ];
+                track n.model
+              ) {
+                <div
+                  class="flex items-center justify-between p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
+                >
+                  <div>
+                    <p class="text-sm font-black text-slate-700 dark:text-gray-300">
+                      {{ n.label }}
+                    </p>
+                    <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">{{ n.desc }}</p>
+                  </div>
+                  <button
+                    type="button"
+                    (click)="$any(this)[n.model] = !$any(this)[n.model]"
+                    class="w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-300 border-none flex-shrink-0"
+                    [class.bg-blue-600]="$any(this)[n.model]"
+                    [class.bg-slate-200]="!$any(this)[n.model]"
+                    [class.dark:bg-gray-700]="!$any(this)[n.model]"
+                  >
+                    <div
+                      class="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300"
+                      [class.left-1]="!$any(this)[n.model]"
+                      [class.left-6]="$any(this)[n.model]"
+                    ></div>
+                  </button>
+                </div>
+              }
+            </div>
+          </section>
+
+          <div class="pt-4 border-t border-slate-100 dark:border-gray-800 flex justify-end">
+            <button
+              type="button"
+              (click)="saveGeneral()"
+              class="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
+            >
+              Save Preferences
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- ===== DANGER ZONE ===== -->
+      @if (activeTab === 'danger') {
+        <div class="space-y-6">
+          <div
+            class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30"
+          >
+            <span class="text-red-500 text-xl">⚠️</span>
+            <p class="text-sm font-bold text-red-700 dark:text-red-400">
+              These actions are irreversible. Proceed with extreme caution.
+            </p>
+          </div>
+
+          @for (
+            action of [
+              {
+                title: 'Archive All Projects',
+                desc: 'Move all active projects to archive. Clients will lose access.',
+                btn: 'Archive All',
+                color: 'amber',
+              },
+              {
+                title: 'Clear All Deliverables',
+                desc: 'Permanently delete all uploaded files and deliverables.',
+                btn: 'Clear Files',
+                color: 'orange',
+              },
+              {
+                title: 'Reset System Data',
+                desc: 'Wipe all projects, clients, and financial records. Cannot be undone.',
+                btn: 'Reset System',
+                color: 'red',
+              },
+            ];
+            track action.title
+          ) {
+            <div
+              class="p-6 rounded-2xl border transition-all"
+              [class.border-amber-200]="action.color === 'amber'"
+              [class.dark:border-amber-800/30]="action.color === 'amber'"
+              [class.border-orange-200]="action.color === 'orange'"
+              [class.dark:border-orange-800/30]="action.color === 'orange'"
+              [class.border-red-200]="action.color === 'red'"
+              [class.dark:border-red-800/30]="action.color === 'red'"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-black text-slate-900 dark:text-white">
+                    {{ action.title }}
+                  </p>
+                  <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-1">
+                    {{ action.desc }}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all ml-6 flex-shrink-0"
+                  [class.bg-amber-100]="action.color === 'amber'"
+                  [class.text-amber-700]="action.color === 'amber'"
+                  [class.hover:bg-amber-200]="action.color === 'amber'"
+                  [class.bg-orange-100]="action.color === 'orange'"
+                  [class.text-orange-700]="action.color === 'orange'"
+                  [class.bg-red-100]="action.color === 'red'"
+                  [class.text-red-700]="action.color === 'red'"
+                  [class.dark:bg-red-900/30]="action.color === 'red'"
+                  [class.dark:text-red-400]="action.color === 'red'"
+                >
+                  {{ action.btn }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
     </div>
   </div>
 </div>

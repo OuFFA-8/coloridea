@@ -1,154 +1,174 @@
-<div
-  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 overflow-hidden bg-transparent"
->
-  <div class="flex-shrink-0 mb-8 px-2">
-    <h1 class="text-3xl font-black tracking-tighter italic m-0 text-slate-900 dark:text-white">
-      Project <span class="text-blue-600 dark:text-blue-500">Deliverables</span>
-    </h1>
-    <p
-      class="text-slate-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-1"
-    >
-      Next-Gen Asset Management System
-    </p>
+<!-- Loading -->
+@if (isLoading) {
+  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0f1a]">
+    <div
+      class="w-10 h-10 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin"
+    ></div>
   </div>
+}
 
-  <div class="flex-1 overflow-y-auto custom-scrollbar space-y-4 px-2 pb-10">
-    @for (item of projectDeliverables; track item.title; let first = $first) {
+@if (!isLoading) {
+  <div class="p-8 space-y-6 min-h-screen bg-transparent transition-colors duration-500">
+    <!-- Header -->
+    <div>
+      <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+        Project <span class="text-blue-600 dark:text-blue-500">Deliverables</span>
+      </h1>
+      <p
+        class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500 mt-1"
+      >
+        {{ outputs.length }} output categories
+      </p>
+    </div>
+
+    <!-- Empty -->
+    @if (outputs.length === 0) {
+      <div
+        class="py-24 text-center border-2 border-dashed border-slate-200 dark:border-gray-800 rounded-3xl"
+      >
+        <div class="text-4xl mb-3">📦</div>
+        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          No deliverables yet
+        </p>
+      </div>
+    }
+
+    <!-- Outputs Accordion -->
+    @for (output of outputs; track output._id; let first = $first) {
       <details
         [attr.open]="first ? '' : null"
-        class="group rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-xl border bg-white border-slate-200 open:bg-slate-50/50 open:border-blue-500/20 shadow-slate-200/50 dark:bg-[#111827]/40 dark:border-gray-800/50 dark:open:bg-[#111827] dark:open:border-blue-500/20 dark:shadow-black/20"
+        class="group rounded-3xl overflow-hidden border transition-all duration-500 shadow-sm bg-white border-slate-100 open:border-blue-500/20 open:shadow-xl dark:bg-[#111827] dark:border-gray-800 dark:open:border-blue-500/20"
       >
         <summary
-          class="flex items-center justify-between p-7 cursor-pointer list-none outline-none"
+          class="flex items-center justify-between p-6 cursor-pointer list-none outline-none"
         >
-          <div class="flex items-center gap-5">
+          <div class="flex items-center gap-4">
             <div
-              class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl transition-all shadow-inner bg-slate-100 text-slate-600 group-open:text-blue-600 dark:bg-gray-950 dark:text-white dark:group-open:text-blue-500"
+              class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl bg-slate-50 dark:bg-gray-900 border border-slate-100 dark:border-gray-800 group-open:bg-blue-50 dark:group-open:bg-blue-900/20 group-open:border-blue-200 dark:group-open:border-blue-800/40 transition-all"
             >
-              {{ item.icon }}
+              📦
             </div>
             <div>
-              <h3 class="font-bold text-lg tracking-tight m-0 text-slate-900 dark:text-white">
-                {{ item.title }}
-              </h3>
-              <span
-                class="text-[9px] font-black uppercase tracking-[0.2em] transition-colors text-slate-400 group-open:text-blue-600 dark:text-gray-600 dark:group-open:text-blue-400"
-              >
-                {{ item.files.length }} Assets Included
-              </span>
+              <h3 class="font-black text-base text-slate-900 dark:text-white">{{ output.name }}</h3>
+              <div class="flex items-center gap-3 mt-0.5">
+                <span
+                  class="text-[9px] font-black uppercase tracking-widest text-slate-400 group-open:text-blue-500 transition-colors"
+                >
+                  {{ output.items?.length || 0 }} / {{ output.numberOfItems }} delivered
+                </span>
+                <!-- Mini progress -->
+                <div class="w-16 h-1 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all"
+                    [class.bg-emerald-500]="getOutputProgress(output) === 100"
+                    [class.bg-blue-500]="getOutputProgress(output) < 100"
+                    [style.width.%]="getOutputProgress(output)"
+                  ></div>
+                </div>
+                <span
+                  class="text-[9px] font-black"
+                  [class.text-emerald-500]="getOutputProgress(output) === 100"
+                  [class.text-blue-500]="getOutputProgress(output) < 100"
+                >
+                  {{ getOutputProgress(output) }}%
+                </span>
+              </div>
             </div>
           </div>
           <div
-            class="w-8 h-8 rounded-full flex items-center justify-center group-open:rotate-180 transition-transform duration-500 border bg-slate-50 border-slate-200 dark:bg-gray-900 dark:border-gray-800"
+            class="w-8 h-8 rounded-full flex items-center justify-center group-open:rotate-180 transition-transform duration-500 border bg-slate-50 border-slate-200 dark:bg-gray-900 dark:border-gray-800 flex-shrink-0"
           >
-            <span class="text-slate-400 dark:text-gray-600 text-[10px]">▼</span>
+            <span class="text-slate-400 text-[10px]">▼</span>
           </div>
         </summary>
 
-        <div
-          class="p-8 pt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fadeIn"
-        >
-          @for (file of item.files; track $index) {
+        <!-- Items Grid -->
+        <div class="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          @for (item of output.items; track item._id) {
             <div
-              (click)="openMedia(file)"
-              class="group/item cursor-pointer relative h-72 rounded-[2.5rem] overflow-hidden border bg-white border-slate-200 dark:bg-gray-950 dark:border-gray-800/30 shadow-sm"
-              style="
-                transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
-                will-change: transform, box-shadow;
-              "
-              onmouseover="
-                this.style.transform = 'translateY(-12px)';
-                this.style.boxShadow = '0 30px 60px -15px rgba(37, 99, 235, 0.2)';
-              "
-              onmouseout="
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = 'none';
-              "
+              (click)="openItem(item)"
+              class="group/item relative h-60 rounded-2xl overflow-hidden border cursor-pointer transition-all duration-500 bg-slate-50 border-slate-200 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 dark:bg-gray-900 dark:border-gray-800"
             >
-              <img
-                [src]="file.thumbnail"
-                class="w-full h-full object-cover opacity-90 group-hover/item:opacity-100"
-                style="transition: transform 1.5s ease-out"
-                onmouseover="this.style.transform = 'scale(1.06)'"
-                onmouseout="this.style.transform = 'scale(1)'"
-              />
+              @if (item.photo) {
+                <img
+                  [src]="getPhotoUrl(item.photo)"
+                  [alt]="item.name"
+                  class="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500"
+                  (error)="$any($event.target).style.display = 'none'"
+                />
+              } @else {
+                <div class="w-full h-full flex items-center justify-center">
+                  <span class="text-4xl opacity-20">🎬</span>
+                </div>
+              }
 
+              <!-- Overlay -->
               <div
-                class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent transition-opacity duration-1000 opacity-80 group-hover/item:opacity-95"
+                class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-all duration-500"
               ></div>
 
-              <div class="absolute inset-0 flex items-center justify-center z-10">
+              <!-- Play button -->
+              @if (item.link) {
                 <div
-                  class="w-16 h-16 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all duration-700 scale-50 group-hover/item:scale-100"
+                  class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all duration-500"
                 >
-                  <span class="text-3xl text-white">
-                    {{ file.type === 'video' ? '▶' : '👁️' }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="absolute inset-x-0 bottom-0 p-8 flex flex-col justify-end">
-                <div
-                  class="flex items-center justify-between mb-3 translate-y-2 group-hover/item:translate-y-0 transition-transform duration-1000"
-                >
-                  <span
-                    class="px-3 py-1 rounded-lg text-[10px] font-black bg-blue-600 text-white uppercase tracking-widest shadow-lg shadow-blue-900/20"
+                  <div
+                    class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center"
                   >
-                    #{{ file.id }}
-                  </span>
-                  <span class="text-[11px] font-bold text-slate-400 tracking-tight">
-                    {{ file.date }}
-                  </span>
+                    <span class="text-white text-xl ml-1">▶</span>
+                  </div>
                 </div>
+              }
 
-                <h4
-                  class="text-base font-bold text-white leading-tight transition-colors duration-700 group-hover/item:text-blue-300"
-                >
-                  {{ file.title }}
-                </h4>
+              <!-- Title -->
+              <div
+                class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover/item:translate-y-0 transition-transform duration-500 opacity-0 group-hover/item:opacity-100"
+              >
+                <p class="text-xs font-black text-white truncate">{{ item.name }}</p>
               </div>
+            </div>
+          } @empty {
+            <div
+              class="col-span-full py-10 text-center border border-dashed rounded-2xl border-slate-200 dark:border-gray-800"
+            >
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                No items delivered yet
+              </p>
             </div>
           }
         </div>
       </details>
     }
   </div>
-</div>
+}
 
-@if (selectedMedia) {
-  <div
-    class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 animate-fadeIn"
-    role="dialog"
-  >
+<!-- Item Modal -->
+@if (selectedItem) {
+  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-xl" (click)="closeModal()"></div>
     <div
-      (click)="closeModal()"
-      class="absolute inset-0 bg-slate-900/80 backdrop-blur-xl transition-opacity"
-    ></div>
-
-    <div
-      class="relative w-full max-w-5xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
+      class="relative w-full max-w-4xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
     >
-      <div
-        class="flex items-center justify-between p-4 px-6 bg-white/5 border-b border-white/10 backdrop-blur-sm z-20"
-      >
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-5 px-6 bg-white/5 border-b border-white/10">
         <div>
-          <h3 class="text-white font-bold text-lg">{{ selectedMedia.title }}</h3>
-          <p class="text-gray-400 text-xs">{{ selectedMedia.date }} • ID: {{ selectedMedia.id }}</p>
+          <h3 class="text-white font-black text-lg">{{ selectedItem.name }}</h3>
         </div>
         <button
           (click)="closeModal()"
-          class="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-rose-500 hover:text-white transition-colors"
+          class="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-rose-500 text-white transition-colors border-none cursor-pointer"
         >
           ✕
         </button>
       </div>
 
+      <!-- Modal Body -->
       <div
-        class="flex-1 bg-black flex items-center justify-center relative min-h-[300px] md:min-h-[500px]"
+        class="flex-1 min-h-[300px] md:min-h-[500px] relative bg-black flex items-center justify-center"
       >
-        @if (selectedMedia.type === 'video') {
+        @if (selectedItem.link) {
           <iframe
-            [src]="getSafeUrl(selectedMedia.url)"
+            [src]="getSafeUrl(selectedItem.link)"
             class="w-full h-full absolute inset-0"
             frameborder="0"
             allow="
@@ -161,10 +181,14 @@
             "
             allowfullscreen
           ></iframe>
-        }
-
-        @if (selectedMedia.type === 'image') {
-          <img [src]="selectedMedia.url" class="max-w-full max-h-[80vh] object-contain p-4" />
+        } @else if (selectedItem.photo) {
+          <img
+            [src]="getPhotoUrl(selectedItem.photo)"
+            [alt]="selectedItem.name"
+            class="max-w-full max-h-[80vh] object-contain p-4"
+          />
+        } @else {
+          <p class="text-white/40 text-sm font-bold uppercase">No media available</p>
         }
       </div>
     </div>

@@ -1,25 +1,79 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ChartCard } from '../../../shared/components/chart-card/chart-card';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { environment } from '../../../../environments/environment';
+import { AuthServices } from '../../../core/services/auth-services/auth-services';
+import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 
 @Component({
   selector: 'app-client-dashboard',
-  imports: [ChartCard],
+  imports: [CommonModule],
   templateUrl: './client-dashboard.html',
   styleUrl: './client-dashboard.css',
 })
-export class ClientDashboard {
-  projectName = 'New Capital Compound';
+export class ClientDashboard implements OnInit {
+  private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
 
-  progress = 72;
+  user: any = null;
+  projects: any[] = [];
+  isLoading = true;
+  baseUrl = environment.baseUrl;
 
-  services = [
-    { name: 'Aerial Photography Sessions', done: 3, total: 4 },
-    { name: 'Ground Photography Sessions', done: 2, total: 4 },
-    { name: 'Timelapse Camera', done: 1, total: 1 },
-    { name: 'Monthly Update Videos', done: 8, total: 12 },
-    { name: 'Quarterly Edited Videos', done: 2, total: 4 },
-    { name: 'Photo Sessions', done: 10, total: 12 },
-  ];
+  constructor(
+    private authServices: AuthServices,
+    private projectsService: ProjectsService,
+    private router: Router,
+  ) {}
 
-  chartData = [72, 28];
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.user = this.authServices.getUser();
+      this.loadProjects();
+    }
+  }
+
+  loadProjects() {
+    if (!this.user?._id) {
+      this.isLoading = false;
+      return;
+    }
+
+    this.projectsService.getUserProjects(this.user._id).subscribe({
+      next: (res) => {
+        this.projects = res.data || [];
+
+        // لو project واحد بس → روح عليه تلقائي
+        if (this.projects.length === 1) {
+          this.router.navigate(['/client/projects', this.projects[0]._id]);
+          return;
+        }
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  get activeCount(): number {
+    return this.projects.filter((p) => p.status === 'active').length;
+  }
+
+  get completedCount(): number {
+    return this.projects.filter((p) => p.status === 'completed').length;
+  }
+
+  getPhotoUrl(path: string | null): string {
+    if (!path) return '';
+    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
+  }
+
+  openProject(id: string) {
+    this.router.navigate(['/client/projects', id]);
+  }
 }

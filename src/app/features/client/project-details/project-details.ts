@@ -1,73 +1,88 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Project } from '../../../core/models/project';
 import { ChartCard } from './../../../shared/components/chart-card/chart-card';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+import { AuthServices } from '../../../core/services/auth-services/auth-services';
+import { LoadingService } from '../../../core/services/loading-service/loading-service';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [ChartCard], // شلنا CommonModule لأننا هنستخدم @for و @if
+  imports: [CommonModule, ChartCard],
   templateUrl: './project-details.html',
   styleUrl: './project-details.css',
 })
-export class ProjectDetails {
-  project!: Project;
-  projectId!: number;
+export class ProjectDetails implements OnInit {
+  private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
+  private loadingService = inject(LoadingService);
 
-  // بيانات التشارتس الأصلية بتاعتك
-  pieData = [40, 30, 30];
-  lineData = [10, 25, 40, 60, 80];
+  project: any = null;
+  isLoading = true;
+  pieData: number[] = [];
+  lineData: number[] = [];
 
-  projectDeliverables = [
-    {
-      title: 'Aerial Photography Sessions',
-      icon: '🚁',
-      files: [
-        { name: 'North View', image: 'https://picsum.photos/400/300?random=1', driveLink: '#' },
-      ],
-    },
-    {
-      title: 'Ground Photography Sessions',
-      icon: '📸',
-      files: [
-        { name: 'Main Entrance', image: 'https://picsum.photos/400/300?random=2', driveLink: '#' },
-      ],
-    },
-    {
-      title: 'Timelapse Camera',
-      icon: '⏳',
-      files: [
-        {
-          name: 'Progress Week 1',
-          image: 'https://picsum.photos/400/300?random=3',
-          driveLink: '#',
+  constructor(
+    private route: ActivatedRoute,
+    private projectsService: ProjectsService,
+    private authServices: AuthServices,
+  ) {}
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      const projectId = this.route.snapshot.paramMap.get('id');
+      const user = this.authServices.getUser();
+      if (!projectId || !user?._id) {
+        this.isLoading = false;
+        return;
+      }
+
+      this.loadingService.show('Loading project...');
+      this.projectsService.getUserProjects(user._id).subscribe({
+        next: (res) => {
+          this.project = (res.data || []).find((p: any) => p._id === projectId) || null;
+          if (this.project) this.buildChartData();
+          this.isLoading = false;
+          this.loadingService.hide();
+          this.cdr.detectChanges();
         },
-      ],
-    },
-    {
-      title: 'Monthly Update Videos',
-      icon: '🎬',
-      files: [
-        { name: 'January Recap', image: 'https://picsum.photos/400/300?random=4', driveLink: '#' },
-      ],
-    },
-    {
-      title: 'Quarterly Edited Videos',
-      icon: '🎞️',
-      files: [
-        { name: 'Q1 Highlights', image: 'https://picsum.photos/400/300?random=5', driveLink: '#' },
-      ],
-    },
-    {
-      title: 'Photo Sessions',
-      icon: '🖼️',
-      files: [
-        {
-          name: 'Architectural Shot',
-          image: 'https://picsum.photos/400/300?random=6',
-          driveLink: '#',
+        error: () => {
+          this.isLoading = false;
+          this.loadingService.hide();
+          this.cdr.detectChanges();
         },
-      ],
-    },
-  ];
+      });
+    }
+  }
+
+  buildChartData() {
+    this.pieData = [this.deliveredItems, Math.max(0, this.totalItems - this.deliveredItems)];
+    this.lineData = this.project.outputs?.map((o: any) => o.items?.length || 0) || [];
+  }
+
+  get totalItems(): number {
+    return this.project?.outputs?.reduce((s: number, o: any) => s + (o.numberOfItems || 0), 0) || 0;
+  }
+  get deliveredItems(): number {
+    return this.project?.outputs?.reduce((s: number, o: any) => s + (o.items?.length || 0), 0) || 0;
+  }
+  get outputsProgress(): number {
+    return this.totalItems ? Math.round((this.deliveredItems / this.totalItems) * 100) : 0;
+  }
+  get paidAmount(): number {
+    return (
+      this.project?.financialDetails?.installments?.reduce(
+        (s: number, i: any) => s + (i.amount || 0),
+        0,
+      ) || 0
+    );
+  }
+  get remainingAmount(): number {
+    return (this.project?.financialDetails?.totalAmount || 0) - this.paidAmount;
+  }
+  get paymentProgress(): number {
+    const t = this.project?.financialDetails?.totalAmount || 0;
+    return t ? Math.round((this.paidAmount / t) * 100) : 0;
+  }
 }
