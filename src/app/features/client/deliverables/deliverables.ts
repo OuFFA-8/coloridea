@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // مهم جداً للفيديو
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
@@ -10,7 +11,7 @@ import { LoadingService } from '../../../core/services/loading-service/loading-s
 @Component({
   selector: 'app-deliverables',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './deliverables.html',
   styleUrl: './deliverables.css',
 })
@@ -59,8 +60,7 @@ export class Deliverables implements OnInit {
   }
 
   getPhotoUrl(path: string | null): string {
-    if (!path) return '';
-    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
+    return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
   }
   getSafeUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);

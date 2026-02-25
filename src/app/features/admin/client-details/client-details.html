@@ -1,39 +1,52 @@
 @if (isLoading) {
-  <div class="min-h-screen bg-slate-50 dark:bg-[#0b0f1a] animate-pulse">
-    <div class="h-80 bg-slate-200 dark:bg-gray-800"></div>
+  <div class="min-h-screen bg-[#fff1e6] dark:bg-[#0e0e0e] animate-pulse">
+    <div class="h-80 bg-[#e6d5c3] dark:bg-[#1c1c1c]"></div>
     <div class="max-w-6xl mx-auto px-8 mt-8">
-      <div class="grid grid-cols-3 gap-6">
-        <div class="h-40 bg-slate-100 dark:bg-gray-800 rounded-3xl"></div>
-        <div class="h-40 bg-slate-100 dark:bg-gray-800 rounded-3xl"></div>
-        <div class="h-40 bg-slate-100 dark:bg-gray-800 rounded-3xl"></div>
+      <div class="grid grid-cols-3 gap-5">
+        <div class="h-48 bg-[#e6d5c3]/60 dark:bg-[#1c1c1c] rounded-2xl"></div>
+        <div class="h-48 bg-[#e6d5c3]/60 dark:bg-[#1c1c1c] rounded-2xl"></div>
+        <div class="h-48 bg-[#e6d5c3]/60 dark:bg-[#1c1c1c] rounded-2xl"></div>
       </div>
     </div>
   </div>
 }
 
 @if (!isLoading && client) {
-  <div class="min-h-screen bg-slate-50 dark:bg-[#0b0f1a] pb-20 transition-colors duration-500">
-    <!-- HERO -->
+  <div class="min-h-screen bg-[#fff1e6] dark:bg-[#0e0e0e] pb-20 transition-colors duration-500">
+    <!-- ===== HERO ===== -->
     <div
       class="relative h-80 overflow-hidden"
       [style.backgroundImage]="client.pattern ? 'url(' + getPhotoUrl(client.pattern) + ')' : 'none'"
-      [class.bg-gradient-to-br]="!client.pattern"
-      [class.from-blue-900]="!client.pattern"
-      [class.to-indigo-900]="!client.pattern"
+      [class.bg-[#444547]]="!client.pattern"
       style="background-size: cover; background-position: center"
     >
       <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10"></div>
+      <div
+        class="absolute inset-0 opacity-[0.05]"
+        style="
+          background-image: repeating-linear-gradient(
+            45deg,
+            #fa8728 0,
+            #fa8728 1px,
+            transparent 0,
+            transparent 50%
+          );
+          background-size: 18px 18px;
+        "
+      ></div>
+
       <button
         routerLink="/admin/clients"
         class="absolute top-8 left-8 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/15 text-white text-xs font-bold transition-all cursor-pointer border-solid"
       >
         ← Back
       </button>
+
       <div class="absolute bottom-0 left-0 right-0 px-8 pb-8">
         <div class="max-w-6xl mx-auto flex items-end justify-between gap-6">
           <div class="flex items-end gap-6">
             <div
-              class="w-24 h-24 rounded-2xl bg-white dark:bg-[#111827] shadow-2xl border-4 border-white/20 overflow-hidden flex items-center justify-center flex-shrink-0 mb-1"
+              class="w-24 h-24 rounded-2xl bg-white dark:bg-[#1c1c1c] shadow-2xl border-4 border-white/20 overflow-hidden flex items-center justify-center flex-shrink-0 mb-1"
             >
               @if (client.logo || client.photo) {
                 <img
@@ -43,19 +56,19 @@
                   (error)="$any($event.target).style.display = 'none'"
                 />
               } @else {
-                <span class="text-3xl font-black text-slate-400">{{ client.name?.charAt(0) }}</span>
+                <span class="text-3xl font-black text-[#fa8728]">{{ client.name?.charAt(0) }}</span>
               }
             </div>
             <div>
               <div class="flex items-center gap-3 mb-1">
                 <span
-                  class="px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest"
-                  [class.bg-emerald-500/30]="client.isActive"
-                  [class.text-emerald-300]="client.isActive"
-                  [class.border-emerald-500/30]="client.isActive"
+                  class="px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border"
+                  [class.bg-[#68ab1f]/25]="client.isActive"
+                  [class.text-[#68ab1f]]="client.isActive"
+                  [class.border-[#68ab1f]/30]="client.isActive"
                   [class.bg-white/10]="!client.isActive"
                   [class.text-white/50]="!client.isActive"
-                  style="border: 1px solid"
+                  [class.border-white/15]="!client.isActive"
                 >
                   {{ client.isActive ? 'Active' : 'Inactive' }}
                 </span>
@@ -63,13 +76,23 @@
                   >{{ client.projectsCount }} projects</span
                 >
               </div>
-              <h1 class="text-4xl font-black text-white tracking-tight">{{ client.name }}</h1>
-              <p class="text-blue-300/80 font-bold mt-0.5">{{ client.email }}</p>
+              <h1
+                class="text-4xl font-black text-white tracking-tight"
+                style="font-family: 'Lexend', sans-serif"
+              >
+                {{ client.name }}
+              </h1>
+              <p
+                class="text-[#fa8728]/80 font-bold mt-0.5"
+                style="font-family: 'Alexandria', sans-serif"
+              >
+                {{ client.email }}
+              </p>
             </div>
           </div>
           <button
             (click)="toggleProjectModal()"
-            class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-2xl shadow-blue-500/40 active:scale-95 cursor-pointer border-none flex-shrink-0 mb-1"
+            class="px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-2xl shadow-[#fa8728]/40 active:scale-95 cursor-pointer border-none flex-shrink-0 mb-1 bg-[#fa8728] hover:bg-[#f97316] text-white"
           >
             + New Project
           </button>
@@ -77,38 +100,45 @@
       </div>
     </div>
 
-    <!-- PROJECTS -->
+    <!-- ===== PROJECTS ===== -->
     <div class="max-w-6xl mx-auto px-8 mt-10">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500">
-          Projects ({{ client.projects?.length || 0 }})
-        </h2>
+        <div class="flex items-center gap-3">
+          <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
+          <h2
+            class="text-xs font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500"
+          >
+            Projects ({{ client.projects?.length || 0 }})
+          </h2>
+        </div>
       </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         @for (project of client.projects; track project._id) {
           <div
             (click)="openProject(project._id)"
-            class="group bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden"
+            class="ci-card group bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm cursor-pointer overflow-hidden"
           >
-            <div class="w-full h-44 bg-slate-100 dark:bg-gray-800 overflow-hidden relative">
+            <!-- Image -->
+            <div class="w-full h-44 bg-[#e6d5c3]/30 dark:bg-[#444547]/20 overflow-hidden relative">
               @if (project.photo) {
                 <img
                   [src]="getPhotoUrl(project.photo)"
                   [alt]="project.name"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  class="ci-card-img w-full h-full object-cover"
                   (error)="$any($event.target).style.display = 'none'"
                 />
               } @else {
                 <div class="w-full h-full flex items-center justify-center">
-                  <span class="text-4xl opacity-20">📁</span>
+                  <span class="text-4xl opacity-10">📁</span>
                 </div>
               }
               <div class="absolute top-3 right-3">
                 <span
                   class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest backdrop-blur-sm"
-                  [class.bg-emerald-500/90]="project.status === 'active'"
+                  [class.bg-[#fa8728]/90]="project.status === 'active'"
                   [class.text-white]="project.status === 'active'"
-                  [class.bg-blue-500/90]="project.status === 'completed'"
+                  [class.bg-[#68ab1f]/90]="project.status === 'completed'"
                   [class.text-white]="project.status === 'completed'"
                   [class.bg-black/40]="project.status === 'pending'"
                   [class.text-white/80]="project.status === 'pending'"
@@ -117,40 +147,52 @@
                 </span>
               </div>
             </div>
+
+            <!-- Content -->
             <div class="p-5">
-              <h4 class="text-base font-black text-slate-900 dark:text-white mb-1 truncate">
+              <h4
+                class="text-base font-black text-[#444547] dark:text-white mb-1 truncate"
+                style="font-family: 'Lexend', sans-serif"
+              >
                 {{ project.name }}
               </h4>
               @if (project.description) {
-                <p class="text-xs text-slate-400 dark:text-gray-500 truncate mb-3">
+                <p
+                  class="text-xs text-[#5c5f63]/50 dark:text-gray-500 truncate mb-3"
+                  style="font-family: 'Alexandria', sans-serif"
+                >
                   {{ project.description }}
                 </p>
               }
               <div
-                class="flex items-center justify-between pt-3 border-t border-slate-50 dark:border-gray-800"
+                class="flex items-center justify-between pt-3 border-t border-[#e6d5c3]/60 dark:border-[#444547]/20"
               >
                 <span
-                  class="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider"
-                  >{{ project.user?.name || client.name }}</span
+                  class="text-[10px] font-bold text-[#5c5f63]/40 dark:text-gray-600 uppercase tracking-wider"
                 >
+                  {{ project.user?.name || client.name }}
+                </span>
                 <span
-                  class="text-[10px] font-black text-blue-500 group-hover:text-blue-600 transition-colors"
-                  >View →</span
+                  class="text-[10px] font-black text-[#fa8728] group-hover:text-[#f97316] transition-colors duration-300"
                 >
+                  View →
+                </span>
               </div>
             </div>
           </div>
         } @empty {
           <div
-            class="col-span-full py-24 text-center border-2 border-dashed border-slate-200 dark:border-gray-800 rounded-2xl"
+            class="col-span-full py-24 text-center border-2 border-dashed border-[#e6d5c3] dark:border-[#444547]/30 rounded-2xl"
           >
-            <div class="text-4xl mb-3">📂</div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <div class="text-4xl mb-3 opacity-20">📂</div>
+            <p
+              class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest"
+            >
               No Projects Yet
             </p>
             <button
               (click)="toggleProjectModal()"
-              class="mt-4 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer hover:bg-blue-700 transition-all"
+              class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316]"
             >
               + Create First Project
             </button>
@@ -159,128 +201,139 @@
       </div>
     </div>
 
-    <!-- PROJECT MODAL -->
+    <!-- ===== PROJECT MODAL ===== -->
     @if (showProjectModal) {
       <div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div
-          class="fixed inset-0 bg-slate-900/80 backdrop-blur-md"
+          class="fixed inset-0 bg-[#0e0e0e]/75 backdrop-blur-md"
           (click)="toggleProjectModal()"
         ></div>
 
         <div
-          class="relative w-full max-w-2xl bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-slate-200 dark:border-gray-800 flex flex-col max-h-[90vh]"
+          class="ci-modal relative w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh] bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
         >
-          <!-- Modal Header -->
+          <!-- Header -->
           <div
-            class="p-8 pb-5 border-b border-slate-100 dark:border-gray-800 flex items-center justify-between"
+            class="px-8 py-6 border-b border-[#e6d5c3] dark:border-[#444547]/20 flex items-center justify-between flex-shrink-0"
           >
             <div>
-              <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                New Project
+              <h2
+                class="text-xl font-black text-[#444547] dark:text-white"
+                style="font-family: 'Lexend', sans-serif"
+              >
+                {{ 'ADMIN.PROJECTS.ADD_PROJECT' | translate }}
               </h2>
-              <p class="text-[10px] text-blue-500 font-black uppercase tracking-widest mt-1">
-                For {{ client.name }}
+              <p class="text-[9px] font-black uppercase tracking-widest text-[#fa8728] mt-0.5">
+                {{ client.name }}
               </p>
             </div>
             <button
               (click)="toggleProjectModal()"
-              class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-gray-800 text-slate-400 flex items-center justify-center border-none cursor-pointer hover:bg-slate-200 transition-all text-lg"
+              class="w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer border-none transition-all duration-200 text-sm bg-[#e6d5c3]/40 dark:bg-[#444547]/20 text-[#5c5f63] dark:text-gray-400 hover:bg-[#e6d5c3] dark:hover:bg-[#444547]/40"
             >
               ✕
             </button>
           </div>
 
-          <!-- Modal Body — form واحدة بس وكل حاجة جواها -->
-          <div class="overflow-y-auto p-8">
+          <!-- Body -->
+          <div class="overflow-y-auto p-8 ci-modal-scrollbar">
             <form [formGroup]="projectForm" class="space-y-8">
-              <!-- 1. Basic Info -->
+              <!-- Section 1: Basic Info -->
               <div class="space-y-4">
-                <h3
-                  class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"
-                >
-                  <span
-                    class="w-5 h-5 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[9px]"
-                    >1</span
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-5 h-5 rounded-lg bg-[#fa8728] flex items-center justify-center text-white text-[9px] font-black flex-shrink-0"
                   >
-                  Basic Information
-                </h3>
+                    1
+                  </div>
+                  <h3
+                    class="text-[9px] font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500"
+                  >
+                    {{ 'ADMIN.PROJECTS.BASIC_INFO' | translate }}
+                  </h3>
+                </div>
                 <input
                   formControlName="name"
                   type="text"
-                  placeholder="Project Name"
-                  class="w-full px-5 py-3.5 rounded-2xl bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 font-bold text-sm outline-none focus:border-blue-400 text-slate-900 dark:text-white transition-colors"
+                  placeholder="{{ 'ADMIN.PROJECTS.NAME' | translate }}"
+                  class="ci-input"
                 />
                 <textarea
                   formControlName="description"
                   rows="2"
-                  placeholder="Description..."
-                  class="w-full px-5 py-3.5 rounded-2xl bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 font-bold text-sm outline-none text-slate-900 dark:text-white resize-none"
+                  placeholder="{{ 'ADMIN.PROJECTS.DESCRIPTION' | translate }}"
+                  class="ci-input resize-none"
                 ></textarea>
                 <div
-                  class="relative h-28 rounded-2xl border-2 border-dashed border-slate-200 dark:border-gray-800 flex items-center justify-center overflow-hidden hover:border-blue-400 transition-colors cursor-pointer bg-slate-50 dark:bg-gray-900"
+                  class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e]"
                 >
                   @if (projectPhotoPreview) {
-                    <img [src]="projectPhotoPreview" class="h-full w-full object-cover" />
+                    <img [src]="projectPhotoPreview" class="w-full h-full object-cover" />
                   } @else {
-                    <div class="text-center opacity-40 pointer-events-none">
-                      <span class="text-2xl">📷</span>
-                      <p class="text-[9px] font-black uppercase mt-1">Project Photo (Optional)</p>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                      <span class="text-xl opacity-20">📷</span>
+                      <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/30">
+                        {{ 'ADMIN.PROJECTS.PHOTO_OPTIONAL' | translate }}
+                      </p>
                     </div>
                   }
                   <input
                     type="file"
                     (change)="onProjectPhotoSelected($event)"
-                    class="absolute inset-0 opacity-0 cursor-pointer"
                     accept="image/*"
+                    class="absolute inset-0 opacity-0 cursor-pointer"
                   />
                 </div>
               </div>
 
-              <hr class="border-slate-100 dark:border-gray-800" />
+              <div class="h-px bg-[#e6d5c3] dark:bg-[#444547]/20"></div>
 
-              <!-- 2. Agreed Outputs -->
+              <!-- Section 2: Outputs -->
               <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                  <h3
-                    class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"
-                  >
-                    <span
-                      class="w-5 h-5 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[9px]"
-                      >2</span
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-5 h-5 rounded-lg bg-[#fa8728] flex items-center justify-center text-white text-[9px] font-black flex-shrink-0"
                     >
-                    Agreed Outputs
-                  </h3>
+                      2
+                    </div>
+                    <h3
+                      class="text-[9px] font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500"
+                    >
+                      {{ 'ADMIN.PROJECTS.OUTPUTS' | translate }}
+                    </h3>
+                  </div>
                   <button
                     type="button"
                     (click)="addAgreedItem()"
-                    class="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 px-4 py-2 rounded-xl transition-all cursor-pointer border-none"
+                    class="text-[9px] font-black uppercase tracking-widest px-3 py-2 rounded-xl cursor-pointer border-none transition-all duration-200 text-[#fa8728] bg-[#fa8728]/8 hover:bg-[#fa8728]/15"
                   >
-                    + Add
+                    + {{ 'COMMON.ADD' | translate }}
                   </button>
                 </div>
                 <div formArrayName="agreedItems" class="space-y-3">
                   @for (item of agreedItemsControls; track $index) {
                     <div
                       [formGroupName]="$index"
-                      class="flex gap-3 items-center p-3 bg-slate-50 dark:bg-gray-900 rounded-xl"
+                      class="flex gap-3 items-center p-3 rounded-xl bg-[#fff1e6] dark:bg-[#0e0e0e] border border-[#e6d5c3] dark:border-[#444547]/20"
                     >
                       <input
                         formControlName="name"
                         type="text"
-                        placeholder="Output name (e.g. جلسة تصوير جوي)"
-                        class="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 font-bold text-sm outline-none text-slate-900 dark:text-white"
+                        placeholder="{{ 'ADMIN.PROJECTS.OUTPUT_NAME_PLACEHOLDER' | translate }}"
+                        class="ci-input !w-auto grow !bg-white dark:!bg-[#1c1c1c]"
                       />
                       <input
                         formControlName="numberOfItems"
                         type="number"
                         min="1"
-                        placeholder="N"
-                        class="w-20 px-3 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 font-black text-sm text-center outline-none text-slate-900 dark:text-white"
+                        placeholder="Qty"
+                        class="ci-input !w-20 shrink-0 text-center !bg-white dark:!bg-[#1c1c1c]"
                       />
                       <button
                         type="button"
                         (click)="removeAgreedItem($index)"
-                        class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-400 hover:text-red-600 flex items-center justify-center cursor-pointer border-none transition-all text-sm"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer border-none transition-all duration-200 shrink-0 bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:text-rose-600 text-sm"
                       >
                         ✕
                       </button>
@@ -289,80 +342,89 @@
                 </div>
               </div>
 
-              <hr class="border-slate-100 dark:border-gray-800" />
+              <div class="h-px bg-[#e6d5c3] dark:bg-[#444547]/20"></div>
 
-              <!-- 3. Financial Details -->
+              <!-- Section 3: Financials -->
               <div class="space-y-4">
-                <h3
-                  class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"
-                >
-                  <span
-                    class="w-5 h-5 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[9px]"
-                    >3</span
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-5 h-5 rounded-lg bg-[#68ab1f] flex items-center justify-center text-white text-[9px] font-black flex-shrink-0"
                   >
-                  Financial Details
-                </h3>
+                    3
+                  </div>
+                  <h3
+                    class="text-[9px] font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500"
+                  >
+                    {{ 'CLIENT.FINANCIALS.TITLE' | translate }}
+                  </h3>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
-                  <div class="space-y-1.5">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase"
-                      >Total Amount</label
+                  <div>
+                    <label
+                      class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
                     >
+                      {{ 'CLIENT.FINANCIALS.TOTAL_CONTRACT' | translate }}
+                    </label>
                     <input
                       formControlName="totalAmount"
                       type="number"
                       placeholder="0.00"
-                      class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-sm font-bold outline-none text-slate-900 dark:text-white"
+                      class="ci-input ci-input-green"
                     />
                   </div>
-                  <div class="space-y-1.5">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase"
-                      >Total Installments</label
+                  <div>
+                    <label
+                      class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
                     >
+                      {{ 'ADMIN.PROJECTS.TOTAL_INSTALLMENTS' | translate }}
+                    </label>
                     <input
                       formControlName="totalInstallments"
                       type="number"
                       min="1"
                       placeholder="1"
-                      class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-sm font-bold outline-none text-slate-900 dark:text-white"
+                      class="ci-input ci-input-green"
                     />
                   </div>
                 </div>
 
-                <!-- Paid Installments -->
                 <div class="space-y-3">
-                  <div class="flex justify-between items-center">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase"
-                      >Paid Installments</label
+                  <div class="flex items-center justify-between">
+                    <label
+                      class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
                     >
+                      {{ 'ADMIN.PROJECTS.PAID_INSTALLMENTS' | translate }}
+                    </label>
                     <button
                       type="button"
                       (click)="addInstallment()"
-                      class="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 px-4 py-2 rounded-xl transition-all cursor-pointer border-none"
+                      class="text-[9px] font-black uppercase tracking-widest px-3 py-2 rounded-xl cursor-pointer border-none transition-all duration-200 text-[#68ab1f] bg-[#68ab1f]/8 hover:bg-[#68ab1f]/15"
                     >
-                      + Add
+                      + {{ 'COMMON.ADD' | translate }}
                     </button>
                   </div>
                   <div formArrayName="installments" class="space-y-3">
                     @for (inst of installmentsControls; track $index) {
                       <div
                         [formGroupName]="$index"
-                        class="flex gap-3 items-center p-3 bg-slate-50 dark:bg-gray-900 rounded-xl"
+                        class="flex gap-3 items-center p-3 rounded-xl bg-[#fff1e6] dark:bg-[#0e0e0e] border border-[#e6d5c3] dark:border-[#444547]/20"
                       >
                         <input
                           formControlName="amount"
                           type="number"
                           placeholder="Amount"
-                          class="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 font-bold text-sm outline-none text-slate-900 dark:text-white"
+                          class="ci-input !w-auto grow !bg-white dark:!bg-[#1c1c1c]"
                         />
                         <input
                           formControlName="createdAt"
                           type="date"
-                          class="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 font-bold text-sm outline-none text-slate-900 dark:text-white"
+                          class="ci-input !w-auto grow !bg-white dark:!bg-[#1c1c1c]"
                         />
                         <button
                           type="button"
                           (click)="removeInstallment($index)"
-                          class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-400 hover:text-red-600 flex items-center justify-center cursor-pointer border-none transition-all text-sm"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer border-none transition-all duration-200 flex-shrink-0 bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:text-rose-600 text-sm"
                         >
                           ✕
                         </button>
@@ -374,20 +436,23 @@
             </form>
           </div>
 
-          <!-- Modal Footer -->
-          <div class="p-6 border-t border-slate-100 dark:border-gray-800 flex gap-3">
-            <button
-              (click)="toggleProjectModal()"
-              class="flex-1 py-3.5 rounded-2xl text-[10px] font-black uppercase text-slate-400 bg-slate-50 dark:bg-gray-800 cursor-pointer border-none hover:bg-slate-100 transition-all"
-            >
-              Cancel
+          <!-- Footer -->
+          <div
+            class="px-8 py-5 border-t border-[#e6d5c3] dark:border-[#444547]/20 flex gap-3 flex-shrink-0"
+          >
+            <button (click)="toggleProjectModal()" class="ci-btn-secondary flex-1">
+              {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
               (click)="saveProject()"
               [disabled]="projectForm.invalid || isSaving"
-              class="flex-1 py-3.5 rounded-2xl text-[10px] font-black uppercase text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-500/20 disabled:opacity-50 cursor-pointer border-none transition-all"
+              class="ci-btn-primary flex-1"
             >
-              {{ isSaving ? 'Creating...' : 'Create Project' }}
+              {{
+                isSaving
+                  ? ('COMMON.LOADING' | translate)
+                  : ('ADMIN.PROJECTS.ADD_PROJECT' | translate)
+              }}
             </button>
           </div>
         </div>
@@ -397,14 +462,16 @@
 }
 
 @if (!isLoading && !client) {
-  <div class="min-h-screen flex flex-col items-center justify-center gap-4">
-    <div class="text-5xl">🔍</div>
-    <h2 class="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-gray-300">
+  <div
+    class="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#fff1e6] dark:bg-[#0e0e0e]"
+  >
+    <div class="text-5xl opacity-20">🔍</div>
+    <h2 class="text-sm font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600">
       Client Not Found
     </h2>
     <button
       routerLink="/admin/clients"
-      class="px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer"
+      class="px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316]"
     >
       ← Back
     </button>

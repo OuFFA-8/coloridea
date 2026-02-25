@@ -1,24 +1,24 @@
 <!-- Loading -->
 @if (isLoading) {
-  <div class="min-h-screen bg-[#0b0f1a] flex items-center justify-center">
+  <div class="min-h-screen bg-[#0e0e0e] flex items-center justify-center">
     <div class="text-center">
       <div
-        class="w-12 h-12 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"
+        class="w-12 h-12 border-4 border-[#fa8728]/30 border-t-[#fa8728] rounded-full animate-spin mx-auto mb-4"
       ></div>
       <p class="text-[10px] font-black uppercase tracking-widest text-gray-500">
-        Loading your projects...
+        {{ 'CLIENT.SELECT.LOADING' | translate }}
       </p>
     </div>
   </div>
 }
 
 @if (!isLoading) {
-  <div class="min-h-screen bg-[#0b0f1a] flex flex-col">
-    <!-- Top Bar -->
-    <div class="flex items-center justify-between px-8 py-5 border-b border-gray-800">
+  <div class="min-h-screen bg-[#0e0e0e] flex flex-col">
+    <!-- ===== TOP BAR ===== -->
+    <div class="flex items-center justify-between px-8 py-5 border-b border-[#444547]/30">
       <div class="flex items-center gap-3">
         @if (user?.logo || user?.photo) {
-          <div class="w-9 h-9 rounded-xl overflow-hidden border border-gray-700 bg-gray-800">
+          <div class="w-9 h-9 rounded-xl overflow-hidden border border-[#444547]/40 bg-[#1c1c1c]">
             <img
               [src]="getPhotoUrl(user.logo || user.photo)"
               [alt]="user.name"
@@ -28,47 +28,64 @@
           </div>
         }
         <div>
-          <p class="text-[9px] font-black uppercase tracking-widest text-gray-600">Logged in as</p>
-          <p class="text-sm font-black text-white">{{ user?.name }}</p>
+          <p
+            class="text-[9px] font-black uppercase tracking-widest text-gray-600"
+            style="font-family: 'Alexandria', sans-serif"
+          >
+            {{ 'CLIENT.SELECT.LOGGED_IN_AS' | translate }}
+          </p>
+          <p class="text-sm font-black text-white" style="font-family: 'Lexend', sans-serif">
+            {{ user?.name }}
+          </p>
         </div>
       </div>
       <button
         (click)="logout()"
-        class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-red-400 bg-gray-900 border border-gray-800 hover:border-red-800/40 transition-all cursor-pointer"
+        class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all border text-gray-500 hover:text-rose-400 bg-[#1c1c1c] border-[#444547]/30 hover:border-rose-500/30"
       >
-        Sign Out
+        {{ 'NAV.LOGOUT' | translate }}
       </button>
     </div>
 
-    <!-- Content -->
+    <!-- ===== CONTENT ===== -->
     <div class="flex-1 flex flex-col items-center justify-center px-6 py-16">
       <!-- Header -->
-      <div class="text-center mb-12">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-3">
-          Welcome back
+      <div class="text-center mb-12 ci-section" style="--delay: 0s">
+        <p
+          class="text-[10px] font-black uppercase tracking-[0.3em] text-[#fa8728] mb-3"
+          style="font-family: 'Alexandria', sans-serif"
+        >
+          {{ 'CLIENT.SELECT.WELCOME' | translate }}
         </p>
-        <h1 class="text-4xl font-black text-white tracking-tight mb-3">
-          Which project<br />are you working on?
+        <h1
+          class="text-4xl font-black text-white tracking-tight mb-3"
+          style="font-family: 'Lexend', sans-serif"
+        >
+          {{ 'CLIENT.SELECT.TITLE_LINE1' | translate }}<br />
+          {{ 'CLIENT.SELECT.TITLE_LINE2' | translate }}
         </h1>
-        <p class="text-sm text-gray-500 font-medium">
-          {{ projects.length }} projects assigned to your account
+        <p class="text-sm text-gray-500 font-medium" style="font-family: 'Alexandria', sans-serif">
+          {{ projects.length }} {{ 'CLIENT.SELECT.PROJECTS_COUNT' | translate }}
         </p>
       </div>
 
       <!-- Projects Grid -->
-      <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div
+        class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 ci-section"
+        style="--delay: 0.08s"
+      >
         @for (project of projects; track project._id) {
           <div
             (click)="selectProject(project)"
-            class="group relative bg-[#111827] rounded-3xl border border-gray-800 hover:border-blue-500/40 shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden"
+            class="ci-card group relative bg-[#1c1c1c] rounded-3xl border border-[#444547]/30 shadow-xl cursor-pointer overflow-hidden"
           >
             <!-- Image -->
-            <div class="w-full h-40 bg-gray-800 overflow-hidden relative">
+            <div class="w-full h-40 bg-[#444547]/20 overflow-hidden relative">
               @if (project.photo) {
                 <img
                   [src]="getPhotoUrl(project.photo)"
                   [alt]="project.name"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  class="ci-card-img w-full h-full object-cover"
                   (error)="$any($event.target).style.display = 'none'"
                 />
               } @else {
@@ -76,24 +93,21 @@
                   <span class="text-5xl opacity-10">🏗️</span>
                 </div>
               }
-
-              <!-- Gradient overlay -->
               <div
-                class="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent"
+                class="absolute inset-0 bg-gradient-to-t from-[#1c1c1c] via-transparent to-transparent"
               ></div>
-
               <!-- Status -->
               <div class="absolute top-3 right-3">
                 <span
                   class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest backdrop-blur-sm"
-                  [class.bg-amber-500/80]="project.status === 'active'"
+                  [class.bg-[#fa8728]/80]="project.status === 'active'"
                   [class.text-white]="project.status === 'active'"
-                  [class.bg-blue-500/80]="project.status === 'completed'"
+                  [class.bg-[#68ab1f]/80]="project.status === 'completed'"
                   [class.text-white]="project.status === 'completed'"
-                  [class.bg-gray-700]="project.status === 'pending'"
-                  [class.text-gray-300]="project.status === 'pending'"
+                  [class.bg-[#444547]/80]="project.status === 'pending' || !project.status"
+                  [class.text-gray-300]="project.status === 'pending' || !project.status"
                 >
-                  {{ project.status || 'pending' }}
+                  {{ 'STATUS.' + (project.status?.toUpperCase() || 'PENDING') | translate }}
                 </span>
               </div>
             </div>
@@ -101,27 +115,33 @@
             <!-- Body -->
             <div class="p-5">
               <h3
-                class="text-base font-black text-white mb-1 truncate group-hover:text-blue-400 transition-colors"
+                class="text-base font-black text-white mb-1 truncate transition-colors duration-300 group-hover:text-[#fa8728]"
+                style="font-family: 'Lexend', sans-serif"
               >
                 {{ project.name }}
               </h3>
               @if (project.description) {
-                <p class="text-xs text-gray-500 truncate mb-4">{{ project.description }}</p>
+                <p
+                  class="text-xs text-gray-500 truncate mb-4"
+                  style="font-family: 'Alexandria', sans-serif"
+                >
+                  {{ project.description }}
+                </p>
               }
 
-              <!-- Outputs -->
+              <!-- Output tags -->
               @if (project.outputs?.length > 0) {
                 <div class="flex flex-wrap gap-1.5 mb-4">
                   @for (output of project.outputs.slice(0, 2); track output._id) {
                     <span
-                      class="text-[9px] font-bold px-2 py-1 rounded-lg bg-gray-900 border border-gray-800 text-gray-500 truncate max-w-[100px]"
+                      class="text-[9px] font-bold px-2 py-1 rounded-lg truncate max-w-[100px] bg-[#444547]/30 border border-[#444547]/40 text-gray-500"
                     >
                       {{ output.name }}
                     </span>
                   }
                   @if (project.outputs.length > 2) {
                     <span
-                      class="text-[9px] font-bold px-2 py-1 rounded-lg bg-blue-900/30 text-blue-400 border border-blue-800/30"
+                      class="text-[9px] font-bold px-2 py-1 rounded-lg bg-[#fa8728]/15 text-[#fa8728] border border-[#fa8728]/20"
                     >
                       +{{ project.outputs.length - 2 }}
                     </span>
@@ -129,14 +149,12 @@
                 </div>
               }
 
-              <div class="flex items-center justify-between pt-4 border-t border-gray-800">
+              <div class="flex items-center justify-between pt-4 border-t border-[#444547]/25">
                 <span class="text-[9px] font-black text-gray-700 uppercase tracking-wider">
-                  {{ project.outputs?.length || 0 }} outputs
+                  {{ project.outputs?.length || 0 }} {{ 'ADMIN.PROJECTS.OUTPUTS' | translate }}
                 </span>
-                <span
-                  class="text-[10px] font-black text-blue-500 group-hover:text-blue-400 transition-colors"
-                >
-                  Enter →
+                <span class="text-[10px] font-black text-[#fa8728] transition-colors">
+                  {{ 'CLIENT.SELECT.ENTER' | translate }} →
                 </span>
               </div>
             </div>

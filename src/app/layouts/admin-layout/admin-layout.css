@@ -1,13 +1,14 @@
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+/* Custom scrollbar matching brand */
+.ci-main-scrollbar::-webkit-scrollbar {
+  width: 5px;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #0b0f1a;
+.ci-main-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #1f2937;
-  border-radius: 10px;
+.ci-main-scrollbar::-webkit-scrollbar-thumb {
+  background: #fa872840;
+  border-radius: 99px;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
+.ci-main-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #fa8728;
 }

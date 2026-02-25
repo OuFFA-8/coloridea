@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common'; // مهم جداً للـ Class Binding
+import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { AlertService } from '../../../core/services/alert-service/alert-service';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule], // ضفنا الـ modules هنا
+  imports: [ReactiveFormsModule, CommonModule, TranslateModule],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css',
 })
@@ -45,14 +46,12 @@ export class ResetPassword implements OnInit {
 
   onSubmit() {
     if (this.form.invalid || !this.token) return;
-
     this.isLoading = true;
-
     this.authService.resetPassword(this.token, this.form.value).subscribe({
       next: () => {
         this.isLoading = false;
         this.alert.success('Your password has been updated successfully').then(() => {
-          this.router.navigate(['/login']); // ينتظر المستخدم يضغط OK الأول
+          this.router.navigate(['/login']);
         });
       },
       error: (err) => {

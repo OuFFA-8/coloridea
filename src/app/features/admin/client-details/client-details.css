@@ -1,0 +1,163 @@
+/* ===========================
+   KEYFRAMES
+=========================== */
+@keyframes ci-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===========================
+   PROJECT CARDS
+=========================== */
+.ci-card {
+  will-change: transform, box-shadow, border-color;
+  /* Enter: بطيء وناعم */
+  transition:
+    transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    border-color 500ms ease;
+}
+.ci-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -12px rgba(250, 135, 40, 0.15);
+  border-color: rgba(250, 135, 40, 0.3) !important;
+  /* Leave: أسرع شوية */
+  transition:
+    transform 400ms cubic-bezier(0.34, 1.1, 0.64, 1),
+    box-shadow 400ms cubic-bezier(0.34, 1.1, 0.64, 1),
+    border-color 300ms ease;
+}
+
+/* الصورة — scale بطيئة جداً */
+.ci-card-img {
+  transition: transform 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.ci-card:hover .ci-card-img {
+  transform: scale(1.06);
+  transition: transform 1000ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ===========================
+   MODAL
+=========================== */
+.ci-modal {
+  animation: ci-modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ci-modal-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.ci-modal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ci-modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(250, 135, 40, 0.25);
+  border-radius: 99px;
+}
+.ci-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #fa8728;
+}
+
+/* ===========================
+   SHARED INPUTS
+=========================== */
+.ci-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: 'Alexandria', sans-serif;
+  outline: none;
+  transition:
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+  background-color: #fff1e6;
+  border: 1.5px solid #e6d5c3;
+  color: #444547;
+  box-sizing: border-box;
+}
+.ci-input:focus {
+  border-color: #fa8728;
+  box-shadow: 0 0 0 3px rgba(250, 135, 40, 0.1);
+}
+.ci-input-green:focus {
+  border-color: #68ab1f !important;
+  box-shadow: 0 0 0 3px rgba(104, 171, 31, 0.1) !important;
+}
+
+:host-context(.dark) .ci-input {
+  background-color: #0e0e0e;
+  border-color: rgba(68, 69, 71, 0.3);
+  color: #fff;
+}
+:host-context(.dark) .ci-input:focus {
+  border-color: #fa8728;
+}
+
+/* ===========================
+   SHARED BUTTONS
+=========================== */
+.ci-btn-primary {
+  padding: 0.875rem 1rem;
+  border-radius: 1rem;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background-color: #fa8728;
+  box-shadow: 0 4px 16px rgba(250, 135, 40, 0.3);
+  transition:
+    background-color 250ms,
+    transform 150ms,
+    box-shadow 250ms;
+}
+.ci-btn-primary:hover:not(:disabled) {
+  background-color: #f97316;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(250, 135, 40, 0.4);
+}
+.ci-btn-primary:active {
+  transform: scale(0.97);
+}
+.ci-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ci-btn-secondary {
+  padding: 0.875rem 1rem;
+  border-radius: 1rem;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border: none;
+  background-color: rgba(230, 213, 195, 0.4);
+  color: #5c5f63;
+  transition: background-color 250ms;
+}
+.ci-btn-secondary:hover {
+  background-color: rgba(230, 213, 195, 0.7);
+}
+
+:host-context(.dark) .ci-btn-secondary {
+  background-color: rgba(68, 69, 71, 0.2);
+  color: #9ca3af;
+}
+:host-context(.dark) .ci-btn-secondary:hover {
+  background-color: rgba(68, 69, 71, 0.4);
+}

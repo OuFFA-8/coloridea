@@ -5,11 +5,12 @@ import { AuthServices } from '../../../core/services/auth-services/auth-services
 import { Router, RouterLink } from '@angular/router';
 import { AlertService } from '../../../core/services/alert-service/alert-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, TranslateModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -18,7 +19,6 @@ export class Login {
 
   loginForm: FormGroup;
   isLoading = false;
-  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -37,21 +37,18 @@ export class Login {
       this.loginForm.markAllAsTouched();
       return;
     }
-
     this.isLoading = true;
     this.loadingService.show('Signing in...');
-
     this.authService.login(this.loginForm.value).subscribe({
       next: (res) => {
         this.isLoading = false;
+        this.loadingService.hide();
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.data));
-        this.loadingService.hide();
-
         if (this.authService.isAdmin()) {
           this.router.navigate(['/admin/dashboard']);
         } else {
-          this.router.navigate(['/select-project']); // ← fix: أزلنا الـ space
+          this.router.navigate(['/select-project']);
         }
       },
       error: (err) => {

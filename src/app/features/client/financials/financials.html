@@ -1,147 +1,180 @@
 <!-- Loading -->
 @if (isLoading) {
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0f1a]">
+  <div class="min-h-screen flex items-center justify-center bg-[#fff1e6] dark:bg-[#0e0e0e]">
     <div
-      class="w-10 h-10 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin"
+      class="w-10 h-10 border-4 border-[#fa8728]/30 border-t-[#fa8728] rounded-full animate-spin"
     ></div>
   </div>
 }
 
 @if (!isLoading) {
   <div class="p-8 space-y-8 min-h-screen bg-transparent transition-colors duration-500">
-    <!-- Header -->
-    <div>
-      <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Financials</h1>
-      <p
-        class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500 mt-1"
+    <!-- ===== HEADER ===== -->
+    <div class="ci-section" style="--delay: 0s">
+      <h1
+        class="text-3xl font-black tracking-tight text-[#444547] dark:text-white"
+        style="font-family: 'Lexend', sans-serif"
       >
-        Payment schedule & breakdown
+        {{ 'CLIENT.FINANCIALS.TITLE' | translate }}
+      </h1>
+      <p
+        class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5c5f63]/50 dark:text-gray-500 mt-1"
+        style="font-family: 'Alexandria', sans-serif"
+      >
+        {{ 'CLIENT.FINANCIALS.SUBTITLE' | translate }}
       </p>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <!-- ===== STATS CARDS ===== -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 ci-section" style="--delay: 0.06s">
+      <!-- Total -->
       <div
-        class="p-7 rounded-3xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm relative overflow-hidden"
+        class="p-7 rounded-3xl relative overflow-hidden shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
       >
         <div class="absolute -right-3 -bottom-3 text-5xl opacity-5">💰</div>
-        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">
-          Total Contract
+        <p
+          class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-2"
+        >
+          {{ 'CLIENT.FINANCIALS.TOTAL_CONTRACT' | translate }}
         </p>
-        <p class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+        <p
+          class="text-4xl font-black text-[#444547] dark:text-white tracking-tight"
+          style="font-family: 'Lexend', sans-serif"
+        >
           ${{ totalAmount | number }}
         </p>
       </div>
 
+      <!-- Paid -->
       <div
-        class="p-7 rounded-3xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30 shadow-sm relative overflow-hidden"
+        class="p-7 rounded-3xl relative overflow-hidden shadow-sm bg-[#68ab1f]/8 border border-[#68ab1f]/20 dark:bg-[#68ab1f]/10 dark:border-[#68ab1f]/20"
       >
         <div class="absolute -right-3 -bottom-3 text-5xl opacity-10">✅</div>
-        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-2">
-          Total Paid
+        <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-2">
+          {{ 'CLIENT.FINANCIALS.TOTAL_PAID' | translate }}
         </p>
-        <p class="text-4xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+        <p
+          class="text-4xl font-black text-[#68ab1f] tracking-tight"
+          style="font-family: 'Lexend', sans-serif"
+        >
           ${{ paidAmount | number }}
         </p>
       </div>
 
+      <!-- Remaining -->
       <div
-        class="p-7 rounded-3xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 shadow-sm relative overflow-hidden"
+        class="p-7 rounded-3xl relative overflow-hidden shadow-sm bg-rose-50 border border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/15"
       >
         <div class="absolute -right-3 -bottom-3 text-5xl opacity-10">⏳</div>
-        <p class="text-[9px] font-black uppercase tracking-widest text-red-400 mb-2">Remaining</p>
-        <p class="text-4xl font-black text-red-500 dark:text-red-400 tracking-tight">
+        <p class="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-2">
+          {{ 'CLIENT.FINANCIALS.REMAINING' | translate }}
+        </p>
+        <p
+          class="text-4xl font-black text-rose-500 dark:text-rose-400 tracking-tight"
+          style="font-family: 'Lexend', sans-serif"
+        >
           ${{ remainingAmount | number }}
         </p>
       </div>
     </div>
 
-    <!-- Progress Bar -->
+    <!-- ===== PROGRESS ===== -->
     <div
-      class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm p-7"
+      class="bg-white dark:bg-[#1c1c1c] rounded-3xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm p-7 ci-section"
+      style="--delay: 0.1s"
     >
       <div class="flex justify-between items-center mb-4">
-        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-          Payment Progress
+        <p
+          class="text-[10px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+        >
+          {{ 'CLIENT.FINANCIALS.PAYMENT_PROGRESS' | translate }}
         </p>
-        <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400"
+        <span class="text-2xl font-black text-[#68ab1f]" style="font-family: 'Lexend', sans-serif"
           >{{ paymentProgress }}%</span
         >
       </div>
-      <div class="h-4 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+      <div class="h-4 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden">
         <div
-          class="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full transition-all duration-1000"
+          class="h-full bg-gradient-to-r from-[#68ab1f] to-[#8bc34a] rounded-full transition-all duration-1000"
           [style.width.%]="paymentProgress"
         ></div>
       </div>
       <div class="flex justify-between mt-3">
-        <span class="text-[10px] font-bold text-slate-400">
-          {{ financialDetails.paidInstallments || 0 }} of
-          {{ financialDetails.totalInstallments || 0 }} installments paid
+        <span class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500">
+          {{ financialDetails.paidInstallments || 0 }} {{ 'CLIENT.FINANCIALS.OF' | translate }}
+          {{ financialDetails.totalInstallments || 0 }}
+          {{ 'CLIENT.FINANCIALS.INSTALLMENTS_PAID' | translate }}
         </span>
-        <span class="text-[10px] font-bold text-red-400"
-          >{{ financialDetails.remainingInstallments || 0 }} remaining</span
-        >
+        <span class="text-[10px] font-bold text-rose-400">
+          {{ financialDetails.remainingInstallments || 0 }}
+          {{ 'CLIENT.FINANCIALS.REMAINING_SHORT' | translate }}
+        </span>
       </div>
     </div>
 
-    <!-- Installments Table -->
+    <!-- ===== INSTALLMENTS TABLE ===== -->
     <div
-      class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm overflow-hidden"
+      class="bg-white dark:bg-[#1c1c1c] rounded-3xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm overflow-hidden ci-section"
+      style="--delay: 0.14s"
     >
       <div
-        class="px-7 py-5 border-b border-slate-50 dark:border-gray-800 flex justify-between items-center"
+        class="px-7 py-5 border-b border-[#e6d5c3]/60 dark:border-[#444547]/20 flex justify-between items-center"
       >
-        <h2 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500">
-          Payment Schedule
+        <h2
+          class="text-xs font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500"
+        >
+          {{ 'CLIENT.FINANCIALS.PAYMENT_SCHEDULE' | translate }}
         </h2>
-        <span class="text-[9px] font-bold text-slate-400 italic">All amounts in USD</span>
+        <span class="text-[9px] font-bold text-[#5c5f63]/30 dark:text-gray-700 italic">
+          {{ 'CLIENT.FINANCIALS.CURRENCY_NOTE' | translate }}
+        </span>
       </div>
 
       @if (installments.length === 0) {
         <div class="py-16 text-center">
-          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-            No payments recorded yet
+          <p
+            class="text-[10px] font-black uppercase tracking-widest text-[#5c5f63]/30 dark:text-gray-700"
+          >
+            {{ 'CLIENT.FINANCIALS.NO_PAYMENTS' | translate }}
           </p>
         </div>
       }
 
-      <div class="divide-y divide-slate-50 dark:divide-gray-800">
+      <div class="divide-y divide-[#e6d5c3]/40 dark:divide-[#444547]/20">
         @for (inst of installments; track inst._id; let i = $index) {
-          <div
-            class="group flex items-center justify-between px-7 py-5 hover:bg-slate-50 dark:hover:bg-gray-800/40 transition-colors"
-          >
+          <div class="ci-row group flex items-center justify-between px-7 py-5">
             <div class="flex items-center gap-5">
-              <!-- Index Badge -->
               <div
-                class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 flex-shrink-0"
+                class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs flex-shrink-0 bg-[#68ab1f]/10 text-[#68ab1f] dark:bg-[#68ab1f]/15"
               >
                 {{ i + 1 }}
               </div>
               <div>
-                <p class="font-black text-sm text-slate-900 dark:text-white">
-                  Installment #{{ i + 1 }}
+                <p
+                  class="font-black text-sm text-[#444547] dark:text-white"
+                  style="font-family: 'Lexend', sans-serif"
+                >
+                  {{ 'CLIENT.FINANCIALS.INSTALLMENT' | translate }} #{{ i + 1 }}
                 </p>
                 <p
-                  class="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest"
+                  class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500 uppercase tracking-widest"
                 >
                   {{ inst.createdAt | date: 'dd MMM yyyy' }}
                 </p>
               </div>
             </div>
-
-            <div class="flex items-center gap-4">
-              <div class="text-right">
-                <p class="text-xl font-black text-emerald-600 dark:text-emerald-400">
-                  ${{ inst.amount | number }}
-                </p>
-                <div class="flex items-center gap-1.5 justify-end mt-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  <span
-                    class="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500"
-                    >Paid</span
-                  >
-                </div>
+            <div class="text-right">
+              <p
+                class="text-xl font-black text-[#68ab1f]"
+                style="font-family: 'Lexend', sans-serif"
+              >
+                ${{ inst.amount | number }}
+              </p>
+              <div class="flex items-center gap-1.5 justify-end mt-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f]"></span>
+                <span class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f]">
+                  {{ 'CLIENT.FINANCIALS.PAID' | translate }}
+                </span>
               </div>
             </div>
           </div>

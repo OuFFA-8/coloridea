@@ -1,20 +1,15 @@
 import { CommonModule, DatePipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { environment } from '../../../../environments/environment';
-interface Installment {
-  id: number;
-  amount: number;
-  dueDate: string;
-  status: 'paid' | 'pending';
-}
+
 @Component({
   selector: 'app-financials',
-  imports: [CommonModule, DecimalPipe, DatePipe],
+  standalone: true,
+  imports: [CommonModule, DecimalPipe, DatePipe, TranslateModule],
   templateUrl: './financials.html',
   styleUrl: './financials.css',
 })
@@ -25,8 +20,6 @@ export class Financials implements OnInit {
 
   project: any = null;
   isLoading = true;
-
-  // Public properties — مش getters عشان Angular template يشوفها
   totalAmount = 0;
   paidAmount = 0;
   remainingAmount = 0;
@@ -48,7 +41,6 @@ export class Financials implements OnInit {
         this.isLoading = false;
         return;
       }
-
       this.loadingService.show('Loading financials...');
       this.projectsService.getUserProjects(user._id).subscribe({
         next: (res) => {

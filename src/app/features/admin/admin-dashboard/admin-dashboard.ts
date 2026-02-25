@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angu
 import { ChartCard } from '../../../shared/components/chart-card/chart-card';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { UsersService } from '../../../core/services/users-service/users-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
@@ -9,7 +10,7 @@ import { LoadingService } from '../../../core/services/loading-service/loading-s
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ChartCard],
+  imports: [CommonModule, RouterLink, ChartCard, TranslateModule],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })

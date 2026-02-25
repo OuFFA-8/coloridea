@@ -1,6 +1,7 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
@@ -8,7 +9,8 @@ import { LoadingService } from '../../../core/services/loading-service/loading-s
 
 @Component({
   selector: 'app-project-select',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
   templateUrl: './project-select.html',
   styleUrl: './project-select.css',
 })
@@ -35,13 +37,11 @@ export class ProjectSelect implements OnInit {
         this.router.navigate(['/login']);
         return;
       }
-
-      this.loadingService.show('Loading your projects...');
+      this.loadingService.show('Loading...');
       this.projectsService.getUserProjects(this.user._id).subscribe({
         next: (res) => {
           this.projects = res.data || [];
           this.loadingService.hide();
-
           if (this.projects.length === 0) {
             this.router.navigate(['/client/dashboard']);
             return;
@@ -50,7 +50,6 @@ export class ProjectSelect implements OnInit {
             this.selectProject(this.projects[0]);
             return;
           }
-
           this.isLoading = false;
           this.cdr.detectChanges();
         },
@@ -71,8 +70,7 @@ export class ProjectSelect implements OnInit {
   }
 
   getPhotoUrl(path: string | null): string {
-    if (!path) return '';
-    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
+    return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
   }
 
   logout() {

@@ -1,15 +1,16 @@
 import { Project } from './../../../core/models/project';
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule, isPlatformBrowser } from '@angular/common'; // مهم جداً للـ classes والـ pipes
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-client-project',
   standalone: true,
-  imports: [CommonModule], // ضفنا CommonModule هنا
+  imports: [CommonModule, TranslateModule],
   templateUrl: './client-project.html',
   styleUrl: './client-project.css',
 })
@@ -60,8 +61,7 @@ export class ClientProject implements OnInit {
   }
 
   getPhotoUrl(path: string | null): string {
-    if (!path) return '';
-    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
+    return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
   }
 
   openDetails(id: string) {
@@ -70,14 +70,8 @@ export class ClientProject implements OnInit {
 
   getOutputsProgress(project: any): number {
     if (!project.outputs?.length) return 0;
-    const totalItems = project.outputs.reduce(
-      (sum: number, o: any) => sum + (o.numberOfItems || 0),
-      0,
-    );
-    const doneItems = project.outputs.reduce(
-      (sum: number, o: any) => sum + (o.items?.length || 0),
-      0,
-    );
-    return totalItems ? Math.round((doneItems / totalItems) * 100) : 0;
+    const total = project.outputs.reduce((s: number, o: any) => s + (o.numberOfItems || 0), 0);
+    const done = project.outputs.reduce((s: number, o: any) => s + (o.items?.length || 0), 0);
+    return total ? Math.round((done / total) * 100) : 0;
   }
 }

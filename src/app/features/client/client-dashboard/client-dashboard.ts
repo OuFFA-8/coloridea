@@ -5,10 +5,11 @@ import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-client-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './client-dashboard.html',
   styleUrl: './client-dashboard.css',
 })
@@ -39,17 +40,13 @@ export class ClientDashboard implements OnInit {
       this.isLoading = false;
       return;
     }
-
     this.projectsService.getUserProjects(this.user._id).subscribe({
       next: (res) => {
         this.projects = res.data || [];
-
-        // لو project واحد بس → روح عليه تلقائي
         if (this.projects.length === 1) {
           this.router.navigate(['/client/projects', this.projects[0]._id]);
           return;
         }
-
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -63,14 +60,12 @@ export class ClientDashboard implements OnInit {
   get activeCount(): number {
     return this.projects.filter((p) => p.status === 'active').length;
   }
-
   get completedCount(): number {
     return this.projects.filter((p) => p.status === 'completed').length;
   }
 
   getPhotoUrl(path: string | null): string {
-    if (!path) return '';
-    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
+    return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
   }
 
   openProject(id: string) {

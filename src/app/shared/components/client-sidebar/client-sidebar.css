@@ -1,0 +1,27 @@
+/* Active nav item */
+.ci-nav-active {
+  background-color: #fff1e6 !important;
+  color: #fa8728 !important;
+  box-shadow: 0 1px 3px rgba(250, 135, 40, 0.12);
+}
+:host-context(.dark) .ci-nav-active {
+  background-color: rgba(250, 135, 40, 0.12) !important;
+  color: #fa8728 !important;
+  box-shadow: 0 4px 16px -4px rgba(250, 135, 40, 0.15);
+}
+
+/* Hover state */
+.ci-nav-item:hover:not(.ci-nav-active) {
+  background-color: #fff1e6;
+  color: #fa8728;
+}
+:host-context(.dark) .ci-nav-item:hover:not(.ci-nav-active) {
+  background-color: rgba(68, 69, 71, 0.25);
+  color: #fff;
+}
+
+/* Active icon opacity */
+.ci-nav-active span:first-child,
+.ci-nav-item:hover span:first-child {
+  opacity: 1 !important;
+}

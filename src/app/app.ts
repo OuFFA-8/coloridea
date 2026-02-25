@@ -12,12 +12,16 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { initFlowbite } from 'flowbite';
 import { filter } from 'rxjs/operators';
 import { LoadingService } from './core/services/loading-service/loading-service';
+import { LoadingScreen } from './shared/components/loading-screen/loading-screen';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TranslateModule, RouterOutlet],
-  template: `<router-outlet></router-outlet>`,
+  imports: [TranslateModule, RouterOutlet, LoadingScreen],
+  template: `
+    <app-loading-screen></app-loading-screen>
+    <router-outlet></router-outlet>
+  `,
 })
 export class App implements OnInit {
   constructor(
@@ -27,13 +31,11 @@ export class App implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.translate.setDefaultLang('en');
-    const initialLang = 'en';
-    this.translate.use(initialLang);
+    this.translate.use('en');
 
     if (isPlatformBrowser(this.platformId)) {
-      this.updateHtmlAttributes(initialLang);
+      this.updateHtmlAttributes('en');
 
-      // Loading على كل navigation
       this.router.events.subscribe((event) => {
         if (event instanceof NavigationStart) {
           this.loadingService.show();
@@ -43,21 +45,18 @@ export class App implements OnInit {
           event instanceof NavigationCancel ||
           event instanceof NavigationError
         ) {
-          setTimeout(() => this.loadingService.hide(), 400);
+          setTimeout(() => this.loadingService.hide(), 500);
         }
       });
 
-      // Flowbite على كل NavigationEnd
-      this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
         setTimeout(() => initFlowbite(), 100);
       });
     }
   }
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      initFlowbite();
-    }
+    if (isPlatformBrowser(this.platformId)) initFlowbite();
   }
 
   toggleLanguage() {

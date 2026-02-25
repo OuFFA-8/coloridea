@@ -1,0 +1,190 @@
+/* ===========================
+   KEYFRAMES
+=========================== */
+@keyframes ci-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(3px);
+  }
+  55% {
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes ci-modal-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.93) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===========================
+   SECTION ENTRANCE
+=========================== */
+.ci-section {
+  animation: ci-fade-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) both;
+}
+
+/* ===========================
+   OUTPUT CARDS — SMOOTH HOVER
+=========================== */
+.ci-card {
+  will-change: transform, box-shadow, border-color;
+  /* Slow ease-out on enter */
+  transition:
+    transform 550ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 550ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    border-color 550ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    background-color 300ms ease;
+}
+
+.ci-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -12px rgba(250, 135, 40, 0.18);
+  border-color: rgba(250, 135, 40, 0.35) !important;
+  /* Slightly faster on leave */
+  transition:
+    transform 400ms cubic-bezier(0.34, 1.1, 0.64, 1),
+    box-shadow 400ms cubic-bezier(0.34, 1.1, 0.64, 1),
+    border-color 400ms ease,
+    background-color 200ms ease;
+}
+
+/* ===========================
+   MODALS
+=========================== */
+.ci-modal {
+  animation: ci-modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ===========================
+   SHARED INPUT
+=========================== */
+.ci-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: 'Alexandria', sans-serif;
+  outline: none;
+  transition:
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+  background-color: #fff1e6;
+  border: 1.5px solid #e6d5c3;
+  color: #444547;
+}
+.ci-input:focus {
+  border-color: #fa8728;
+  box-shadow: 0 0 0 3px rgba(250, 135, 40, 0.1);
+}
+.ci-input-green:focus {
+  border-color: #68ab1f !important;
+  box-shadow: 0 0 0 3px rgba(104, 171, 31, 0.1) !important;
+}
+
+/* Dark mode inputs */
+:host-context(.dark) .ci-input {
+  background-color: #0e0e0e;
+  border-color: rgba(68, 69, 71, 0.3);
+  color: #fff;
+}
+:host-context(.dark) .ci-input:focus {
+  border-color: #fa8728;
+}
+
+/* ===========================
+   SHARED BUTTONS
+=========================== */
+.ci-btn-primary {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border: none;
+  background-color: #fa8728;
+  color: white;
+  transition:
+    background-color 250ms ease,
+    transform 150ms ease,
+    box-shadow 250ms ease;
+  box-shadow: 0 4px 14px rgba(250, 135, 40, 0.25);
+}
+.ci-btn-primary:hover:not(:disabled) {
+  background-color: #f97316;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(250, 135, 40, 0.35);
+}
+.ci-btn-primary:active {
+  transform: scale(0.97);
+}
+.ci-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ci-btn-green {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border: none;
+  background-color: #68ab1f;
+  color: white;
+  transition:
+    background-color 250ms ease,
+    transform 150ms ease;
+  box-shadow: 0 4px 14px rgba(104, 171, 31, 0.25);
+}
+.ci-btn-green:hover:not(:disabled) {
+  background-color: #5a9419;
+  transform: translateY(-1px);
+}
+.ci-btn-green:active {
+  transform: scale(0.97);
+}
+.ci-btn-green:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ci-btn-secondary {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border: none;
+  background-color: rgba(230, 213, 195, 0.4);
+  color: #5c5f63;
+  transition: background-color 250ms ease;
+}
+.ci-btn-secondary:hover {
+  background-color: rgba(230, 213, 195, 0.7);
+}
+:host-context(.dark) .ci-btn-secondary {
+  background-color: rgba(68, 69, 71, 0.2);
+  color: #9ca3af;
+}
+:host-context(.dark) .ci-btn-secondary:hover {
+  background-color: rgba(68, 69, 71, 0.4);
+}

@@ -7,11 +7,12 @@ import { AlertService } from '../../../core/services/alert-service/alert-service
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { OutputsService } from '../../../core/services/outputs-service/outputs-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin-project-details',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, TranslateModule],
   templateUrl: './admin-project-details.html',
   styleUrl: './admin-project-details.css',
 })
@@ -312,19 +313,19 @@ export class AdminProjectDetails implements OnInit {
   saveInstallment() {
     if (this.installmentForm.invalid) return;
     this.isSaving = true;
-    this.loadingService.show('Adding installment...');
+    this.loadingService.show('Adding payment...');
     this.projectsService.addInstallment(this.project._id, this.installmentForm.value).subscribe({
       next: () => {
         this.showAddInstallmentModal = false;
         this.isSaving = false;
         this.loadingService.hide();
         this.loadProject();
-        this.alert.success('Installment added successfully');
+        this.alert.success('Payment added successfully');
       },
       error: (err) => {
         this.isSaving = false;
         this.loadingService.hide();
-        this.alert.error(err.error?.message || 'Failed to add installment');
+        this.alert.error(err.error?.message || 'Failed to add payment');
       },
     });
   }
@@ -341,7 +342,7 @@ export class AdminProjectDetails implements OnInit {
   saveEditInstallment() {
     if (this.installmentForm.invalid) return;
     this.isSaving = true;
-    this.loadingService.show('Updating installment...');
+    this.loadingService.show('Updating payment...');
     this.projectsService
       .updateInstallment(this.selectedInstallment._id, this.installmentForm.value)
       .subscribe({
@@ -350,29 +351,29 @@ export class AdminProjectDetails implements OnInit {
           this.isSaving = false;
           this.loadingService.hide();
           this.loadProject();
-          this.alert.success('Installment updated');
+          this.alert.success('Payment updated');
         },
         error: (err) => {
           this.isSaving = false;
           this.loadingService.hide();
-          this.alert.error(err.error?.message || 'Failed to update installment');
+          this.alert.error(err.error?.message || 'Failed to update payment');
         },
       });
   }
 
   deleteInstallment(installment: any) {
-    this.alert.confirm('Delete this installment?').then((result: any) => {
+    this.alert.confirm('Delete this payment?').then((result: any) => {
       if (result.isConfirmed) {
-        this.loadingService.show('Deleting installment...');
+        this.loadingService.show('Deleting payment...');
         this.projectsService.deleteInstallment(installment._id).subscribe({
           next: () => {
             this.loadingService.hide();
             this.loadProject();
-            this.alert.success('Installment deleted');
+            this.alert.success('Payment deleted');
           },
           error: (err) => {
             this.loadingService.hide();
-            this.alert.error(err.error?.message || 'Failed to delete installment');
+            this.alert.error(err.error?.message || 'Failed to delete payment');
           },
         });
       }

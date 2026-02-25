@@ -2,13 +2,15 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -115,7 +117,7 @@ export class Profile implements OnInit {
   saveProfile() {
     if (this.profileForm.invalid) return;
     this.isSavingProfile = true;
-    this.loadingService.show('Saving profile...');
+    this.loadingService.show('Saving...');
     const fd = new FormData();
     fd.append('name', this.profileForm.value.name);
     if (this.selectedPhoto) fd.append('photo', this.selectedPhoto);
@@ -167,7 +169,7 @@ export class Profile implements OnInit {
   requestEmailChange() {
     if (this.emailRequestForm.invalid) return;
     this.isSendingEmail = true;
-    this.loadingService.show('Sending verification link...');
+    this.loadingService.show('Sending...');
     this.http
       .patch(`${this.apiUrl}/email/request-change`, { email: this.emailRequestForm.value.email })
       .subscribe({
@@ -175,7 +177,6 @@ export class Profile implements OnInit {
           this.isSendingEmail = false;
           this.loadingService.hide();
           this.emailRequestSent = true;
-          this.showSuccess('Verification link sent to your new email');
         },
         error: (err: any) => {
           this.isSendingEmail = false;
@@ -188,7 +189,7 @@ export class Profile implements OnInit {
   verifyEmail() {
     if (this.emailVerifyForm.invalid) return;
     this.isVerifyingEmail = true;
-    this.loadingService.show('Verifying email...');
+    this.loadingService.show('Verifying...');
     this.http
       .patch(`${this.apiUrl}/email/verify`, { token: this.emailVerifyForm.value.token })
       .subscribe({

@@ -1,25 +1,17 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  PLATFORM_ID,
-  TransferState,
-  inject,
-  makeStateKey,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { UsersService } from '../../../core/services/users-service/users-service';
 import { environment } from '../../../../environments/environment';
 import { AlertService } from '../../../core/services/alert-service/alert-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
-const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './clients.html',
   styleUrl: './clients.css',
 })
@@ -79,10 +71,12 @@ export class Clients implements OnInit {
   getPhotoUrl(path: string | null): string {
     return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : 'images/default-avatar.png';
   }
+
   toggleModal() {
     this.showModal = !this.showModal;
     if (!this.showModal) this.resetForm();
   }
+
   openClient(id: string) {
     this.router.navigate(['/admin/clients', id]);
   }
@@ -101,6 +95,7 @@ export class Clients implements OnInit {
       } else {
         this.photoFile = file;
       }
+      this.cdr.detectChanges();
     };
     reader.readAsDataURL(file);
   }
@@ -123,6 +118,7 @@ export class Clients implements OnInit {
         this.loadingService.hide();
         this.clients.unshift(res.data);
         this.toggleModal();
+        this.cdr.detectChanges();
         this.alert.success(`"${res.data.name}" has been added successfully`);
       },
       error: (err) => {
@@ -142,6 +138,7 @@ export class Clients implements OnInit {
           next: () => {
             this.loadingService.hide();
             this.clients = this.clients.filter((c) => c._id !== id);
+            this.cdr.detectChanges();
             this.alert.success(`"${name}" deleted successfully`);
           },
           error: (err) => {

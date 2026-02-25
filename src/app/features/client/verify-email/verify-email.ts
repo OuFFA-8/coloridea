@@ -1,20 +1,20 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-verify-email',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule, RouterLink],
   templateUrl: './verify-email.html',
   styleUrl: './verify-email.css',
 })
 export class VerifyEmail implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
-
   state: 'loading' | 'success' | 'error' = 'loading';
   errorMsg = '';
 

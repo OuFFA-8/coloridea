@@ -1,74 +1,145 @@
 <aside
-  class="w-64 h-screen flex flex-col border-r transition-colors duration-500 bg-white border-slate-100 text-slate-500 dark:bg-[#111827] dark:border-gray-800 dark:text-gray-400"
+  class="w-64 h-screen flex flex-col border-e transition-colors duration-500 relative overflow-hidden bg-[#111827] border-[#444547]/30 text-gray-400"
+  [class.ci-sidebar-slide]="animated"
 >
-  <div class="p-8">
-    <h2 class="text-xl font-black tracking-tight transition-colors text-slate-900 dark:text-white">
-      Admin<span class="text-blue-600 dark:text-blue-500">.</span>
-    </h2>
+  <!-- Top accent line -->
+  <div
+    class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#fa8728] via-[#f97316] to-transparent"
+  ></div>
+
+  <!-- Logo -->
+  <div class="px-6 py-6 flex items-center gap-3">
+    <div
+      class="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 bg-[#fa8728]/10 border border-[#fa8728]/20 flex items-center justify-center"
+    >
+      <img src="assets/images/logo-01.png" alt="CI" class="w-7 h-7 object-contain" />
+    </div>
+    <div>
+      <h2
+        class="text-sm font-black leading-none text-white"
+        style="font-family: 'Lexend', sans-serif"
+      >
+        Color<span class="text-[#fa8728]">Idea</span>
+      </h2>
+      <span
+        class="text-[8px] font-black uppercase tracking-[0.25em] text-gray-600"
+        style="font-family: 'Alexandria', sans-serif"
+      >
+        {{ 'SIDEBAR.ADMIN_PANEL' | translate }}
+      </span>
+    </div>
   </div>
 
-  <nav class="flex-1 px-4 space-y-1">
+  <div class="mx-5 h-px bg-[#444547]/20 mb-3"></div>
+
+  <!-- Nav label -->
+  <p
+    class="px-6 text-[8px] font-black uppercase tracking-[0.3em] text-gray-700 mb-2"
+    style="font-family: 'Alexandria', sans-serif"
+  >
+    {{ 'SIDEBAR.NAVIGATION' | translate }}
+  </p>
+
+  <!-- Nav -->
+  <nav class="flex-1 px-3 space-y-0.5">
     <a
       routerLink="/admin/dashboard"
-      routerLinkActive="active-link"
+      routerLinkActive="ci-nav-active"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
+      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
     >
       <span
-        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
-        >▤</span
+        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
       >
-      Dashboard
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+          />
+        </svg>
+      </span>
+      {{ 'NAV.DASHBOARD' | translate }}
     </a>
 
     <a
       routerLink="/admin/clients"
-      routerLinkActive="active-link"
-      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
+      routerLinkActive="ci-nav-active"
+      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
     >
       <span
-        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
-        >👥</span
+        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
       >
-      Clients
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      </span>
+      {{ 'NAV.CLIENTS' | translate }}
     </a>
 
     <a
       routerLink="/admin/projects"
-      routerLinkActive="active-link"
-      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
+      routerLinkActive="ci-nav-active"
+      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
     >
       <span
-        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
-        >💼</span
+        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
       >
-      Projects
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          />
+        </svg>
+      </span>
+      {{ 'NAV.PROJECTS' | translate }}
     </a>
 
-    <div class="h-px my-4 mx-4 bg-slate-100 dark:bg-gray-800"></div>
+    <div class="h-px my-2 mx-2 bg-[#444547]/20"></div>
 
     <a
       routerLink="/admin/settings"
-      routerLinkActive="active-link"
-      class="flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all no-underline group text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/50"
+      routerLinkActive="ci-nav-active"
+      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
     >
       <span
-        class="mr-3 text-lg opacity-70 group-hover:opacity-100 transition-transform group-hover:scale-110"
-        >⚙️</span
+        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
       >
-      Settings
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      </span>
+      {{ 'NAV.SETTINGS' | translate }}
     </a>
   </nav>
 
   <!-- User + Logout -->
-  <div class="p-4 border-t border-slate-100 dark:border-gray-800 space-y-2">
-    <!-- User Info -->
+  <div class="p-3 border-t border-[#444547]/20">
     @if (user) {
       <div
-        class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-gray-800/40 transition-colors"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 hover:bg-[#fa8728]/5 transition-colors duration-300 cursor-default"
       >
         <div
-          class="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-tr from-blue-500 to-purple-600 shadow-md border-2 border-white dark:border-gray-700 flex-shrink-0 flex items-center justify-center"
+          class="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 border border-[#fa8728]/20 bg-gradient-to-tr from-[#fa8728] to-[#f97316] flex items-center justify-center"
         >
           @if (user.photo) {
             <img
@@ -82,23 +153,34 @@
           }
         </div>
         <div class="flex flex-col min-w-0">
-          <span class="text-xs font-black text-slate-900 dark:text-gray-200 truncate">{{
-            user.name
-          }}</span>
-          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate"
-            >Super Admin</span
+          <span
+            class="text-xs font-black text-gray-200 truncate"
+            style="font-family: 'Lexend', sans-serif"
+            >{{ user.name }}</span
           >
+          <span
+            class="text-[8px] font-black text-[#fa8728] uppercase tracking-widest"
+            style="font-family: 'Alexandria', sans-serif"
+          >
+            {{ 'SIDEBAR.SUPER_ADMIN' | translate }}
+          </span>
         </div>
       </div>
     }
 
-    <!-- Logout -->
     <button
       (click)="logout()"
-      class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 transition-all cursor-pointer bg-transparent border-none text-sm font-black"
+      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-black text-rose-400 border-none bg-transparent transition-all duration-300 hover:bg-rose-500/10 hover:text-rose-400"
     >
-      <span class="text-lg">🚪</span>
-      Sign Out
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+        />
+      </svg>
+      {{ 'NAV.LOGOUT' | translate }}
     </button>
   </div>
 </aside>

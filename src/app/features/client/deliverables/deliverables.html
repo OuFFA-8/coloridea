@@ -1,84 +1,103 @@
 <!-- Loading -->
 @if (isLoading) {
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0f1a]">
+  <div class="min-h-screen flex items-center justify-center bg-[#fff1e6] dark:bg-[#0e0e0e]">
     <div
-      class="w-10 h-10 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin"
+      class="w-10 h-10 border-4 border-[#fa8728]/30 border-t-[#fa8728] rounded-full animate-spin"
     ></div>
   </div>
 }
 
 @if (!isLoading) {
   <div class="p-8 space-y-6 min-h-screen bg-transparent transition-colors duration-500">
-    <!-- Header -->
-    <div>
-      <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-        Project <span class="text-blue-600 dark:text-blue-500">Deliverables</span>
+    <!-- ===== HEADER ===== -->
+    <div class="ci-section" style="--delay: 0s">
+      <h1
+        class="text-3xl font-black tracking-tight text-[#444547] dark:text-white"
+        style="font-family: 'Lexend', sans-serif"
+      >
+        {{ 'CLIENT.DELIVERABLES.TITLE' | translate }}
+        <span class="text-[#fa8728]">{{ 'CLIENT.DELIVERABLES.TITLE_ACCENT' | translate }}</span>
       </h1>
       <p
-        class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500 mt-1"
+        class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5c5f63]/50 dark:text-gray-500 mt-1"
+        style="font-family: 'Alexandria', sans-serif"
       >
-        {{ outputs.length }} output categories
+        {{ outputs.length }} {{ 'CLIENT.DELIVERABLES.OUTPUT_CATEGORIES' | translate }}
       </p>
     </div>
 
     <!-- Empty -->
     @if (outputs.length === 0) {
       <div
-        class="py-24 text-center border-2 border-dashed border-slate-200 dark:border-gray-800 rounded-3xl"
+        class="py-24 text-center border-2 border-dashed border-[#e6d5c3] dark:border-[#444547]/30 rounded-3xl ci-section"
+        style="--delay: 0.08s"
       >
-        <div class="text-4xl mb-3">📦</div>
-        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-          No deliverables yet
+        <div class="text-4xl mb-3 opacity-20">📦</div>
+        <p
+          class="text-[10px] font-black uppercase tracking-widest text-[#5c5f63]/30 dark:text-gray-700"
+        >
+          {{ 'CLIENT.DELIVERABLES.EMPTY' | translate }}
         </p>
       </div>
     }
 
-    <!-- Outputs Accordion -->
-    @for (output of outputs; track output._id; let first = $first) {
+    <!-- ===== ACCORDION ===== -->
+    @for (output of outputs; track output._id; let i = $index) {
       <details
-        [attr.open]="first ? '' : null"
-        class="group rounded-3xl overflow-hidden border transition-all duration-500 shadow-sm bg-white border-slate-100 open:border-blue-500/20 open:shadow-xl dark:bg-[#111827] dark:border-gray-800 dark:open:border-blue-500/20"
+        [attr.open]="i === 0 ? '' : null"
+        class="ci-accordion group rounded-3xl overflow-hidden border transition-all duration-500 shadow-sm bg-white border-[#e6d5c3] open:border-[#fa8728]/25 open:shadow-xl open:shadow-[#fa8728]/5 dark:bg-[#1c1c1c] dark:border-[#444547]/30 dark:open:border-[#fa8728]/20"
+        style="--delay: {{ i * 0.06 }}s"
       >
         <summary
           class="flex items-center justify-between p-6 cursor-pointer list-none outline-none"
         >
           <div class="flex items-center gap-4">
+            <!-- Icon -->
             <div
-              class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl bg-slate-50 dark:bg-gray-900 border border-slate-100 dark:border-gray-800 group-open:bg-blue-50 dark:group-open:bg-blue-900/20 group-open:border-blue-200 dark:group-open:border-blue-800/40 transition-all"
+              class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl transition-all duration-300 bg-[#fff1e6] border border-[#e6d5c3] dark:bg-[#444547]/20 dark:border-[#444547]/30 group-open:bg-[#fa8728]/10 group-open:border-[#fa8728]/25"
             >
               📦
             </div>
             <div>
-              <h3 class="font-black text-base text-slate-900 dark:text-white">{{ output.name }}</h3>
+              <h3
+                class="font-black text-base text-[#444547] dark:text-white"
+                style="font-family: 'Lexend', sans-serif"
+              >
+                {{ output.name }}
+              </h3>
               <div class="flex items-center gap-3 mt-0.5">
                 <span
-                  class="text-[9px] font-black uppercase tracking-widest text-slate-400 group-open:text-blue-500 transition-colors"
+                  class="text-[9px] font-black uppercase tracking-widest transition-colors duration-300 text-[#5c5f63]/50 dark:text-gray-500 group-open:text-[#fa8728]"
                 >
-                  {{ output.items?.length || 0 }} / {{ output.numberOfItems }} delivered
+                  {{ output.items?.length || 0 }} / {{ output.numberOfItems }}
+                  {{ 'CLIENT.DELIVERABLES.DELIVERED' | translate }}
                 </span>
                 <!-- Mini progress -->
-                <div class="w-16 h-1 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  class="w-16 h-1 bg-[#e6d5c3]/60 dark:bg-[#444547]/20 rounded-full overflow-hidden"
+                >
                   <div
-                    class="h-full rounded-full transition-all"
-                    [class.bg-emerald-500]="getOutputProgress(output) === 100"
-                    [class.bg-blue-500]="getOutputProgress(output) < 100"
+                    class="h-full rounded-full transition-all duration-700"
+                    [class.bg-[#68ab1f]]="getOutputProgress(output) === 100"
+                    [class.bg-[#fa8728]]="getOutputProgress(output) < 100"
                     [style.width.%]="getOutputProgress(output)"
                   ></div>
                 </div>
                 <span
                   class="text-[9px] font-black"
-                  [class.text-emerald-500]="getOutputProgress(output) === 100"
-                  [class.text-blue-500]="getOutputProgress(output) < 100"
+                  [class.text-[#68ab1f]]="getOutputProgress(output) === 100"
+                  [class.text-[#fa8728]]="getOutputProgress(output) < 100"
                 >
                   {{ getOutputProgress(output) }}%
                 </span>
               </div>
             </div>
           </div>
+          <!-- Chevron -->
           <div
-            class="w-8 h-8 rounded-full flex items-center justify-center group-open:rotate-180 transition-transform duration-500 border bg-slate-50 border-slate-200 dark:bg-gray-900 dark:border-gray-800 flex-shrink-0"
+            class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border transition-all duration-500 group-open:rotate-180 bg-[#fff1e6] border-[#e6d5c3] dark:bg-[#444547]/20 dark:border-[#444547]/30"
           >
-            <span class="text-slate-400 text-[10px]">▼</span>
+            <span class="text-[#5c5f63]/50 dark:text-gray-500 text-[10px]">▼</span>
           </div>
         </summary>
 
@@ -87,13 +106,13 @@
           @for (item of output.items; track item._id) {
             <div
               (click)="openItem(item)"
-              class="group/item relative h-60 rounded-2xl overflow-hidden border cursor-pointer transition-all duration-500 bg-slate-50 border-slate-200 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 dark:bg-gray-900 dark:border-gray-800"
+              class="ci-item group/item relative h-60 rounded-2xl overflow-hidden border cursor-pointer bg-[#fff1e6] border-[#e6d5c3] dark:bg-[#444547]/10 dark:border-[#444547]/30"
             >
               @if (item.photo) {
                 <img
                   [src]="getPhotoUrl(item.photo)"
                   [alt]="item.name"
-                  class="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500"
+                  class="ci-item-img w-full h-full object-cover"
                   (error)="$any($event.target).style.display = 'none'"
                 />
               } @else {
@@ -101,25 +120,22 @@
                   <span class="text-4xl opacity-20">🎬</span>
                 </div>
               }
-
               <!-- Overlay -->
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-all duration-500"
               ></div>
-
-              <!-- Play button -->
+              <!-- Play -->
               @if (item.link) {
                 <div
                   class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all duration-500"
                 >
                   <div
-                    class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center"
+                    class="w-14 h-14 rounded-full bg-[#fa8728]/80 backdrop-blur-sm border border-white/20 flex items-center justify-center"
                   >
                     <span class="text-white text-xl ml-1">▶</span>
                   </div>
                 </div>
               }
-
               <!-- Title -->
               <div
                 class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover/item:translate-y-0 transition-transform duration-500 opacity-0 group-hover/item:opacity-100"
@@ -129,10 +145,12 @@
             </div>
           } @empty {
             <div
-              class="col-span-full py-10 text-center border border-dashed rounded-2xl border-slate-200 dark:border-gray-800"
+              class="col-span-full py-10 text-center border border-dashed rounded-2xl border-[#e6d5c3] dark:border-[#444547]/30"
             >
-              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                No items delivered yet
+              <p
+                class="text-[10px] font-black uppercase tracking-widest text-[#5c5f63]/30 dark:text-gray-700"
+              >
+                {{ 'CLIENT.DELIVERABLES.NO_ITEMS' | translate }}
               </p>
             </div>
           }
@@ -142,27 +160,29 @@
   </div>
 }
 
-<!-- Item Modal -->
+<!-- ===== ITEM MODAL ===== -->
 @if (selectedItem) {
   <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-xl" (click)="closeModal()"></div>
+    <div class="absolute inset-0 bg-black/85 backdrop-blur-xl" (click)="closeModal()"></div>
     <div
-      class="relative w-full max-w-4xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
+      class="ci-modal relative w-full max-w-4xl bg-[#0e0e0e] rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
     >
-      <!-- Modal Header -->
+      <!-- Header -->
       <div class="flex items-center justify-between p-5 px-6 bg-white/5 border-b border-white/10">
         <div>
-          <h3 class="text-white font-black text-lg">{{ selectedItem.name }}</h3>
+          <h3 class="text-white font-black text-lg" style="font-family: 'Lexend', sans-serif">
+            {{ selectedItem.name }}
+          </h3>
         </div>
         <button
           (click)="closeModal()"
-          class="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-rose-500 text-white transition-colors border-none cursor-pointer"
+          class="w-8 h-8 rounded-full flex items-center justify-center border-none cursor-pointer transition-colors duration-200 bg-white/10 hover:bg-rose-500 text-white"
         >
           ✕
         </button>
       </div>
 
-      <!-- Modal Body -->
+      <!-- Body -->
       <div
         class="flex-1 min-h-[300px] md:min-h-[500px] relative bg-black flex items-center justify-center"
       >
@@ -188,7 +208,9 @@
             class="max-w-full max-h-[80vh] object-contain p-4"
           />
         } @else {
-          <p class="text-white/40 text-sm font-bold uppercase">No media available</p>
+          <p class="text-white/40 text-sm font-bold uppercase">
+            {{ 'CLIENT.DELIVERABLES.NO_MEDIA' | translate }}
+          </p>
         }
       </div>
     </div>

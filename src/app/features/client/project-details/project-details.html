@@ -1,139 +1,174 @@
 <!-- Loading -->
 @if (isLoading) {
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0f1a]">
+  <div class="min-h-screen flex items-center justify-center bg-[#fff1e6] dark:bg-[#0e0e0e]">
     <div
-      class="w-10 h-10 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin"
+      class="w-10 h-10 border-4 border-[#fa8728]/30 border-t-[#fa8728] rounded-full animate-spin"
     ></div>
   </div>
 }
 
 @if (!isLoading && project) {
   <div class="p-8 space-y-8 min-h-screen bg-transparent transition-colors duration-500">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <!-- ===== HEADER ===== -->
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-6 ci-section"
+      style="--delay: 0s"
+    >
       <div>
         <div
-          class="flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500"
+          class="flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500"
         >
           <a
             routerLink="/client/projects"
-            class="hover:text-blue-600 no-underline transition-colors"
-            >Projects</a
+            class="hover:text-[#fa8728] no-underline transition-colors"
           >
+            {{ 'ADMIN.PROJECTS.TITLE' | translate }}
+          </a>
           <span>/</span>
-          <span class="text-blue-600 dark:text-blue-500">Overview</span>
+          <span class="text-[#fa8728]">{{ 'CLIENT.PROJECT_DETAILS.OVERVIEW' | translate }}</span>
         </div>
-        <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+        <h1
+          class="text-3xl font-black tracking-tight text-[#444547] dark:text-white"
+          style="font-family: 'Lexend', sans-serif"
+        >
           {{ project.name }}
         </h1>
         @if (project.description) {
-          <p class="text-sm text-slate-400 dark:text-gray-500 mt-1 italic">
+          <p
+            class="text-sm text-[#5c5f63]/50 dark:text-gray-500 mt-1 italic"
+            style="font-family: 'Alexandria', sans-serif"
+          >
             "{{ project.description }}"
           </p>
         }
       </div>
       <span
         class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest self-start md:self-center"
-        [class.bg-amber-100]="project.status === 'active'"
-        [class.text-amber-700]="project.status === 'active'"
-        [class.dark:bg-amber-900/20]="project.status === 'active'"
-        [class.dark:text-amber-400]="project.status === 'active'"
-        [class.bg-emerald-100]="project.status === 'completed'"
-        [class.text-emerald-700]="project.status === 'completed'"
-        [class.dark:bg-emerald-900/20]="project.status === 'completed'"
-        [class.dark:text-emerald-400]="project.status === 'completed'"
-        [class.bg-slate-100]="project.status === 'pending'"
-        [class.text-slate-500]="project.status === 'pending'"
-        [class.dark:bg-gray-800]="project.status === 'pending'"
-        [class.dark:text-gray-400]="project.status === 'pending'"
+        [class.bg-[#fa8728]/10]="project.status === 'active'"
+        [class.text-[#fa8728]]="project.status === 'active'"
+        [class.bg-[#68ab1f]/10]="project.status === 'completed'"
+        [class.text-[#68ab1f]]="project.status === 'completed'"
+        [class.bg-[#e6d5c3]/60]="project.status === 'pending' || !project.status"
+        [class.text-[#5c5f63]/50]="project.status === 'pending' || !project.status"
+        [class.dark:bg-[#444547]/20]="project.status === 'pending' || !project.status"
+        [class.dark:text-gray-500]="project.status === 'pending' || !project.status"
       >
-        {{ project.status || 'pending' }}
+        {{ 'STATUS.' + (project.status?.toUpperCase() || 'PENDING') | translate }}
       </span>
     </div>
 
     <!-- ===== STATS GRID ===== -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 ci-section" style="--delay: 0.06s">
       <!-- Outputs Progress -->
       <div
-        class="col-span-2 lg:col-span-2 p-7 rounded-3xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm"
+        class="col-span-2 lg:col-span-2 p-7 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
       >
-        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
-          Outputs Progress
+        <p
+          class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1"
+        >
+          {{ 'CLIENT.PROJECT_DETAILS.OUTPUTS_PROGRESS' | translate }}
         </p>
         <div class="flex items-end justify-between mb-4">
-          <span class="text-5xl font-black text-slate-900 dark:text-white">{{
-            outputsProgress
-          }}</span>
-          <span class="text-2xl font-black text-blue-600 mb-1">%</span>
+          <span
+            class="text-5xl font-black text-[#444547] dark:text-white"
+            style="font-family: 'Lexend', sans-serif"
+            >{{ outputsProgress }}</span
+          >
+          <span class="text-2xl font-black text-[#fa8728] mb-1">%</span>
         </div>
-        <div class="h-3 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-3 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden">
           <div
-            class="h-full bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full transition-all duration-1000"
+            class="h-full bg-gradient-to-r from-[#fa8728] to-[#f97316] rounded-full transition-all duration-1000"
             [style.width.%]="outputsProgress"
           ></div>
         </div>
-        <p class="text-[10px] font-bold text-slate-400 mt-2">
-          {{ deliveredItems }} of {{ totalItems }} items delivered
+        <p class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500 mt-2">
+          {{ deliveredItems }} {{ 'CLIENT.PROJECT_DETAILS.OF' | translate }} {{ totalItems }}
+          {{ 'CLIENT.PROJECT_DETAILS.ITEMS_DELIVERED' | translate }}
         </p>
       </div>
 
       <!-- Payment Progress -->
       <div
-        class="col-span-2 lg:col-span-2 p-7 rounded-3xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm"
+        class="col-span-2 lg:col-span-2 p-7 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
       >
-        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1">
-          Payment Progress
+        <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-1">
+          {{ 'CLIENT.FINANCIALS.PAYMENT_PROGRESS' | translate }}
         </p>
         <div class="flex items-end justify-between mb-4">
-          <span class="text-5xl font-black text-slate-900 dark:text-white">{{
-            paymentProgress
-          }}</span>
-          <span class="text-2xl font-black text-emerald-500 mb-1">%</span>
+          <span
+            class="text-5xl font-black text-[#444547] dark:text-white"
+            style="font-family: 'Lexend', sans-serif"
+            >{{ paymentProgress }}</span
+          >
+          <span class="text-2xl font-black text-[#68ab1f] mb-1">%</span>
         </div>
-        <div class="h-3 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-3 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden">
           <div
-            class="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full transition-all duration-1000"
+            class="h-full bg-gradient-to-r from-[#68ab1f] to-[#8bc34a] rounded-full transition-all duration-1000"
             [style.width.%]="paymentProgress"
           ></div>
         </div>
-        <p class="text-[10px] font-bold text-slate-400 mt-2">
-          {{ project.financialDetails?.paidInstallments || 0 }} of
-          {{ project.financialDetails?.totalInstallments || 0 }} installments paid
+        <p class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500 mt-2">
+          {{ project.financialDetails?.paidInstallments || 0 }}
+          {{ 'CLIENT.FINANCIALS.OF' | translate }}
+          {{ project.financialDetails?.totalInstallments || 0 }}
+          {{ 'CLIENT.FINANCIALS.INSTALLMENTS_PAID' | translate }}
         </p>
       </div>
 
-      <!-- Total Amount -->
+      <!-- Total -->
       <div
-        class="p-6 rounded-2xl bg-white dark:bg-[#111827] border border-slate-100 dark:border-gray-800 shadow-sm text-center"
+        class="p-6 rounded-2xl shadow-sm text-center bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
       >
-        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">Total</p>
-        <p class="text-2xl font-black text-slate-900 dark:text-white">
+        <p
+          class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-2"
+        >
+          {{ 'CLIENT.FINANCIALS.TOTAL_CONTRACT' | translate }}
+        </p>
+        <p
+          class="text-2xl font-black text-[#444547] dark:text-white"
+          style="font-family: 'Lexend', sans-serif"
+        >
           ${{ project.financialDetails?.totalAmount || 0 }}
         </p>
       </div>
 
       <!-- Paid -->
       <div
-        class="p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30 shadow-sm text-center"
+        class="p-6 rounded-2xl shadow-sm text-center bg-[#68ab1f]/8 border border-[#68ab1f]/20 dark:bg-[#68ab1f]/10 dark:border-[#68ab1f]/20"
       >
-        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-2">Paid</p>
-        <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400">${{ paidAmount }}</p>
+        <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-2">
+          {{ 'CLIENT.FINANCIALS.TOTAL_PAID' | translate }}
+        </p>
+        <p class="text-2xl font-black text-[#68ab1f]" style="font-family: 'Lexend', sans-serif">
+          ${{ paidAmount }}
+        </p>
       </div>
 
       <!-- Remaining -->
       <div
-        class="p-6 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 shadow-sm text-center"
+        class="p-6 rounded-2xl shadow-sm text-center bg-rose-50 border border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/15"
       >
-        <p class="text-[9px] font-black uppercase tracking-widest text-red-400 mb-2">Remaining</p>
-        <p class="text-2xl font-black text-red-500 dark:text-red-400">${{ remainingAmount }}</p>
+        <p class="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-2">
+          {{ 'CLIENT.FINANCIALS.REMAINING' | translate }}
+        </p>
+        <p
+          class="text-2xl font-black text-rose-500 dark:text-rose-400"
+          style="font-family: 'Lexend', sans-serif"
+        >
+          ${{ remainingAmount }}
+        </p>
       </div>
 
       <!-- Outputs Count -->
       <div
-        class="p-6 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 shadow-sm text-center"
+        class="p-6 rounded-2xl shadow-sm text-center bg-[#fa8728]/8 border border-[#fa8728]/20 dark:bg-[#fa8728]/10 dark:border-[#fa8728]/20"
       >
-        <p class="text-[9px] font-black uppercase tracking-widest text-blue-500 mb-2">Outputs</p>
-        <p class="text-2xl font-black text-blue-600 dark:text-blue-400">
+        <p class="text-[9px] font-black uppercase tracking-widest text-[#fa8728] mb-2">
+          {{ 'ADMIN.PROJECTS.OUTPUTS' | translate }}
+        </p>
+        <p class="text-2xl font-black text-[#fa8728]" style="font-family: 'Lexend', sans-serif">
           {{ project.outputs?.length || 0 }}
         </p>
       </div>
@@ -142,35 +177,40 @@
     <!-- ===== OUTPUTS SUMMARY ===== -->
     @if (project.outputs?.length > 0) {
       <div
-        class="bg-white dark:bg-[#111827] rounded-3xl border border-slate-100 dark:border-gray-800 shadow-sm overflow-hidden"
+        class="bg-white dark:bg-[#1c1c1c] rounded-3xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm overflow-hidden ci-section"
+        style="--delay: 0.1s"
       >
-        <div class="px-7 py-5 border-b border-slate-50 dark:border-gray-800">
+        <div class="px-7 py-5 border-b border-[#e6d5c3]/60 dark:border-[#444547]/20">
           <h2
-            class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500"
+            class="text-xs font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500"
           >
-            Outputs Summary
+            {{ 'CLIENT.PROJECT_DETAILS.OUTPUTS_SUMMARY' | translate }}
           </h2>
         </div>
-        <div class="divide-y divide-slate-50 dark:divide-gray-800">
+        <div class="divide-y divide-[#e6d5c3]/40 dark:divide-[#444547]/20">
           @for (output of project.outputs; track output._id) {
-            <div class="flex items-center justify-between px-7 py-4">
+            <div
+              class="flex items-center justify-between px-7 py-4 transition-colors duration-200 hover:bg-[#fa8728]/4 dark:hover:bg-[#fa8728]/4"
+            >
               <div class="flex items-center gap-3">
                 <div
                   class="w-2 h-2 rounded-full flex-shrink-0"
-                  [class.bg-emerald-500]="output.items?.length >= output.numberOfItems"
-                  [class.bg-blue-500]="
+                  [class.bg-[#68ab1f]]="output.items?.length >= output.numberOfItems"
+                  [class.bg-[#fa8728]]="
                     output.items?.length > 0 && output.items?.length < output.numberOfItems
                   "
-                  [class.bg-slate-300]="!output.items?.length"
+                  [class.bg-[#e6d5c3]]="!output.items?.length"
                 ></div>
-                <span class="text-sm font-bold text-slate-700 dark:text-gray-300">{{
+                <span class="text-sm font-bold text-[#444547] dark:text-gray-300">{{
                   output.name
                 }}</span>
               </div>
               <div class="flex items-center gap-4">
-                <div class="w-24 h-1.5 bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  class="w-24 h-1.5 bg-[#e6d5c3]/60 dark:bg-[#444547]/20 rounded-full overflow-hidden"
+                >
                   <div
-                    class="h-full bg-blue-500 rounded-full transition-all"
+                    class="h-full bg-[#fa8728] rounded-full transition-all duration-700"
                     [style.width.%]="
                       output.numberOfItems
                         ? ((output.items?.length || 0) / output.numberOfItems) * 100
@@ -178,9 +218,11 @@
                     "
                   ></div>
                 </div>
-                <span class="text-[10px] font-black text-slate-400 w-12 text-right"
-                  >{{ output.items?.length || 0 }}/{{ output.numberOfItems }}</span
+                <span
+                  class="text-[10px] font-black text-[#5c5f63]/50 dark:text-gray-500 w-12 text-right"
                 >
+                  {{ output.items?.length || 0 }}/{{ output.numberOfItems }}
+                </span>
               </div>
             </div>
           }
@@ -188,21 +230,27 @@
       </div>
     }
 
-    <!-- Charts -->
-    <div class="grid lg:grid-cols-2 gap-6">
+    <!-- ===== CHARTS ===== -->
+    <div class="grid lg:grid-cols-2 gap-6 ci-section" style="--delay: 0.14s">
       <div
-        class="p-8 rounded-3xl border shadow-sm bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+        class="p-8 rounded-3xl border shadow-sm bg-white border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
       >
         <app-chart-card
-          title="Work Distribution"
+          [title]="'CLIENT.PROJECT_DETAILS.WORK_DISTRIBUTION' | translate"
           [type]="'doughnut'"
           [data]="pieData"
-        ></app-chart-card>
+        >
+        </app-chart-card>
       </div>
       <div
-        class="p-8 rounded-3xl border shadow-sm bg-white border-slate-100 dark:bg-[#111827] dark:border-gray-800"
+        class="p-8 rounded-3xl border shadow-sm bg-white border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
       >
-        <app-chart-card title="Outputs Delivery" [type]="'line'" [data]="lineData"></app-chart-card>
+        <app-chart-card
+          [title]="'CLIENT.PROJECT_DETAILS.OUTPUTS_DELIVERY' | translate"
+          [type]="'line'"
+          [data]="lineData"
+        >
+        </app-chart-card>
       </div>
     </div>
   </div>
@@ -210,14 +258,15 @@
 
 @if (!isLoading && !project) {
   <div class="min-h-screen flex flex-col items-center justify-center gap-4">
-    <div class="text-5xl">🔍</div>
-    <h2 class="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-gray-300">
-      Project Not Found
+    <div class="text-5xl opacity-20">🔍</div>
+    <h2 class="text-sm font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500">
+      {{ 'CLIENT.PROJECT_DETAILS.NOT_FOUND' | translate }}
     </h2>
     <a
       routerLink="/client/projects"
-      class="px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest no-underline"
-      >← Back</a
+      class="px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest no-underline text-white bg-[#fa8728] hover:bg-[#f97316] transition-colors"
     >
+      ← {{ 'COMMON.BACK' | translate }}
+    </a>
   </div>
 }

@@ -1,19 +1,71 @@
-@if (visible) {
-  <div class="loading-overlay">
-    <div class="loading-content">
-      <!-- Logo -->
-      <div class="logo-wrapper">
-        <img src="/images/logo-01.png" alt="Color Idea" class="logo-img" />
-        <div class="logo-glow"></div>
+@if (loadingService.visible()) {
+  <div
+    class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#fff1e6] dark:bg-[#0e0e0e] transition-colors duration-300"
+  >
+    <!-- Ambient glow behind logo -->
+    <div
+      class="absolute w-64 h-64 rounded-full blur-[100px] bg-[#fa8728]/20 dark:bg-[#fa8728]/10 animate-pulse"
+    ></div>
+
+    <!-- Logo container -->
+    <div class="relative flex flex-col items-center ci-loader-pop">
+      <!-- Logo with ring -->
+      <div class="relative mb-8">
+        <!-- Spinning ring -->
+        <svg
+          class="absolute inset-0 w-full h-full animate-spin"
+          style="animation-duration: 2s"
+          viewBox="0 0 80 80"
+        >
+          <circle
+            cx="40"
+            cy="40"
+            r="36"
+            fill="none"
+            stroke="url(#ci-gradient)"
+            stroke-width="2"
+            stroke-dasharray="60 160"
+            stroke-linecap="round"
+          />
+          <defs>
+            <linearGradient id="ci-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#fa8728" />
+              <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <!-- Logo image -->
+        <div class="w-20 h-20 flex items-center justify-center">
+          <img
+            src="assets/images/logo-01.png"
+            alt="Color Idea"
+            class="w-14 h-14 object-contain ci-logo-pulse"
+          />
+        </div>
       </div>
 
-      <!-- Animated bar -->
-      <div class="bar-track">
-        <div class="bar-fill"></div>
-      </div>
+      <!-- Brand name -->
+      <h1
+        class="text-xl font-black tracking-tight text-[#444547] dark:text-white mb-1"
+        style="font-family: 'Lexend', sans-serif"
+      >
+        Color<span class="text-[#fa8728]">Idea</span>
+      </h1>
 
-      <!-- Message -->
-      <p class="loading-msg">{{ message }}</p>
+      <!-- Loading message -->
+      <p
+        class="text-[10px] font-black uppercase tracking-[0.3em] text-[#5c5f63]/50 dark:text-gray-500 mb-6"
+      >
+        {{ loadingService.message() }}
+      </p>
+
+      <!-- Progress bar -->
+      <div class="w-48 h-0.5 rounded-full overflow-hidden bg-[#e6d5c3] dark:bg-[#444547]/30">
+        <div
+          class="h-full rounded-full ci-progress-bar"
+          style="background: linear-gradient(90deg, #fa8728, #f97316)"
+        ></div>
+      </div>
     </div>
   </div>
 }

@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChartCard } from './../../../shared/components/chart-card/chart-card';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
@@ -9,7 +10,7 @@ import { LoadingService } from '../../../core/services/loading-service/loading-s
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, ChartCard],
+  imports: [CommonModule, ChartCard, TranslateModule, RouterLink],
   templateUrl: './project-details.html',
   styleUrl: './project-details.css',
 })
@@ -37,7 +38,6 @@ export class ProjectDetails implements OnInit {
         this.isLoading = false;
         return;
       }
-
       this.loadingService.show('Loading project...');
       this.projectsService.getUserProjects(user._id).subscribe({
         next: (res) => {

@@ -10,17 +10,19 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { UsersService } from '../../../core/services/users-service/users-service';
 import { AlertService } from '../../../core/services/alert-service/alert-service';
 import { environment } from '../../../../environments/environment';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
+
 const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
 @Component({
   selector: 'app-client-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './client-details.html',
   styleUrl: './client-details.css',
 })
@@ -92,6 +94,7 @@ export class ClientDetails implements OnInit {
   openProject(id: string) {
     this.router.navigate(['/admin/projects', id]);
   }
+
   getPhotoUrl(path: string | null): string {
     return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
   }

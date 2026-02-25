@@ -1,79 +1,94 @@
-<div class="p-8 min-h-screen bg-slate-50 dark:bg-[#0b0f1a] transition-colors duration-500">
-  <!-- Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+<div class="p-8 min-h-screen bg-[#fff1e6] dark:bg-[#0e0e0e] transition-colors duration-500">
+  <!-- ===== HEADER ===== -->
+  <div
+    class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 ci-section"
+    style="--delay: 0s"
+  >
     <div>
-      <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-        Clients Directory
+      <h1
+        class="text-3xl font-black text-[#444547] dark:text-white tracking-tight"
+        style="font-family: 'Lexend', sans-serif"
+      >
+        {{ 'ADMIN.CLIENTS.TITLE' | translate }}
       </h1>
-      <p class="text-sm text-slate-400 dark:text-gray-500 font-bold uppercase tracking-widest mt-1">
-        {{ clients.length }} Partners
+      <p
+        class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mt-1"
+        style="font-family: 'Alexandria', sans-serif"
+      >
+        {{ clients.length }} {{ 'ADMIN.CLIENTS.PARTNERS' | translate }}
       </p>
     </div>
     <button
       (click)="toggleModal()"
-      class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-blue-500/20 active:scale-95 cursor-pointer border-none"
+      class="px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 cursor-pointer border-none bg-[#fa8728] hover:bg-[#f97316] text-white shadow-xl shadow-[#fa8728]/25"
     >
-      + Register New Client
+      + {{ 'ADMIN.CLIENTS.ADD_CLIENT' | translate }}
     </button>
   </div>
 
-  <!-- Loading Skeleton -->
+  <!-- ===== SKELETON ===== -->
   @if (isLoading) {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       @for (item of [1, 2, 3, 4, 5, 6]; track item) {
         <div
-          class="bg-white dark:bg-[#111827] rounded-[2.5rem] border border-slate-100 dark:border-gray-800 p-8 animate-pulse"
+          class="bg-white dark:bg-[#1c1c1c] rounded-[2.5rem] border border-[#e6d5c3] dark:border-[#444547]/30 p-8 animate-pulse"
         >
           <div class="flex items-start justify-between mb-6">
-            <div class="w-16 h-16 rounded-2xl bg-slate-200 dark:bg-gray-700"></div>
-            <div class="w-20 h-6 rounded-xl bg-slate-100 dark:bg-gray-800"></div>
+            <div class="w-16 h-16 rounded-2xl bg-[#e6d5c3] dark:bg-[#444547]/30"></div>
+            <div class="w-20 h-6 rounded-xl bg-[#e6d5c3]/60 dark:bg-[#444547]/20"></div>
           </div>
-          <div class="h-6 w-40 bg-slate-200 dark:bg-gray-700 rounded-full mb-2"></div>
-          <div class="h-4 w-28 bg-slate-100 dark:bg-gray-800 rounded-full"></div>
+          <div class="h-6 w-40 bg-[#e6d5c3] dark:bg-[#444547]/30 rounded-full mb-2"></div>
+          <div class="h-4 w-28 bg-[#e6d5c3]/60 dark:bg-[#444547]/20 rounded-full"></div>
         </div>
       }
     </div>
   }
 
-  <!-- Empty State -->
+  <!-- ===== EMPTY ===== -->
   @if (!isLoading && clients.length === 0) {
-    <div class="flex flex-col items-center justify-center py-32 text-center">
-      <div class="text-5xl mb-4">👥</div>
+    <div
+      class="flex flex-col items-center justify-center py-32 text-center ci-section"
+      style="--delay: 0.1s"
+    >
+      <div class="text-5xl mb-4 opacity-20">👥</div>
       <h3
-        class="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-gray-300 mb-2"
+        class="text-sm font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600 mb-2"
       >
-        No Clients Yet
+        {{ 'ADMIN.CLIENTS.NO_CLIENTS' | translate }}
       </h3>
-      <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-        Add your first client to get started
+      <p
+        class="text-[11px] font-bold text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-wider"
+      >
+        {{ 'ADMIN.CLIENTS.EMPTY_HINT' | translate }}
       </p>
     </div>
   }
 
-  <!-- Cards Grid -->
+  <!-- ===== CARDS GRID ===== -->
   @if (!isLoading && clients.length > 0) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ci-section"
+      style="--delay: 0.06s"
+    >
       @for (client of clients; track client._id) {
         <div
           (click)="openClient(client._id)"
-          class="group relative bg-white dark:bg-[#111827] rounded-[2.5rem] border border-slate-100 dark:border-gray-800 p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 cursor-pointer overflow-hidden"
+          class="ci-card group relative bg-white dark:bg-[#1c1c1c] rounded-[2.5rem] border border-[#e6d5c3] dark:border-[#444547]/30 p-8 cursor-pointer overflow-hidden"
         >
-          <!-- Pattern bar on top -->
+          <!-- Top accent bar -->
           @if (client.pattern) {
             <div
-              class="absolute top-0 left-0 right-0 h-1.5 group-hover:h-3 transition-all duration-700 bg-cover bg-center opacity-60"
+              class="ci-top-bar absolute top-0 left-0 right-0 bg-cover bg-center opacity-70"
               [style.backgroundImage]="'url(' + getPhotoUrl(client.pattern) + ')'"
             ></div>
           } @else {
-            <div
-              class="absolute top-0 left-0 right-0 h-1.5 group-hover:h-3 transition-all duration-700 bg-blue-500 opacity-60"
-            ></div>
+            <div class="ci-top-bar absolute top-0 left-0 right-0 bg-[#fa8728] opacity-60"></div>
           }
 
-          <!-- Delete Button -->
+          <!-- Delete -->
           <button
             (click)="deleteClient($event, client._id, client.name)"
-            class="absolute top-5 right-5 w-8 h-8 rounded-xl bg-slate-100 dark:bg-gray-800 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center text-xs border-none cursor-pointer z-10"
+            class="absolute top-5 right-5 w-8 h-8 rounded-xl flex items-center justify-center text-xs border-none cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-[#e6d5c3]/60 dark:bg-[#444547]/30 text-[#5c5f63] dark:text-gray-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500"
           >
             ✕
           </button>
@@ -81,7 +96,7 @@
           <div class="flex items-start justify-between mb-6">
             <!-- Logo -->
             <div
-              class="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-gray-800 border border-slate-100 dark:border-gray-700 shadow-sm overflow-hidden flex items-center justify-center"
+              class="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-[#fff1e6] dark:bg-[#444547]/20 border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm"
             >
               <img
                 [src]="getPhotoUrl(client.logo || client.photo)"
@@ -90,30 +105,34 @@
                 (error)="$any($event.target).style.display = 'none'"
               />
             </div>
-            <!-- Projects Count -->
+            <!-- Projects count -->
             <span
-              class="px-4 py-1.5 rounded-xl text-[9px] font-black bg-slate-50 dark:bg-gray-800 text-slate-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest"
+              class="px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors duration-300 bg-[#fff1e6] dark:bg-[#444547]/20 text-[#5c5f63]/50 dark:text-gray-500 group-hover:text-[#fa8728]"
             >
-              {{ client.projectsCount || 0 }} Projects
+              {{ client.projectsCount || 0 }} {{ 'ADMIN.PROJECTS.TITLE' | translate }}
             </span>
           </div>
 
           <!-- Name -->
-          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          <h3
+            class="text-2xl font-black text-[#444547] dark:text-white tracking-tight"
+            style="font-family: 'Lexend', sans-serif"
+          >
             {{ client.name }}
           </h3>
 
           <!-- Bottom -->
           <div
-            class="mt-8 pt-6 border-t border-slate-50 dark:border-gray-800 flex items-center justify-between"
+            class="mt-8 pt-6 border-t border-[#e6d5c3]/60 dark:border-[#444547]/20 flex items-center justify-between"
           >
             <span
-              class="text-[10px] font-bold text-slate-300 dark:text-gray-600 lowercase tracking-wider truncate max-w-[70%]"
+              class="text-[10px] font-bold text-[#5c5f63]/30 dark:text-gray-600 lowercase tracking-wider truncate max-w-[70%]"
+              style="font-family: 'Alexandria', sans-serif"
             >
               {{ client.email }}
             </span>
             <div
-              class="w-10 h-10 rounded-full bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all"
+              class="ci-arrow w-10 h-10 rounded-full flex items-center justify-center transition-all duration-400 bg-[#fff1e6] dark:bg-[#444547]/20 text-[#5c5f63]/40 dark:text-gray-600 group-hover:bg-[#fa8728] group-hover:text-white"
             >
               →
             </div>
@@ -123,55 +142,65 @@
     </div>
   }
 
-  <!-- Modal -->
+  <!-- ===== MODAL ===== -->
   @if (showModal) {
     <div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
-      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md" (click)="toggleModal()"></div>
+      <div class="fixed inset-0 bg-[#0e0e0e]/70 backdrop-blur-md" (click)="toggleModal()"></div>
 
       <div
-        class="relative w-full max-w-2xl bg-white dark:bg-[#111827] rounded-[3rem] p-10 shadow-2xl border border-slate-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto"
+        class="ci-modal relative w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl max-h-[90vh] overflow-y-auto ci-modal-scrollbar bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
       >
-        <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-8 tracking-tight">
-          Register New Client
+        <h2
+          class="text-2xl font-black text-[#444547] dark:text-white mb-1 tracking-tight"
+          style="font-family: 'Lexend', sans-serif"
+        >
+          {{ 'ADMIN.CLIENTS.ADD_CLIENT' | translate }}
         </h2>
+        <div class="w-8 h-0.5 bg-[#fa8728] rounded-full mb-8"></div>
 
         <form [formGroup]="clientForm" (ngSubmit)="saveClient()" class="space-y-6">
           <!-- Name -->
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-              >Full Name</label
+          <div class="space-y-1.5">
+            <label
+              class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
             >
+              {{ 'ADMIN.CLIENTS.NAME' | translate }}
+            </label>
             <input
               formControlName="name"
               type="text"
-              placeholder="Client name"
-              class="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-gray-950 border border-slate-100 dark:border-gray-800 outline-none font-bold text-sm text-slate-900 dark:text-white"
+              placeholder="{{ 'ADMIN.CLIENTS.NAME_PLACEHOLDER' | translate }}"
+              class="ci-input"
             />
           </div>
 
           <div class="grid grid-cols-2 gap-6">
             <!-- Email -->
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                >Email</label
+            <div class="space-y-1.5">
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
+                {{ 'ADMIN.CLIENTS.EMAIL' | translate }}
+              </label>
               <input
                 formControlName="email"
                 type="email"
                 placeholder="name@company.com"
-                class="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-gray-950 border border-slate-100 dark:border-gray-800 outline-none font-bold text-sm text-slate-900 dark:text-white"
+                class="ci-input"
               />
             </div>
             <!-- Password -->
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                >Password</label
+            <div class="space-y-1.5">
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
+                {{ 'ADMIN.CLIENTS.PASSWORD' | translate }}
+              </label>
               <input
                 formControlName="password"
                 type="password"
                 placeholder="••••••••"
-                class="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-gray-950 border border-slate-100 dark:border-gray-800 outline-none font-bold text-sm text-slate-900 dark:text-white"
+                class="ci-input"
               />
             </div>
           </div>
@@ -179,19 +208,25 @@
           <!-- Files -->
           <div class="grid grid-cols-3 gap-4">
             <!-- Photo -->
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                >Photo</label
+            <div class="space-y-1.5">
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
+                {{ 'ADMIN.CLIENTS.PHOTO' | translate }}
+              </label>
               <div
-                class="relative h-28 rounded-2xl border-2 border-dashed border-slate-200 dark:border-gray-800 flex items-center justify-center overflow-hidden hover:border-blue-500 transition-colors bg-slate-50 dark:bg-gray-950 cursor-pointer"
+                class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
               >
                 @if (photoFile) {
-                  <span class="text-[10px] font-black text-green-500 uppercase">✓ Selected</span>
+                  <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest"
+                    >✓ Selected</span
+                  >
                 } @else {
-                  <div class="text-center opacity-40">
+                  <div class="text-center opacity-25">
                     <span class="text-xl">🖼️</span>
-                    <p class="text-[8px] font-black uppercase mt-1">Photo</p>
+                    <p class="text-[8px] font-black uppercase mt-1">
+                      {{ 'ADMIN.CLIENTS.PHOTO' | translate }}
+                    </p>
                   </div>
                 }
                 <input
@@ -204,19 +239,23 @@
             </div>
 
             <!-- Logo -->
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                >Logo</label
+            <div class="space-y-1.5">
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
+                {{ 'ADMIN.CLIENTS.LOGO' | translate }}
+              </label>
               <div
-                class="relative h-28 rounded-2xl border-2 border-dashed border-slate-200 dark:border-gray-800 flex items-center justify-center overflow-hidden hover:border-blue-500 transition-colors bg-slate-50 dark:bg-gray-950 cursor-pointer"
+                class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
               >
                 @if (logoPreview) {
                   <img [src]="logoPreview" class="h-full w-full object-contain p-3" />
                 } @else {
-                  <div class="text-center opacity-40">
+                  <div class="text-center opacity-25">
                     <span class="text-xl">🏢</span>
-                    <p class="text-[8px] font-black uppercase mt-1">Logo</p>
+                    <p class="text-[8px] font-black uppercase mt-1">
+                      {{ 'ADMIN.CLIENTS.LOGO' | translate }}
+                    </p>
                   </div>
                 }
                 <input
@@ -229,19 +268,23 @@
             </div>
 
             <!-- Pattern -->
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                >Pattern</label
+            <div class="space-y-1.5">
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
+                {{ 'ADMIN.CLIENTS.PATTERN' | translate }}
+              </label>
               <div
-                class="relative h-28 rounded-2xl border-2 border-dashed border-slate-200 dark:border-gray-800 flex items-center justify-center overflow-hidden hover:border-blue-500 transition-colors bg-slate-50 dark:bg-gray-950 cursor-pointer"
+                class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
               >
                 @if (patternPreview) {
                   <img [src]="patternPreview" class="h-full w-full object-cover" />
                 } @else {
-                  <div class="text-center opacity-40">
+                  <div class="text-center opacity-25">
                     <span class="text-xl">🎨</span>
-                    <p class="text-[8px] font-black uppercase mt-1">Pattern</p>
+                    <p class="text-[8px] font-black uppercase mt-1">
+                      {{ 'ADMIN.CLIENTS.PATTERN' | translate }}
+                    </p>
                   </div>
                 }
                 <input
@@ -256,19 +299,17 @@
 
           <!-- Buttons -->
           <div class="flex gap-4 pt-4">
-            <button
-              type="button"
-              (click)="toggleModal()"
-              class="flex-1 py-4 rounded-2xl text-[10px] font-black uppercase text-slate-400 bg-slate-50 dark:bg-gray-800 cursor-pointer border-none"
-            >
-              Cancel
+            <button type="button" (click)="toggleModal()" class="ci-btn-secondary flex-1">
+              {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
               type="submit"
               [disabled]="clientForm.invalid || isSaving"
-              class="flex-1 py-4 rounded-2xl text-[10px] font-black uppercase text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-500/20 cursor-pointer border-none disabled:opacity-50 transition-all"
+              class="ci-btn-primary flex-1"
             >
-              {{ isSaving ? 'Saving...' : 'Register Client' }}
+              {{
+                isSaving ? ('COMMON.LOADING' | translate) : ('ADMIN.CLIENTS.REGISTER' | translate)
+              }}
             </button>
           </div>
         </form>

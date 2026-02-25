@@ -11,11 +11,12 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-chart-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './chart-card.html',
 })
 export class ChartCard implements OnInit, AfterViewInit, OnChanges {
@@ -30,18 +31,18 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
   private chart: any = null;
   private chartJsLoaded = false;
 
+  // ColorIdea palette
+  private readonly ORANGE = 'rgba(250,135,40,0.85)';
+  private readonly GREEN = 'rgba(104,171,31,0.85)';
+
   ngOnInit() {}
 
   ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadChartJs();
-    }
+    if (isPlatformBrowser(this.platformId)) this.loadChartJs();
   }
 
   ngOnChanges() {
-    if (this.chart && this.data?.length) {
-      this.updateChart();
-    }
+    if (this.chart && this.data?.length) this.updateChart();
   }
 
   async loadChartJs() {
@@ -61,7 +62,6 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
     if (!this.canvasRef?.nativeElement || !this.chartJsLoaded) return;
     const Chart = (window as any).Chart;
     if (!Chart) return;
-
     if (this.chart) {
       this.chart.destroy();
       this.chart = null;
@@ -71,8 +71,11 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
     if (!ctx) return;
 
     const isDark = document.documentElement.classList.contains('dark');
-    const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
-    const textColor = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)';
+    const gridColor = isDark ? 'rgba(68,69,71,0.2)' : 'rgba(230,213,195,0.6)';
+    const textColor = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(92,95,99,0.5)';
+    const tooltipBg = isDark ? '#1c1c1c' : '#fff';
+    const tooltipTitle = isDark ? '#fff' : '#444547';
+    const emptyColor = isDark ? 'rgba(68,69,71,0.25)' : 'rgba(230,213,195,0.5)';
 
     if (this.type === 'doughnut') {
       this.chart = new Chart(ctx, {
@@ -82,14 +85,8 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
           datasets: [
             {
               data: this.data?.length >= 2 ? this.data : [0, 1],
-              backgroundColor: [
-                'rgba(37,99,235,0.85)',
-                isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-              ],
-              borderColor: [
-                'rgb(37,99,235)',
-                isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-              ],
+              backgroundColor: [this.ORANGE, emptyColor],
+              borderColor: ['rgba(250,135,40,1)', emptyColor],
               borderWidth: 2,
               hoverOffset: 6,
             },
@@ -111,10 +108,10 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
               },
             },
             tooltip: {
-              backgroundColor: isDark ? '#1f2937' : '#fff',
-              titleColor: isDark ? '#fff' : '#0f172a',
+              backgroundColor: tooltipBg,
+              titleColor: tooltipTitle,
               bodyColor: textColor,
-              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+              borderColor: isDark ? 'rgba(68,69,71,0.3)' : 'rgba(230,213,195,0.8)',
               borderWidth: 1,
               padding: 12,
               cornerRadius: 12,
@@ -132,11 +129,11 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
             {
               label: 'Items Delivered',
               data: this.data || [],
-              borderColor: 'rgb(37,99,235)',
-              backgroundColor: isDark ? 'rgba(37,99,235,0.08)' : 'rgba(37,99,235,0.06)',
+              borderColor: 'rgba(250,135,40,1)',
+              backgroundColor: isDark ? 'rgba(250,135,40,0.06)' : 'rgba(250,135,40,0.08)',
               borderWidth: 2.5,
-              pointBackgroundColor: 'rgb(37,99,235)',
-              pointBorderColor: isDark ? '#111827' : '#fff',
+              pointBackgroundColor: 'rgba(250,135,40,1)',
+              pointBorderColor: isDark ? '#1c1c1c' : '#fff',
               pointBorderWidth: 2,
               pointRadius: 5,
               pointHoverRadius: 7,
@@ -151,10 +148,10 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: isDark ? '#1f2937' : '#fff',
-              titleColor: isDark ? '#fff' : '#0f172a',
+              backgroundColor: tooltipBg,
+              titleColor: tooltipTitle,
               bodyColor: textColor,
-              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+              borderColor: isDark ? 'rgba(68,69,71,0.3)' : 'rgba(230,213,195,0.8)',
               borderWidth: 1,
               padding: 12,
               cornerRadius: 12,
