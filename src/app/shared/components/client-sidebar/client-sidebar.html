@@ -10,9 +10,9 @@
   <!-- Logo -->
   <div class="px-6 py-6">
     <img
-      [src]="isDark ? '/images/logo-10.png' : '/images/logo-09.png'"
+      [src]="isDark ? '/images/logo-10.png' : '/images/logo-9.png'"
       alt="ColorIdea"
-      class="h-10 w-auto object-contain"
+      class="h-8 w-auto object-contain"
     />
   </div>
 
@@ -129,6 +129,16 @@
       {{ 'NAV.PROFILE' | translate }}
     </a>
   </nav>
+
+  <!-- Pattern image -->
+  @if (pattern) {
+    <div
+      class="mx-3 mb-3 rounded-2xl overflow-hidden border border-[#444547]/20"
+      style="height: 120px"
+    >
+      <img [src]="pattern" alt="pattern" class="w-full h-full object-cover opacity-70" />
+    </div>
+  }
 
   <!-- Current Project + Logout -->
   <div class="p-3 border-t border-[#444547]/20">

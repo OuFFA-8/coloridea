@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { Subscription, filter } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-client-sidebar',
@@ -21,6 +22,7 @@ export class ClientSidebar implements OnInit, OnDestroy {
   isDark = true;
   projectId = '';
   projectName = '';
+  pattern = ''; // باترن السايدبار بتاع العميل
 
   get projectLinks() {
     return [
@@ -54,6 +56,7 @@ export class ClientSidebar implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.readProjectFromStorage();
       this.extractProjectFromUrl();
+      this.loadUserPattern();
       this.detectTheme();
 
       this.routerSub = this.router.events
@@ -68,6 +71,18 @@ export class ClientSidebar implements OnInit, OnDestroy {
         attributes: true,
         attributeFilter: ['class'],
       });
+    }
+  }
+
+  loadUserPattern() {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      try {
+        const user = JSON.parse(stored);
+        if (user?.pattern) {
+          this.pattern = `${environment.baseUrl}/${user.pattern.replace(/\\/g, '/')}`;
+        }
+      } catch {}
     }
   }
 

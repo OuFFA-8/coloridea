@@ -5,15 +5,11 @@
     style="--delay: 0s"
   >
     <div>
-      <h1
-        class="text-3xl font-black text-[#444547] dark:text-white tracking-tight"
-        style="font-family: 'Alexandria', sans-serif"
-      >
+      <h1 class="text-3xl font-black text-[#444547] dark:text-white tracking-tight">
         {{ 'ADMIN.CLIENTS.TITLE' | translate }}
       </h1>
       <p
         class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mt-1"
-        style="font-family: 'Alexandria', sans-serif"
       >
         {{ clients.length }} {{ 'ADMIN.CLIENTS.PARTNERS' | translate }}
       </p>
@@ -28,17 +24,21 @@
 
   <!-- ===== SKELETON ===== -->
   @if (isLoading) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       @for (item of [1, 2, 3, 4, 5, 6]; track item) {
         <div
-          class="bg-white dark:bg-[#1c1c1c] rounded-[2.5rem] border border-[#e6d5c3] dark:border-[#444547]/30 p-8 animate-pulse"
+          class="bg-white dark:bg-[#1c1c1c] rounded-[2rem] border border-[#e6d5c3] dark:border-[#444547]/30 overflow-hidden animate-pulse"
         >
-          <div class="flex items-start justify-between mb-6">
-            <div class="w-16 h-16 rounded-2xl bg-[#e6d5c3] dark:bg-[#444547]/30"></div>
-            <div class="w-20 h-6 rounded-xl bg-[#e6d5c3]/60 dark:bg-[#444547]/20"></div>
+          <div class="h-28 bg-[#e6d5c3]/40 dark:bg-[#444547]/20"></div>
+          <div class="p-6 flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-2xl bg-[#e6d5c3] dark:bg-[#444547]/30 flex-shrink-0"
+            ></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 w-32 bg-[#e6d5c3] dark:bg-[#444547]/30 rounded-full"></div>
+              <div class="h-3 w-24 bg-[#e6d5c3]/60 dark:bg-[#444547]/20 rounded-full"></div>
+            </div>
           </div>
-          <div class="h-6 w-40 bg-[#e6d5c3] dark:bg-[#444547]/30 rounded-full mb-2"></div>
-          <div class="h-4 w-28 bg-[#e6d5c3]/60 dark:bg-[#444547]/20 rounded-full"></div>
         </div>
       }
     </div>
@@ -46,93 +46,98 @@
 
   <!-- ===== EMPTY ===== -->
   @if (!isLoading && clients.length === 0) {
-    <div
-      class="flex flex-col items-center justify-center py-32 text-center ci-section"
-      style="--delay: 0.1s"
-    >
+    <div class="flex flex-col items-center justify-center py-32 text-center">
       <div class="text-5xl mb-4 opacity-20">👥</div>
       <h3
         class="text-sm font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600 mb-2"
       >
         {{ 'ADMIN.CLIENTS.NO_CLIENTS' | translate }}
       </h3>
-      <p
-        class="text-[11px] font-bold text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-wider"
-      >
-        {{ 'ADMIN.CLIENTS.EMPTY_HINT' | translate }}
-      </p>
     </div>
   }
 
   <!-- ===== CARDS GRID ===== -->
   @if (!isLoading && clients.length > 0) {
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ci-section"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ci-section"
       style="--delay: 0.06s"
     >
       @for (client of clients; track client._id) {
         <div
           (click)="openClient(client._id)"
-          class="ci-card group relative bg-white dark:bg-[#1c1c1c] rounded-[2.5rem] border border-[#e6d5c3] dark:border-[#444547]/30 p-8 cursor-pointer overflow-hidden"
+          class="ci-card group relative bg-white dark:bg-[#1c1c1c] rounded-[2rem] border border-[#e6d5c3] dark:border-[#444547]/30 cursor-pointer overflow-hidden"
         >
-          <!-- Top accent bar -->
-          @if (client.pattern) {
-            <div
-              class="ci-top-bar absolute top-0 left-0 right-0 bg-cover bg-center opacity-70"
-              [style.backgroundImage]="'url(' + getPhotoUrl(client.pattern) + ')'"
-            ></div>
-          } @else {
-            <div class="ci-top-bar absolute top-0 left-0 right-0 bg-[#fa8728] opacity-60"></div>
-          }
-
-          <!-- Delete -->
-          <button
-            (click)="deleteClient($event, client._id, client.name)"
-            class="absolute top-5 right-5 w-8 h-8 rounded-xl flex items-center justify-center text-xs border-none cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-[#e6d5c3]/60 dark:bg-[#444547]/30 text-[#5c5f63] dark:text-gray-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500"
-          >
-            ✕
-          </button>
-
-          <div class="flex items-start justify-between mb-6">
-            <!-- Logo -->
-            <div
-              class="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-[#fff1e6] dark:bg-[#444547]/20 border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm"
-            >
+          <!-- Cover / Pattern -->
+          <div class="relative h-28 overflow-hidden">
+            @if (client.photo) {
               <img
-                [src]="getPhotoUrl(client.logo || client.photo)"
+                [src]="getPhotoUrl(client.photo)"
                 [alt]="client.name"
-                class="w-full h-full object-contain p-2"
-                (error)="$any($event.target).style.display = 'none'"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-            </div>
-            <!-- Projects count -->
+            } @else if (client.pattern) {
+              <img
+                [src]="getPhotoUrl(client.pattern)"
+                [alt]="client.name"
+                class="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105"
+              />
+            } @else {
+              <div
+                class="w-full h-full bg-gradient-to-br from-[#fa8728]/20 to-[#f97316]/10 flex items-center justify-center"
+              >
+                <span class="text-4xl opacity-20">👤</span>
+              </div>
+            }
+            <!-- Overlay gradient -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+
+            <!-- Projects badge -->
             <span
-              class="px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors duration-300 bg-[#fff1e6] dark:bg-[#444547]/20 text-[#5c5f63]/50 dark:text-gray-500 group-hover:text-[#fa8728]"
+              class="absolute top-3 end-3 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-black/30 backdrop-blur-sm text-white/80"
             >
               {{ client.projectsCount || 0 }} {{ 'ADMIN.PROJECTS.TITLE' | translate }}
             </span>
+
+            <!-- Delete -->
+            <button
+              (click)="deleteClient($event, client._id, client.name)"
+              class="absolute top-3 start-3 w-7 h-7 rounded-xl flex items-center justify-center text-xs border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/30 backdrop-blur-sm text-white/70 hover:bg-rose-500 hover:text-white"
+            >
+              ✕
+            </button>
           </div>
 
-          <!-- Name -->
-          <h3
-            class="text-2xl font-black text-[#444547] dark:text-white tracking-tight"
-            style="font-family: 'Alexandria', sans-serif"
-          >
-            {{ client.name }}
-          </h3>
-
-          <!-- Bottom -->
-          <div
-            class="mt-8 pt-6 border-t border-[#e6d5c3]/60 dark:border-[#444547]/20 flex items-center justify-between"
-          >
-            <span
-              class="text-[10px] font-bold text-[#5c5f63]/30 dark:text-gray-600 lowercase tracking-wider truncate max-w-[70%]"
-              style="font-family: 'Alexandria', sans-serif"
-            >
-              {{ client.email }}
-            </span>
+          <!-- Card Body -->
+          <div class="p-5 flex items-center gap-4">
+            <!-- Logo -->
             <div
-              class="ci-arrow w-10 h-10 rounded-full flex items-center justify-center transition-all duration-400 bg-[#fff1e6] dark:bg-[#444547]/20 text-[#5c5f63]/40 dark:text-gray-600 group-hover:bg-[#fa8728] group-hover:text-white"
+              class="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center bg-[#fff1e6] dark:bg-[#444547]/20 border border-[#e6d5c3] dark:border-[#444547]/30"
+            >
+              @if (client.logo) {
+                <img
+                  [src]="getPhotoUrl(client.logo)"
+                  [alt]="client.name"
+                  class="w-full h-full object-contain p-1.5"
+                  (error)="$any($event.target).style.display = 'none'"
+                />
+              } @else {
+                <span class="text-xl opacity-30">🏢</span>
+              }
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <h3 class="font-black text-[#444547] dark:text-white tracking-tight truncate">
+                {{ client.name }}
+              </h3>
+              <p class="text-[10px] font-bold text-[#5c5f63]/40 dark:text-gray-600 truncate mt-0.5">
+                {{ client.email }}
+              </p>
+            </div>
+
+            <!-- Arrow -->
+            <div
+              class="ci-arrow w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-400 bg-[#fff1e6] dark:bg-[#444547]/20 text-[#5c5f63]/40 dark:text-gray-600 group-hover:bg-[#fa8728] group-hover:text-white"
             >
               →
             </div>
@@ -150,10 +155,7 @@
       <div
         class="ci-modal relative w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl max-h-[90vh] overflow-y-auto ci-modal-scrollbar bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
       >
-        <h2
-          class="text-2xl font-black text-[#444547] dark:text-white mb-1 tracking-tight"
-          style="font-family: 'Alexandria', sans-serif"
-        >
+        <h2 class="text-2xl font-black text-[#444547] dark:text-white mb-1 tracking-tight">
           {{ 'ADMIN.CLIENTS.ADD_CLIENT' | translate }}
         </h2>
         <div class="w-8 h-0.5 bg-[#fa8728] rounded-full mb-8"></div>
@@ -175,7 +177,6 @@
           </div>
 
           <div class="grid grid-cols-2 gap-6">
-            <!-- Email -->
             <div class="space-y-1.5">
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
@@ -189,7 +190,6 @@
                 class="ci-input"
               />
             </div>
-            <!-- Password -->
             <div class="space-y-1.5">
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
@@ -205,45 +205,14 @@
             </div>
           </div>
 
-          <!-- Files -->
+          <!-- Files — 3 cols with clear labels -->
           <div class="grid grid-cols-3 gap-4">
-            <!-- Photo -->
+            <!-- 1. لوجو العميل (logo) -->
             <div class="space-y-1.5">
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
-                {{ 'ADMIN.CLIENTS.PHOTO' | translate }}
-              </label>
-              <div
-                class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
-              >
-                @if (photoFile) {
-                  <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest"
-                    >✓ Selected</span
-                  >
-                } @else {
-                  <div class="text-center opacity-25">
-                    <span class="text-xl">🖼️</span>
-                    <p class="text-[8px] font-black uppercase mt-1">
-                      {{ 'ADMIN.CLIENTS.PHOTO' | translate }}
-                    </p>
-                  </div>
-                }
-                <input
-                  type="file"
-                  (change)="onFileSelected($event, 'photo')"
-                  class="absolute inset-0 opacity-0 cursor-pointer"
-                  accept="image/*"
-                />
-              </div>
-            </div>
-
-            <!-- Logo -->
-            <div class="space-y-1.5">
-              <label
-                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
-              >
-                {{ 'ADMIN.CLIENTS.LOGO' | translate }}
+                لوجو العميل
               </label>
               <div
                 class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
@@ -253,9 +222,7 @@
                 } @else {
                   <div class="text-center opacity-25">
                     <span class="text-xl">🏢</span>
-                    <p class="text-[8px] font-black uppercase mt-1">
-                      {{ 'ADMIN.CLIENTS.LOGO' | translate }}
-                    </p>
+                    <p class="text-[8px] font-black uppercase mt-1">اللوجو</p>
                   </div>
                 }
                 <input
@@ -267,12 +234,41 @@
               </div>
             </div>
 
-            <!-- Pattern -->
+            <!-- 2. خلفية الملف (photo) -->
             <div class="space-y-1.5">
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
-                {{ 'ADMIN.CLIENTS.PATTERN' | translate }}
+                خلفية الملف
+              </label>
+              <div
+                class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
+              >
+                @if (photoFile) {
+                  <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest"
+                    >✓ تم الاختيار</span
+                  >
+                } @else {
+                  <div class="text-center opacity-25">
+                    <span class="text-xl">🖼️</span>
+                    <p class="text-[8px] font-black uppercase mt-1">الخلفية</p>
+                  </div>
+                }
+                <input
+                  type="file"
+                  (change)="onFileSelected($event, 'photo')"
+                  class="absolute inset-0 opacity-0 cursor-pointer"
+                  accept="image/*"
+                />
+              </div>
+            </div>
+
+            <!-- 3. باترن السايدبار (pattern) -->
+            <div class="space-y-1.5">
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+              >
+                باترن السايدبار
               </label>
               <div
                 class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
@@ -282,9 +278,7 @@
                 } @else {
                   <div class="text-center opacity-25">
                     <span class="text-xl">🎨</span>
-                    <p class="text-[8px] font-black uppercase mt-1">
-                      {{ 'ADMIN.CLIENTS.PATTERN' | translate }}
-                    </p>
+                    <p class="text-[8px] font-black uppercase mt-1">الباترن</p>
                   </div>
                 }
                 <input
