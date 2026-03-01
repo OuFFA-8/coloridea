@@ -3,16 +3,8 @@
 >
   <!-- ===== LEFT PANEL ===== -->
   <div
-    class="hidden lg:flex w-5/12 h-full relative items-center justify-center border-r flex-shrink-0 transition-all duration-500 bg-white/60 backdrop-blur-sm border-[#e6d5c3] dark:bg-transparent dark:border-[#444547]/30"
+    class="hidden lg:flex w-5/12 h-full relative items-center justify-center border-e flex-shrink-0 transition-all duration-500 bg-white/60 backdrop-blur-sm border-[#e6d5c3] dark:bg-transparent dark:border-[#444547]/30"
   >
-    <!-- Blobs -->
-    <div
-      class="absolute top-[-20%] left-[-20%] w-[140%] h-[140%] bg-[#fa8728]/[0.04] blur-[150px] rounded-full pointer-events-none"
-    ></div>
-    <div
-      class="absolute bottom-[-20%] right-[-20%] w-[140%] h-[140%] bg-[#68ab1f]/[0.04] blur-[150px] rounded-full pointer-events-none"
-    ></div>
-
     <!-- Diagonal pattern -->
     <div
       class="absolute inset-0 opacity-[0.025]"
@@ -30,16 +22,12 @@
 
     <div class="relative z-10 text-center px-12">
       <!-- Logo -->
-      <div class="inline-block mb-8 group cursor-default">
-        <h1
-          class="text-6xl font-black tracking-tighter italic m-0 transition-transform duration-700 group-hover:scale-105 text-[#444547] dark:text-white"
-          style="font-family: 'Lexend', sans-serif"
-        >
-          Color<span class="text-[#fa8728]">Idea</span>
-        </h1>
-        <div
-          class="h-0.5 w-full bg-gradient-to-r from-transparent via-[#fa8728]/60 to-transparent mt-2"
-        ></div>
+      <div class="inline-block mb-8">
+        <img
+          [src]="isDark ? '/images/logo-10.png' : '/images/logo-09.png'"
+          alt="ColorIdea"
+          class="h-12 w-auto object-contain"
+        />
       </div>
 
       <!-- Tagline -->
@@ -72,12 +60,16 @@
   <div
     class="w-full lg:w-7/12 h-full flex items-center justify-center p-6 md:p-12 relative box-border overflow-y-auto"
   >
-    <!-- Mobile blob -->
-    <div
-      class="lg:hidden absolute inset-0 bg-[#fa8728]/[0.04] blur-[100px] pointer-events-none"
-    ></div>
+    <div class="w-full max-w-md relative z-10 flex flex-col justify-center">
+      <!-- Logo — mobile only -->
+      <div class="lg:hidden text-center mb-8">
+        <img
+          [src]="isDark ? '/images/logo-10.png' : '/images/logo-09.png'"
+          alt="ColorIdea"
+          class="h-10 w-auto object-contain mx-auto"
+        />
+      </div>
 
-    <div class="w-full max-w-md relative z-10 flex flex-col justify-center py-12">
       <router-outlet></router-outlet>
     </div>
   </div>

@@ -2,14 +2,13 @@
   <div
     class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#fff1e6] dark:bg-[#0e0e0e] transition-colors duration-300"
   >
-    <!-- Ambient glow behind logo -->
+    <!-- Ambient glow -->
     <div
       class="absolute w-64 h-64 rounded-full blur-[100px] bg-[#fa8728]/20 dark:bg-[#fa8728]/10 animate-pulse"
     ></div>
 
     <!-- Logo container -->
     <div class="relative flex flex-col items-center ci-loader-pop">
-      <!-- Logo with ring -->
       <div class="relative mb-8">
         <!-- Spinning ring -->
         <svg
@@ -34,27 +33,20 @@
             </linearGradient>
           </defs>
         </svg>
-        <!-- Logo image -->
-        <div class="w-20 h-20 flex items-center justify-center">
+        <!-- Logo -->
+        <div class="w-34 h-34 flex items-center justify-center">
           <img
-            src="assets/images/logo-01.png"
+            [src]="isDark ? '/images/logo-10.png' : '/images/logo-09.png'"
             alt="Color Idea"
-            class="w-14 h-14 object-contain ci-logo-pulse"
+            class="w-28 h-28 object-contain ci-logo-pulse"
           />
         </div>
       </div>
 
-      <!-- Brand name -->
-      <h1
-        class="text-xl font-black tracking-tight text-[#444547] dark:text-white mb-1"
-        style="font-family: 'Lexend', sans-serif"
-      >
-        Color<span class="text-[#fa8728]">Idea</span>
-      </h1>
-
       <!-- Loading message -->
       <p
         class="text-[10px] font-black uppercase tracking-[0.3em] text-[#5c5f63]/50 dark:text-gray-500 mb-6"
+        style="font-family: 'Alexandria', sans-serif"
       >
         {{ loadingService.message() }}
       </p>

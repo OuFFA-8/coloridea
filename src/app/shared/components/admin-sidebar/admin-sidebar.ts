@@ -1,10 +1,9 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, effect, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
-import { effect } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -13,23 +12,23 @@ import { TranslatePipe } from '@ngx-translate/core';
   templateUrl: './admin-sidebar.html',
   styleUrl: './admin-sidebar.css',
 })
-export class AdminSidebar implements OnInit {
+export class AdminSidebar implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private loadingService = inject(LoadingService);
+  private themeObserver?: MutationObserver;
 
   user: any = null;
   baseUrl = environment.baseUrl;
-  animated = false; // بنتحكم فيها عشان نشغل الأنيميشن
+  animated = false;
+  isDark = true;
 
   constructor(
     private authServices: AuthServices,
     private router: Router,
   ) {
-    // لما اللودينج يختفي نشغل الأنيميشن
     effect(() => {
       const isVisible = this.loadingService.visible();
       if (!isVisible && isPlatformBrowser(this.platformId)) {
-        // delay صغير عشان الـ DOM يتحدث
         setTimeout(() => {
           this.animated = false;
           requestAnimationFrame(() => {
@@ -43,7 +42,18 @@ export class AdminSidebar implements OnInit {
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.user = this.authServices.getUser();
+      this.detectTheme();
+
+      this.themeObserver = new MutationObserver(() => this.detectTheme());
+      this.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
     }
+  }
+
+  detectTheme() {
+    this.isDark = document.documentElement.classList.contains('dark');
   }
 
   getPhotoUrl(path: string | null): string {
@@ -54,5 +64,9 @@ export class AdminSidebar implements OnInit {
   logout() {
     this.authServices.logout();
     this.router.navigate(['/login']);
+  }
+
+  ngOnDestroy() {
+    this.themeObserver?.disconnect();
   }
 }

@@ -1,5 +1,5 @@
 <aside
-  class="w-64 h-screen flex flex-col border-e transition-colors duration-500 relative overflow-hidden bg-[#00000000] border-[#444547]/30 text-gray-400"
+  class="w-64 h-screen flex flex-col border-e transition-colors duration-500 relative overflow-hidden bg-[#111827] border-[#444547]/30 text-gray-400"
   [class.ci-sidebar-slide]="animated"
 >
   <!-- Top accent line -->
@@ -8,26 +8,12 @@
   ></div>
 
   <!-- Logo -->
-  <div class="px-6 py-6 flex items-center gap-3">
-    <div
-      class="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 bg-[#fa8728]/10 border border-[#fa8728]/20 flex items-center justify-center"
-    >
-      <img src="assets/images/logo-01.png" alt="CI" class="w-7 h-7 object-contain" />
-    </div>
-    <div>
-      <h2
-        class="text-sm font-black leading-none text-white"
-        style="font-family: 'Lexend', sans-serif"
-      >
-        Color<span class="text-[#fa8728]">Idea</span>
-      </h2>
-      <span
-        class="text-[8px] font-black uppercase tracking-[0.25em] text-gray-600"
-        style="font-family: 'Alexandria', sans-serif"
-      >
-        {{ 'SIDEBAR.CLIENT_AREA' | translate }}
-      </span>
-    </div>
+  <div class="px-6 py-6">
+    <img
+      [src]="isDark ? '/images/logo-10.png' : '/images/logo-09.png'"
+      alt="ColorIdea"
+      class="h-10 w-auto object-contain"
+    />
   </div>
 
   <div class="mx-5 h-px bg-[#444547]/20 mb-3"></div>
@@ -171,7 +157,7 @@
           </span>
           <span
             class="text-xs font-black text-[#fa8728] truncate"
-            style="font-family: 'Lexend', sans-serif"
+            style="font-family: 'Alexandria', sans-serif"
             >{{ projectName }}</span
           >
         </div>

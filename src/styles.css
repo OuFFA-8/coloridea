@@ -6,6 +6,14 @@
   color-scheme: light dark;
 }
 
+/* ===== Global font ===== */
+html,
+body,
+* {
+  font-family: 'Alexandria', sans-serif;
+}
+
+/* ===== Smooth color transitions ===== */
 *,
 *::before,
 *::after {
@@ -13,7 +21,7 @@
     color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow,
     outline-color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 500ms;
+  transition-duration: 300ms;
 }
 
 html,
@@ -24,10 +32,12 @@ body {
     color 500ms ease;
 }
 
+/* ===== Dark mode image dimming ===== */
 .dark img {
-  filter: brightness(0.8) contrast(1.1);
+  filter: brightness(0.85) contrast(1.05);
 }
 
+/* ===== Remove old blue active-link ===== */
 .active-link {
-  @apply !bg-blue-50 !text-blue-600 dark:!bg-gray-800 dark:!text-white;
+  @apply !bg-[#fa8728]/10 !text-[#fa8728];
 }

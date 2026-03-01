@@ -2,131 +2,154 @@ import { isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, NgZone, PLATFORM_ID } from '@angular/core';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AlertService {
   private platformId = inject(PLATFORM_ID);
   private zone = inject(NgZone);
 
-  private isBrowser(): boolean {
-    return isPlatformBrowser(this.platformId);
-  }
+  private isBrowser = () => isPlatformBrowser(this.platformId);
 
   private getThemeConfig(): Partial<SweetAlertOptions> {
     const isDark = localStorage.getItem('theme') === 'dark';
     return {
-      background: isDark ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.92)',
-      color: isDark ? '#f8fafc' : '#1e293b',
+      background: isDark ? '#1c1c1c' : '#ffffff',
+      color: isDark ? '#f3f0ec' : '#444547',
     };
   }
 
   private fire(config: SweetAlertOptions): Promise<any> {
-    // الـ theme بياخد الأولوية — لازم يجي آخر في الـ merge
-    const theme = this.getThemeConfig();
-    const finalConfig = Object.assign({}, config, theme) as SweetAlertOptions;
-
     return new Promise((resolve) => {
       this.zone.runOutsideAngular(() => {
-        Swal.fire(finalConfig).then((result) => {
-          this.zone.run(() => resolve(result));
-        });
+        Swal.fire({ ...config, ...this.getThemeConfig() } as SweetAlertOptions).then((r) =>
+          this.zone.run(() => resolve(r)),
+        );
       });
     });
   }
 
-  private get baseConfig(): SweetAlertOptions {
+  private get base(): SweetAlertOptions {
     return {
       customClass: {
-        popup: 'coloridea-popup',
-        confirmButton: 'coloridea-confirm-btn',
-        cancelButton: 'coloridea-cancel-btn',
-        title: 'coloridea-title',
-        htmlContainer: 'coloridea-text',
-        icon: 'coloridea-icon',
+        popup: 'ci-popup',
+        confirmButton: 'ci-btn-confirm',
+        cancelButton: 'ci-btn-cancel',
+        title: 'ci-title',
+        htmlContainer: 'ci-text',
+        icon: 'ci-icon',
       },
       buttonsStyling: false,
     };
   }
 
   private injectStyles() {
-    if (document.getElementById('coloridea-swal-styles')) return;
-
-    const style = document.createElement('style');
-    style.id = 'coloridea-swal-styles';
-    style.innerHTML = `
-      .coloridea-popup {
-        border-radius: 2rem !important;
-        border: 1px solid rgba(226, 232, 240, 0.8) !important;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+    if (!this.isBrowser() || document.getElementById('ci-swal-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'ci-swal-styles';
+    s.innerHTML = `
+      /* ===== Popup ===== */
+      .ci-popup {
+        border-radius: 1.75rem !important;
+        border: 1px solid rgba(230,213,195,0.5) !important;
+        box-shadow: 0 32px 64px -16px rgba(0,0,0,0.18) !important;
         padding: 2rem !important;
-        backdrop-filter: blur(20px) !important;
+        backdrop-filter: blur(24px) !important;
         max-width: 380px !important;
+        font-family: 'Alexandria', sans-serif !important;
       }
-      .coloridea-title {
+
+      /* ===== Title ===== */
+      .ci-title {
+        font-family: 'Alexandria', sans-serif !important;
         font-size: 1rem !important;
         font-weight: 900 !important;
         letter-spacing: -0.02em !important;
         margin-bottom: 0.25rem !important;
       }
-      .coloridea-text {
+
+      /* ===== Body text ===== */
+      .ci-text {
         font-size: 0.8rem !important;
         font-weight: 600 !important;
-        color: #64748b !important;
+        opacity: 0.6 !important;
       }
-      .coloridea-confirm-btn {
-        background: #2563eb !important;
-        color: white !important;
-        font-weight: 900 !important;
-        font-size: 0.65rem !important;
-        letter-spacing: 0.15em !important;
-        text-transform: uppercase !important;
-        padding: 0.75rem 2rem !important;
-        border-radius: 1rem !important;
-        border: none !important;
-        cursor: pointer !important;
-        transition: all 0.2s !important;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3) !important;
-      }
-      .coloridea-confirm-btn:hover {
-        background: #1d4ed8 !important;
-        transform: scale(1.02) !important;
-      }
-      .coloridea-cancel-btn {
-        background: #f1f5f9 !important;
-        color: #64748b !important;
-        font-weight: 900 !important;
-        font-size: 0.65rem !important;
-        letter-spacing: 0.15em !important;
-        text-transform: uppercase !important;
-        padding: 0.75rem 2rem !important;
-        border-radius: 1rem !important;
-        border: none !important;
-        cursor: pointer !important;
-        transition: all 0.2s !important;
-        margin-right: 0.5rem !important;
-      }
-      .coloridea-cancel-btn:hover {
-        background: #e2e8f0 !important;
-      }
-      .coloridea-icon {
+
+      /* ===== Icon — remove default border ===== */
+      .ci-icon {
         border: none !important;
         margin-bottom: 0.5rem !important;
       }
+      /* Recolor icons to brand */
+      .swal2-success .swal2-success-ring { border-color: #68ab1f !important; }
+      .swal2-success [class^=swal2-success-line] { background: #68ab1f !important; }
+      .swal2-error { border-color: #f87171 !important; color: #f87171 !important; }
+      .swal2-warning { border-color: #fa8728 !important; color: #fa8728 !important; }
+      .swal2-info { border-color: #fa8728 !important; color: #fa8728 !important; }
+
+      /* ===== Confirm button ===== */
+      .ci-btn-confirm {
+        background: #fa8728 !important;
+        color: #fff !important;
+        font-weight: 900 !important;
+        font-size: 0.65rem !important;
+        letter-spacing: 0.15em !important;
+        text-transform: uppercase !important;
+        padding: 0.75rem 2rem !important;
+        border-radius: 1rem !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+        box-shadow: 0 4px 16px rgba(250,135,40,0.3) !important;
+      }
+      .ci-btn-confirm:hover {
+        background: #f97316 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 8px 24px rgba(250,135,40,0.35) !important;
+      }
+
+      /* ===== Cancel button ===== */
+      .ci-btn-cancel {
+        background: rgba(68,69,71,0.08) !important;
+        color: #5c5f63 !important;
+        font-weight: 900 !important;
+        font-size: 0.65rem !important;
+        letter-spacing: 0.15em !important;
+        text-transform: uppercase !important;
+        padding: 0.75rem 2rem !important;
+        border-radius: 1rem !important;
+        border: 1px solid rgba(230,213,195,0.6) !important;
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+        margin-inline-end: 0.5rem !important;
+      }
+      .ci-btn-cancel:hover {
+        background: rgba(68,69,71,0.14) !important;
+      }
+
+      /* ===== Progress bar ===== */
       .swal2-timer-progress-bar {
-        background: #2563eb !important;
+        background: #fa8728 !important;
         border-radius: 1rem !important;
       }
+
+      /* ===== Dark mode overrides ===== */
+      .swal2-popup[style*="1c1c1c"] .ci-btn-cancel {
+        background: rgba(255,255,255,0.06) !important;
+        color: #aaa !important;
+        border-color: rgba(68,69,71,0.3) !important;
+      }
+      .swal2-popup[style*="1c1c1c"] .ci-btn-cancel:hover {
+        background: rgba(255,255,255,0.1) !important;
+      }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(s);
   }
 
   // ✅ Success
-  success(message: string, title: string = 'Done!') {
+  success(message: string, title = 'Done!') {
     if (!this.isBrowser()) return Promise.resolve();
     this.injectStyles();
     return this.fire({
-      ...this.baseConfig,
+      ...this.base,
       icon: 'success',
       title,
       text: message,
@@ -137,11 +160,11 @@ export class AlertService {
   }
 
   // ❌ Error
-  error(message: string, title: string = 'Something went wrong') {
+  error(message: string, title = 'Something went wrong') {
     if (!this.isBrowser()) return Promise.resolve();
     this.injectStyles();
     return this.fire({
-      ...this.baseConfig,
+      ...this.base,
       icon: 'error',
       title,
       text: message,
@@ -152,11 +175,11 @@ export class AlertService {
   }
 
   // ⚠️ Warning
-  warning(message: string, title: string = 'Warning') {
+  warning(message: string, title = 'Warning') {
     if (!this.isBrowser()) return Promise.resolve();
     this.injectStyles();
     return this.fire({
-      ...this.baseConfig,
+      ...this.base,
       icon: 'warning',
       title,
       text: message,
@@ -167,11 +190,11 @@ export class AlertService {
   }
 
   // ℹ️ Info
-  info(message: string, title: string = 'Info') {
+  info(message: string, title = 'Info') {
     if (!this.isBrowser()) return Promise.resolve();
     this.injectStyles();
     return this.fire({
-      ...this.baseConfig,
+      ...this.base,
       icon: 'info',
       title,
       text: message,
@@ -181,12 +204,12 @@ export class AlertService {
     });
   }
 
-  // 🗑️ Confirm (للحذف)
-  confirm(message: string, title: string = 'Are you sure?') {
+  // 🗑️ Confirm
+  confirm(message: string, title = 'Are you sure?') {
     if (!this.isBrowser()) return Promise.resolve();
     this.injectStyles();
     return this.fire({
-      ...this.baseConfig,
+      ...this.base,
       icon: 'warning',
       title,
       text: message,

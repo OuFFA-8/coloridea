@@ -15,8 +15,10 @@ import { AuthServices } from '../../../core/services/auth-services/auth-services
 export class ClientSidebar implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private routerSub!: Subscription;
+  private themeObserver?: MutationObserver;
 
   animated = true;
+  isDark = true;
   projectId = '';
   projectName = '';
 
@@ -52,6 +54,7 @@ export class ClientSidebar implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.readProjectFromStorage();
       this.extractProjectFromUrl();
+      this.detectTheme();
 
       this.routerSub = this.router.events
         .pipe(filter((e) => e instanceof NavigationEnd))
@@ -59,7 +62,17 @@ export class ClientSidebar implements OnInit, OnDestroy {
           this.readProjectFromStorage();
           this.extractProjectFromUrl();
         });
+
+      this.themeObserver = new MutationObserver(() => this.detectTheme());
+      this.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
     }
+  }
+
+  detectTheme() {
+    this.isDark = document.documentElement.classList.contains('dark');
   }
 
   readProjectFromStorage() {
@@ -85,5 +98,6 @@ export class ClientSidebar implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.routerSub?.unsubscribe();
+    this.themeObserver?.disconnect();
   }
 }
