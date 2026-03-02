@@ -52,8 +52,7 @@ export const routes: Routes = [
       { path: 'profile', component: Profile },
       { path: 'verify-email/:token', component: VerifyEmail },
       { path: 'files', component: Files },
-
-      // nested project routes — الـ sidebar بيقرأ الـ :id من الـ URL
+      { path: 'reset-password/:token', component: ResetPassword },
       {
         path: 'projects/:id',
         children: [
