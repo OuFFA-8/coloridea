@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common'; // مهم جداً عشان الـ Pipes والـ Directives
-import { TranslateModule } from '@ngx-translate/core'; // عشان الـ Pipe بتاع الترجمة يشتغل
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { MyTranslate } from '../../../core/services/my-translate/my-translate';
 import { ThemeServices } from '../../../core/services/theme-services/theme-services';
 import { Router, RouterLink } from '@angular/router';
@@ -9,18 +9,16 @@ import { AuthServices } from '../../../core/services/auth-services/auth-services
 
 @Component({
   selector: 'app-header',
-  standalone: true, // تأكد إنها موجودة لو بتستخدم الإصدارات الحديثة
-  imports: [
-    CommonModule, // عشان تقدر تستخدم الـ {{ }} والـ pipes براحتك
-    TranslateModule,
-    RouterLink,
-  ],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header implements OnInit {
   private platformId = inject(PLATFORM_ID);
+
   user: any = null;
+  clientLogo = '';
   baseUrl = environment.baseUrl;
   dropdownOpen = false;
 
@@ -34,6 +32,15 @@ export class Header implements OnInit {
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.user = this.authServices.getUser();
+      this.loadClientLogo();
+    }
+  }
+
+  loadClientLogo() {
+    // لو user عنده logo (كلاينت) يعرضه في الهيدر
+    const logo = this.user?.logo || this.user?.photo;
+    if (logo) {
+      this.clientLogo = `${this.baseUrl}/${logo.replace(/\\/g, '/')}`;
     }
   }
 

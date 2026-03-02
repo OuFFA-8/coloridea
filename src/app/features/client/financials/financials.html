@@ -41,7 +41,24 @@
           class="text-4xl font-black text-[#444547] dark:text-white tracking-tight"
           style="font-family: 'Alexandria', sans-serif"
         >
-          ${{ totalAmount | number }}
+          {{ totalAmount | number }}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="inline-block align-middle -mt-0.5"
+          >
+            <path d="m20 19.5-5.5 1.2" />
+            <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+            <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+            <path d="M20 10 4 13.5" />
+          </svg>
         </p>
       </div>
 
@@ -57,7 +74,24 @@
           class="text-4xl font-black text-[#68ab1f] tracking-tight"
           style="font-family: 'Alexandria', sans-serif"
         >
-          ${{ paidAmount | number }}
+          {{ paidAmount | number }}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="inline-block align-middle -mt-0.5"
+          >
+            <path d="m20 19.5-5.5 1.2" />
+            <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+            <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+            <path d="M20 10 4 13.5" />
+          </svg>
         </p>
       </div>
 
@@ -73,7 +107,24 @@
           class="text-4xl font-black text-rose-500 dark:text-rose-400 tracking-tight"
           style="font-family: 'Alexandria', sans-serif"
         >
-          ${{ remainingAmount | number }}
+          {{ remainingAmount | number }}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="inline-block align-middle -mt-0.5"
+          >
+            <path d="m20 19.5-5.5 1.2" />
+            <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+            <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+            <path d="M20 10 4 13.5" />
+          </svg>
         </p>
       </div>
     </div>
@@ -89,7 +140,9 @@
         >
           {{ 'CLIENT.FINANCIALS.PAYMENT_PROGRESS' | translate }}
         </p>
-        <span class="text-2xl font-black text-[#68ab1f]" style="font-family: 'Alexandria', sans-serif"
+        <span
+          class="text-2xl font-black text-[#68ab1f]"
+          style="font-family: 'Alexandria', sans-serif"
           >{{ paymentProgress }}%</span
         >
       </div>
@@ -125,7 +178,7 @@
         >
           {{ 'CLIENT.FINANCIALS.PAYMENT_SCHEDULE' | translate }}
         </h2>
-        <span class="text-[9px] font-bold text-[#5c5f63]/30 dark:text-gray-700 italic">
+        <span class="text-[9px] font-bold text-[#5c5f63]/30 dark:text-gray-700">
           {{ 'CLIENT.FINANCIALS.CURRENCY_NOTE' | translate }}
         </span>
       </div>
@@ -168,7 +221,24 @@
                 class="text-xl font-black text-[#68ab1f]"
                 style="font-family: 'Alexandria', sans-serif"
               >
-                ${{ inst.amount | number }}
+                {{ inst.amount | number }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="inline-block align-middle -mt-0.5"
+                >
+                  <path d="m20 19.5-5.5 1.2" />
+                  <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+                  <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+                  <path d="M20 10 4 13.5" />
+                </svg>
               </p>
               <div class="flex items-center gap-1.5 justify-end mt-0.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f]"></span>

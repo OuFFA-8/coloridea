@@ -7,13 +7,39 @@
     class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#fa8728] via-[#f97316] to-transparent"
   ></div>
 
+  <!-- Pattern background (bottom half) -->
+  @if (pattern) {
+    <div
+      class="absolute inset-0 top-[45%] pointer-events-none z-0"
+      [style.backgroundImage]="'url(' + pattern + ')'"
+      style="background-size: cover; background-position: center"
+    >
+      <!-- Fade from top -->
+      <div
+        class="absolute inset-0"
+        style="
+          background: linear-gradient(
+            to bottom,
+            #111827 0%,
+            rgba(17, 24, 39, 0.6) 60%,
+            rgba(17, 24, 39, 0.5) 100%
+          );
+        "
+      ></div>
+    </div>
+  }
+
   <!-- Logo -->
   <div class="px-6 py-6">
-    <img
-      [src]="isDark ? '/images/logo-10.png' : '/images/logo-9.png'"
-      alt="ColorIdea"
-      class="h-8 w-auto object-contain"
-    />
+    @if (clientLogo) {
+      <img [src]="clientLogo" alt="logo" class="h-16 w-auto max-w-[160px] object-contain" />
+    } @else {
+      <img
+        [src]="isDark ? '/images/logo-10.png' : '/images/logo-9.png'"
+        alt="ColorIdea"
+        class="h-8 w-auto object-contain"
+      />
+    }
   </div>
 
   <div class="mx-5 h-px bg-[#444547]/20 mb-3"></div>
@@ -26,7 +52,7 @@
   </p>
 
   <!-- Nav -->
-  <nav class="flex-1 px-3 space-y-0.5">
+  <nav class="flex-1 px-3 space-y-0.5 relative z-10">
     @if (projectId) {
       @for (link of projectLinks; track link.label) {
         <a
@@ -130,63 +156,53 @@
     </a>
   </nav>
 
-  <!-- Pattern image -->
-  @if (pattern) {
-    <div
-      class="mx-3 mb-3 rounded-2xl overflow-hidden border border-[#444547]/20"
-      style="height: 120px"
-    >
-      <img [src]="pattern" alt="pattern" class="w-full h-full object-cover opacity-70" />
-    </div>
-  }
-
   <!-- Current Project + Logout -->
-  <div class="p-3 border-t border-[#444547]/20">
-    @if (projectName) {
-      <div
-        class="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 hover:bg-[#fa8728]/5 transition-colors duration-300 cursor-default"
-      >
+  <div class="p-3 border-t border-[#444547]/20 relative z-10">
+    <div class="relative z-10">
+      @if (projectName) {
         <div
-          class="w-9 h-9 rounded-xl flex-shrink-0 bg-[#fa8728]/15 border border-[#fa8728]/20 flex items-center justify-center"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 hover:bg-[#fa8728]/5 transition-colors duration-300 cursor-default"
         >
-          <svg class="w-4 h-4 text-[#fa8728]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-            />
-          </svg>
-        </div>
-        <div class="flex flex-col min-w-0">
-          <span
-            class="text-[8px] font-black uppercase tracking-[0.25em] text-[#fa8728]/70"
-            style="font-family: 'Alexandria', sans-serif"
+          <div
+            class="w-9 h-9 rounded-xl flex-shrink-0 bg-[#fa8728]/15 border border-[#fa8728]/20 flex items-center justify-center"
           >
-            {{ 'SIDEBAR.CURRENT_PROJECT' | translate }}
-          </span>
-          <span
-            class="text-xs font-black text-[#fa8728] truncate"
-            style="font-family: 'Alexandria', sans-serif"
-            >{{ projectName }}</span
-          >
+            <svg
+              class="w-4 h-4 text-[#fa8728]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-[8px] font-black uppercase tracking-[0.25em] text-[#fa8728]/70">
+              {{ 'SIDEBAR.CURRENT_PROJECT' | translate }}
+            </span>
+            <span class="text-xs font-black text-[#fa8728] truncate">{{ projectName }}</span>
+          </div>
         </div>
-      </div>
-    }
+      }
 
-    <button
-      (click)="logout()"
-      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-black text-rose-400 border-none bg-transparent transition-all duration-300 hover:bg-rose-500/10 hover:text-rose-400"
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-        />
-      </svg>
-      {{ 'NAV.LOGOUT' | translate }}
-    </button>
+      <button
+        (click)="logout()"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-black text-rose-400 border-none bg-transparent transition-all duration-300 hover:bg-rose-500/10 hover:text-rose-400"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          />
+        </svg>
+        {{ 'NAV.LOGOUT' | translate }}
+      </button>
+    </div>
   </div>
 </aside>

@@ -8,7 +8,14 @@ import {
   makeStateKey,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { UsersService } from '../../../core/services/users-service/users-service';
@@ -22,7 +29,7 @@ const CLIENTS_KEY = makeStateKey<any[]>('clients');
 @Component({
   selector: 'app-client-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, TranslateModule],
   templateUrl: './client-details.html',
   styleUrl: './client-details.css',
 })
@@ -30,11 +37,24 @@ export class ClientDetails implements OnInit {
   client: any = null;
   isLoading = true;
   isSaving = false;
+  isEditing = false;
   baseUrl = environment.baseUrl;
+
   showProjectModal = false;
+  showEditModal = false;
+
   projectForm: FormGroup;
   projectPhotoFile: File | null = null;
   projectPhotoPreview: string | null = null;
+
+  // Edit modal data
+  editData = { name: '', email: '' };
+  editLogoFile: File | null = null;
+  editPhotoFile: File | null = null;
+  editPatternFile: File | null = null;
+  editLogoPreview: string | null = null;
+  editPhotoPreview: string | null = null;
+  editPatternPreview: string | null = null;
 
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
@@ -152,6 +172,65 @@ export class ClientDetails implements OnInit {
       this.projectPhotoFile = null;
       this.projectPhotoPreview = null;
     }
+  }
+
+  toggleEditModal() {
+    this.showEditModal = !this.showEditModal;
+    if (this.showEditModal) {
+      this.editData = { name: this.client.name, email: this.client.email };
+      this.editLogoFile = this.editPhotoFile = this.editPatternFile = null;
+      this.editLogoPreview = this.editPhotoPreview = this.editPatternPreview = null;
+    }
+  }
+
+  onEditFile(event: any, type: 'logo' | 'photo' | 'pattern') {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      if (type === 'logo') {
+        this.editLogoFile = file;
+        this.editLogoPreview = result;
+      }
+      if (type === 'photo') {
+        this.editPhotoFile = file;
+        this.editPhotoPreview = result;
+      }
+      if (type === 'pattern') {
+        this.editPatternFile = file;
+        this.editPatternPreview = result;
+      }
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  saveEdit() {
+    this.isEditing = true;
+    this.loadingService.show('Saving...');
+    const formData = new FormData();
+    formData.append('name', this.editData.name);
+    formData.append('email', this.editData.email);
+    if (this.editLogoFile) formData.append('logo', this.editLogoFile);
+    if (this.editPhotoFile) formData.append('photo', this.editPhotoFile);
+    if (this.editPatternFile) formData.append('pattern', this.editPatternFile);
+
+    this.usersService.updateUser(this.client._id, formData).subscribe({
+      next: (res: any) => {
+        this.isEditing = false;
+        this.loadingService.hide();
+        this.client = { ...this.client, ...res.data };
+        this.toggleEditModal();
+        this.cdr.detectChanges();
+        this.alert.success('تم تحديث بيانات العميل بنجاح');
+      },
+      error: (err: any) => {
+        this.isEditing = false;
+        this.loadingService.hide();
+        this.alert.error(err.error?.message || 'فشل التحديث');
+      },
+    });
   }
 
   saveProject() {

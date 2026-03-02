@@ -22,7 +22,8 @@ export class ClientSidebar implements OnInit, OnDestroy {
   isDark = true;
   projectId = '';
   projectName = '';
-  pattern = ''; // باترن السايدبار بتاع العميل
+  pattern = '';
+  clientLogo = '';
 
   get projectLinks() {
     return [
@@ -81,6 +82,9 @@ export class ClientSidebar implements OnInit, OnDestroy {
         const user = JSON.parse(stored);
         if (user?.pattern) {
           this.pattern = `${environment.baseUrl}/${user.pattern.replace(/\\/g, '/')}`;
+        }
+        if (user?.logo) {
+          this.clientLogo = `${environment.baseUrl}/${user.logo.replace(/\\/g, '/')}`;
         }
       } catch {}
     }
