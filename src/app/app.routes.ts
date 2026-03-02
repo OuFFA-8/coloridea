@@ -2,13 +2,10 @@ import { Deliverables } from './features/client/deliverables/deliverables';
 import { Projects } from './features/admin/projects/projects';
 import { adminGuard } from './core/guards/admin-guard';
 import { Routes } from '@angular/router';
-
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { ClientLayout } from './layouts/client-layout/client-layout';
 import { AdminLayout } from './layouts/admin-layout/admin-layout';
-
 import { Login } from './features/auth/login/login';
-
 import { Clients } from './features/admin/clients/clients';
 import { authGuard } from './core/guards/auth-guard';
 import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
@@ -36,7 +33,13 @@ export const routes: Routes = [
     ],
   },
 
-  // ===== SELECT PROJECT (standalone - بدون ClientLayout) =====
+  // reset-password برا الجارد — الإيميل بيجي بـ /client/reset-password/:token
+  {
+    path: 'client/reset-password/:token',
+    component: AuthLayout,
+    children: [{ path: '', component: ResetPassword }],
+  },
+
   {
     path: 'select-project',
     component: ProjectSelect,
@@ -52,7 +55,6 @@ export const routes: Routes = [
       { path: 'profile', component: Profile },
       { path: 'verify-email/:token', component: VerifyEmail },
       { path: 'files', component: Files },
-      { path: 'reset-password/:token', component: ResetPassword },
       {
         path: 'projects/:id',
         children: [
@@ -61,7 +63,6 @@ export const routes: Routes = [
           { path: 'financials', component: Financials },
         ],
       },
-
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
     ],
   },
