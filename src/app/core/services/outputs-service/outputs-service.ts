@@ -30,4 +30,12 @@ export class OutputsService {
   addItem(outputId: string, data: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/output-items/${outputId}`, data);
   }
+
+  updateItem(itemId: string, data: FormData): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/output-items/${itemId}`, data);
+  }
+
+  deleteItem(itemId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/output-items/${itemId}`);
+  }
 }

@@ -50,4 +50,8 @@ export class ProjectsService {
   deleteInstallment(installmentId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${installmentId}/installments`);
   }
+
+  updateFinancialTotal(projectId: string, totalAmount: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${projectId}/financial`, { totalAmount });
+  }
 }

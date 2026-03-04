@@ -119,7 +119,6 @@
             class="text-2xl font-black text-[#444547] dark:text-white"
             style="font-family: 'Alexandria', sans-serif"
           >
-            {{ project.financialDetails?.totalAmount || 0 }}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
@@ -135,8 +134,8 @@
               <path d="m20 19.5-5.5 1.2" />
               <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
               <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-              <path d="M20 10 4 13.5" />
-            </svg>
+              <path d="M20 10 4 13.5" /></svg
+            >{{ project.financialDetails?.totalAmount || 0 }}
           </p>
         </div>
         <div>
@@ -147,7 +146,6 @@
             class="text-2xl font-black text-[#68ab1f]"
             style="font-family: 'Alexandria', sans-serif"
           >
-            {{ paidAmount }}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
@@ -163,8 +161,8 @@
               <path d="m20 19.5-5.5 1.2" />
               <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
               <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-              <path d="M20 10 4 13.5" />
-            </svg>
+              <path d="M20 10 4 13.5" /></svg
+            >{{ paidAmount }}
           </p>
         </div>
         <div>
@@ -175,7 +173,6 @@
             class="text-2xl font-black text-rose-500 dark:text-rose-400"
             style="font-family: 'Alexandria', sans-serif"
           >
-            {{ remainingAmount }}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
@@ -191,8 +188,8 @@
               <path d="m20 19.5-5.5 1.2" />
               <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
               <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-              <path d="M20 10 4 13.5" />
-            </svg>
+              <path d="M20 10 4 13.5" /></svg
+            >{{ remainingAmount }}
           </p>
         </div>
         <div>
@@ -228,7 +225,7 @@
           <div class="flex items-start gap-3">
             <div class="w-0.5 self-stretch bg-[#fa8728]/40 rounded-full flex-shrink-0"></div>
             <p
-              class="text-sm text-[#5c5f63] dark:text-gray-400 leading-relaxed"
+              class="text-sm text-[#5c5f63] dark:text-gray-400 italic leading-relaxed"
               style="font-family: 'Alexandria', sans-serif"
             >
               "{{ project.description }}"
@@ -331,30 +328,65 @@
                 <div class="grid grid-cols-3 gap-2 mb-4">
                   @for (item of output.items; track item._id) {
                     <div
-                      (click)="openItemPreview(item)"
-                      class="group/item relative rounded-xl overflow-hidden cursor-pointer aspect-square border border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/40 transition-colors duration-300 bg-[#fff1e6] dark:bg-[#444547]/10"
+                      class="group/item relative rounded-xl overflow-hidden border border-[#e6d5c3] dark:border-[#444547]/30 bg-[#fff1e6] dark:bg-[#444547]/10"
                     >
-                      @if (item.photo) {
-                        <img
-                          [src]="getPhotoUrl(item.photo)"
-                          [alt]="item.name"
-                          class="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500"
-                          (error)="$any($event.target).style.display = 'none'"
-                        />
-                      } @else {
-                        <div
-                          class="w-full h-full flex items-center justify-center opacity-20 text-xl"
-                        >
-                          🎬
-                        </div>
-                      }
+                      <!-- Thumbnail -->
                       <div
-                        class="absolute inset-0 bg-[#fa8728]/0 group-hover/item:bg-[#fa8728]/25 transition-all duration-300 flex items-center justify-center"
+                        (click)="openItemPreview(item)"
+                        class="relative aspect-square cursor-pointer overflow-hidden"
                       >
-                        <span
-                          class="text-white text-base opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"
-                          >▶</span
+                        @if (item.photo) {
+                          <img
+                            [src]="getPhotoUrl(item.photo)"
+                            [alt]="item.name"
+                            class="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500"
+                            (error)="$any($event.target).style.display = 'none'"
+                          />
+                        } @else {
+                          <div
+                            class="w-full h-full flex items-center justify-center opacity-20 text-xl"
+                          >
+                            🎬
+                          </div>
+                        }
+                        <div
+                          class="absolute inset-0 bg-[#fa8728]/0 group-hover/item:bg-[#fa8728]/20 transition-all duration-300 flex items-center justify-center"
                         >
+                          <span
+                            class="text-white text-base opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"
+                            >▶</span
+                          >
+                        </div>
+                      </div>
+                      <!-- Info always visible -->
+                      <div class="px-2 py-1.5 border-t border-[#e6d5c3] dark:border-[#444547]/30">
+                        <p class="text-[9px] font-black text-[#444547] dark:text-white truncate">
+                          {{ item.name }}
+                        </p>
+                        @if (item.date) {
+                          <p class="text-[8px] text-[#5c5f63]/50 dark:text-gray-500 mt-0.5">
+                            {{ item.date | date: 'dd MMM yyyy' }}
+                          </p>
+                        }
+                      </div>
+                      <!-- Edit / Delete buttons -->
+                      <div
+                        class="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200"
+                      >
+                        <button
+                          (click)="openEditItemModal(item, output)"
+                          type="button"
+                          class="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] cursor-pointer border-none bg-white/90 dark:bg-[#1c1c1c]/90 text-[#fa8728] hover:bg-[#fa8728] hover:text-white transition-colors"
+                        >
+                          ✏
+                        </button>
+                        <button
+                          (click)="deleteItem(item, output)"
+                          type="button"
+                          class="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] cursor-pointer border-none bg-white/90 dark:bg-[#1c1c1c]/90 text-rose-400 hover:bg-rose-500 hover:text-white transition-colors"
+                        >
+                          ✕
+                        </button>
                       </div>
                     </div>
                   }
@@ -383,12 +415,20 @@
               {{ 'CLIENT.FINANCIALS.PAYMENT_SCHEDULE' | translate }}
             </h2>
           </div>
-          <button
-            (click)="openAddInstallmentModal()"
-            class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer border-none transition-all duration-300 text-white bg-[#68ab1f] hover:bg-[#5a9419] shadow-md shadow-[#68ab1f]/20 active:scale-95"
-          >
-            + {{ 'COMMON.ADD' | translate }}
-          </button>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <button
+              (click)="openEditTotalModal()"
+              class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer border-none transition-all duration-300 text-[#68ab1f] bg-[#68ab1f]/10 hover:bg-[#68ab1f]/20 active:scale-95"
+            >
+              ✏ Total
+            </button>
+            <button
+              (click)="openAddInstallmentModal()"
+              class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer border-none transition-all duration-300 text-white bg-[#68ab1f] hover:bg-[#5a9419] shadow-md shadow-[#68ab1f]/20 active:scale-95"
+            >
+              + {{ 'COMMON.ADD' | translate }}
+            </button>
+          </div>
         </div>
 
         <div class="grid grid-cols-3 gap-4 mb-5">
@@ -472,7 +512,25 @@
                 <path d="M20 10 4 13.5" /></svg
               >{{ paidAmount }} paid</span
             >
-            <span class="text-[9px] font-bold text-rose-400">${{ remainingAmount }} remaining</span>
+            <span class="text-[9px] font-bold text-rose-400"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="inline-block align-middle -mt-0.5"
+              >
+                <path d="m20 19.5-5.5 1.2" />
+                <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+                <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+                <path d="M20 10 4 13.5" /></svg
+              >{{ remainingAmount }} remaining</span
+            >
           </div>
         </div>
 
@@ -522,8 +580,7 @@
               </div>
               <div class="flex items-center gap-3">
                 <span class="text-base font-black text-[#68ab1f]"
-                  >{{ inst.amount
-                  }}<svg
+                  ><svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="14"
                     height="14"
@@ -539,7 +596,8 @@
                     <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
                     <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
                     <path d="M20 10 4 13.5" /></svg
-                ></span>
+                  >{{ inst.amount }}</span
+                >
                 <div
                   class="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300"
                 >
@@ -794,6 +852,13 @@
               >
               <input formControlName="link" type="url" placeholder="https://..." class="ci-input" />
             </div>
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+                >Date</label
+              >
+              <input formControlName="date" type="date" class="ci-input" />
+            </div>
             <div
               class="relative h-24 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e]"
             >
@@ -828,6 +893,136 @@
                 class="ci-btn-primary flex-1"
               >
                 {{ isSaving ? ('COMMON.LOADING' | translate) : ('COMMON.ADD' | translate) }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
+    <!-- ===== EDIT ITEM MODAL ===== -->
+    @if (showEditItemModal) {
+      <div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div
+          class="fixed inset-0 bg-[#0e0e0e]/75 backdrop-blur-md"
+          (click)="showEditItemModal = false"
+        ></div>
+        <div
+          class="ci-modal relative w-full max-w-md rounded-3xl p-8 shadow-2xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
+        >
+          <h2 class="text-xl font-black text-[#444547] dark:text-white mb-1">Edit Item</h2>
+          <p class="text-[9px] font-black uppercase tracking-widest text-[#fa8728] mb-6">
+            {{ selectedItem?.name }}
+          </p>
+          <form [formGroup]="editItemForm" class="space-y-4">
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+                >Item Name</label
+              >
+              <input formControlName="name" type="text" class="ci-input" />
+            </div>
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+                >Video Link</label
+              >
+              <input formControlName="link" type="url" placeholder="https://..." class="ci-input" />
+            </div>
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+                >Date</label
+              >
+              <input formControlName="date" type="date" class="ci-input" />
+            </div>
+            <div
+              class="relative h-24 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e]"
+            >
+              @if (itemPhotoPreview) {
+                <img [src]="itemPhotoPreview" class="w-full h-full object-cover" />
+              } @else if (selectedItem?.photo) {
+                <img [src]="getPhotoUrl(selectedItem.photo)" class="w-full h-full object-cover" />
+              } @else {
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/30">
+                    🖼️ Thumbnail (Optional)
+                  </p>
+                </div>
+              }
+              <input
+                type="file"
+                (change)="onItemPhotoSelected($event)"
+                accept="image/*"
+                class="absolute inset-0 opacity-0 cursor-pointer"
+              />
+            </div>
+            <div class="flex gap-3 pt-2">
+              <button
+                type="button"
+                (click)="showEditItemModal = false"
+                class="ci-btn-secondary flex-1"
+              >
+                {{ 'COMMON.CANCEL' | translate }}
+              </button>
+              <button
+                type="button"
+                (click)="saveEditItem()"
+                [disabled]="editItemForm.invalid || isSaving"
+                class="ci-btn-primary flex-1"
+              >
+                {{ isSaving ? ('COMMON.LOADING' | translate) : 'Save' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
+    <!-- ===== EDIT TOTAL AMOUNT MODAL ===== -->
+    @if (showEditTotalModal) {
+      <div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div
+          class="fixed inset-0 bg-[#0e0e0e]/75 backdrop-blur-md"
+          (click)="showEditTotalModal = false"
+        ></div>
+        <div
+          class="ci-modal relative w-full max-w-sm rounded-3xl p-8 shadow-2xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
+        >
+          <h2 class="text-xl font-black text-[#444547] dark:text-white mb-1">Total Amount</h2>
+          <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-6">
+            تعديل المبلغ الكلي للعقد
+          </p>
+          <form [formGroup]="totalAmountForm" class="space-y-4">
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+              >
+                {{ 'CLIENT.FINANCIALS.TOTAL_CONTRACT' | translate }}
+              </label>
+              <input
+                formControlName="totalAmount"
+                type="number"
+                min="1"
+                placeholder="0.00"
+                class="ci-input ci-input-green"
+              />
+            </div>
+            <div class="flex gap-3 pt-2">
+              <button
+                type="button"
+                (click)="showEditTotalModal = false"
+                class="ci-btn-secondary flex-1"
+              >
+                {{ 'COMMON.CANCEL' | translate }}
+              </button>
+              <button
+                type="button"
+                (click)="saveEditTotal()"
+                [disabled]="totalAmountForm.invalid || isSaving"
+                class="ci-btn-primary flex-1 !bg-[#68ab1f] hover:!bg-[#5a9419] !shadow-[#68ab1f]/30"
+              >
+                {{ isSaving ? ('COMMON.LOADING' | translate) : 'Save' }}
               </button>
             </div>
           </form>

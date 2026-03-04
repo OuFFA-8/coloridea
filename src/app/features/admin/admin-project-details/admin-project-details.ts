@@ -31,9 +31,11 @@ export class AdminProjectDetails implements OnInit {
   showAddOutputModal = false;
   showEditOutputModal = false;
   showAddItemModal = false;
+  showEditItemModal = false;
   showItemPreviewModal = false;
   showAddInstallmentModal = false;
   showEditInstallmentModal = false;
+  showEditTotalModal = false;
 
   selectedOutput: any = null;
   selectedItem: any = null;
@@ -43,7 +45,9 @@ export class AdminProjectDetails implements OnInit {
   outputForm: FormGroup;
   editOutputForm: FormGroup;
   itemForm: FormGroup;
+  editItemForm: FormGroup;
   installmentForm: FormGroup;
+  totalAmountForm: FormGroup;
 
   projectPhotoFile: File | null = null;
   projectPhotoPreview: string | null = null;
@@ -71,11 +75,20 @@ export class AdminProjectDetails implements OnInit {
     });
     this.itemForm = this.fb.group({
       name: ['', Validators.required],
-      link: ['', Validators.required],
+      link: [''],
+      date: [''],
+    });
+    this.editItemForm = this.fb.group({
+      name: ['', Validators.required],
+      link: [''],
+      date: [''],
     });
     this.installmentForm = this.fb.group({
       amount: [null, [Validators.required, Validators.min(1)]],
       createdAt: ['', Validators.required],
+    });
+    this.totalAmountForm = this.fb.group({
+      totalAmount: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
@@ -280,10 +293,11 @@ export class AdminProjectDetails implements OnInit {
     this.loadingService.show('Adding item...');
     const formData = new FormData();
     formData.append('name', this.itemForm.value.name);
-    formData.append('link', this.itemForm.value.link);
+    if (this.itemForm.value.link) formData.append('link', this.itemForm.value.link);
+    if (this.itemForm.value.date) formData.append('date', this.itemForm.value.date);
     if (this.itemPhotoFile) formData.append('photo', this.itemPhotoFile);
     this.outputsService.addItem(this.selectedOutput._id, formData).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         const output = this.outputs.find((o) => o._id === this.selectedOutput._id);
         if (output) output.items.push(res.data);
         this.showAddItemModal = false;
@@ -292,12 +306,106 @@ export class AdminProjectDetails implements OnInit {
         this.cdr.detectChanges();
         this.alert.success('Item added successfully');
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSaving = false;
         this.loadingService.hide();
         this.alert.error(err.error?.message || 'Failed to add item');
       },
     });
+  }
+
+  openEditItemModal(item: any, output: any) {
+    this.selectedItem = item;
+    this.selectedOutput = output;
+    this.editItemForm.patchValue({
+      name: item.name,
+      link: item.link || '',
+      date: item.date?.split('T')[0] || '',
+    });
+    this.itemPhotoFile = null;
+    this.itemPhotoPreview = null;
+    this.showEditItemModal = true;
+  }
+
+  saveEditItem() {
+    if (this.editItemForm.invalid) return;
+    this.isSaving = true;
+    this.loadingService.show('Updating item...');
+    const formData = new FormData();
+    formData.append('name', this.editItemForm.value.name);
+    if (this.editItemForm.value.link) formData.append('link', this.editItemForm.value.link);
+    if (this.editItemForm.value.date) formData.append('date', this.editItemForm.value.date);
+    if (this.itemPhotoFile) formData.append('photo', this.itemPhotoFile);
+    this.outputsService.updateItem(this.selectedItem._id, formData).subscribe({
+      next: (res: any) => {
+        const output = this.outputs.find((o) => o._id === this.selectedOutput._id);
+        if (output) {
+          const idx = output.items.findIndex((i: any) => i._id === this.selectedItem._id);
+          if (idx !== -1) output.items[idx] = res.data;
+        }
+        this.showEditItemModal = false;
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.cdr.detectChanges();
+        this.alert.success('Item updated successfully');
+      },
+      error: (err: any) => {
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.alert.error(err.error?.message || 'Failed to update item');
+      },
+    });
+  }
+
+  deleteItem(item: any, output: any) {
+    this.alert.confirm('Delete this item?').then((result: any) => {
+      if (result.isConfirmed) {
+        this.loadingService.show('Deleting item...');
+        this.outputsService.deleteItem(item._id).subscribe({
+          next: () => {
+            const o = this.outputs.find((o) => o._id === output._id);
+            if (o) o.items = o.items.filter((i: any) => i._id !== item._id);
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+            this.alert.success('Item deleted');
+          },
+          error: (err: any) => {
+            this.loadingService.hide();
+            this.alert.error(err.error?.message || 'Failed to delete item');
+          },
+        });
+      }
+    });
+  }
+
+  openEditTotalModal() {
+    this.totalAmountForm.patchValue({
+      totalAmount: this.project.financialDetails?.totalAmount || 0,
+    });
+    this.showEditTotalModal = true;
+  }
+
+  saveEditTotal() {
+    if (this.totalAmountForm.invalid) return;
+    this.isSaving = true;
+    this.loadingService.show('Updating total...');
+    this.projectsService
+      .updateFinancialTotal(this.project._id, this.totalAmountForm.value.totalAmount)
+      .subscribe({
+        next: (res: any) => {
+          this.project.financialDetails = res.data;
+          this.showEditTotalModal = false;
+          this.isSaving = false;
+          this.loadingService.hide();
+          this.cdr.detectChanges();
+          this.alert.success('Total amount updated');
+        },
+        error: (err: any) => {
+          this.isSaving = false;
+          this.loadingService.hide();
+          this.alert.error(err.error?.message || 'Failed to update total');
+        },
+      });
   }
 
   openItemPreview(item: any) {

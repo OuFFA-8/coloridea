@@ -65,6 +65,25 @@ export class Deliverables implements OnInit {
   getSafeUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
+
+  getEmbedUrl(url: string): SafeResourceUrl {
+    let embedUrl = url;
+    // Google Drive: /file/d/ID/view → /file/d/ID/preview
+    if (url.includes('drive.google.com')) {
+      embedUrl = url.replace('/view', '/preview').replace('/edit', '/preview');
+    }
+    // YouTube: watch?v=ID → embed/ID
+    if (url.includes('youtube.com/watch')) {
+      const id = new URL(url).searchParams.get('v');
+      if (id) embedUrl = `https://www.youtube.com/embed/${id}`;
+    }
+    // YouTube short: youtu.be/ID → embed/ID
+    if (url.includes('youtu.be/')) {
+      const id = url.split('youtu.be/')[1]?.split('?')[0];
+      if (id) embedUrl = `https://www.youtube.com/embed/${id}`;
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+  }
   openItem(item: any) {
     this.selectedItem = item;
   }
