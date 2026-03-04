@@ -33,7 +33,6 @@ export const routes: Routes = [
     ],
   },
 
-  // reset-password برا الجارد — الإيميل بيجي بـ /client/reset-password/:token
   {
     path: 'client/reset-password/:token',
     component: AuthLayout,
