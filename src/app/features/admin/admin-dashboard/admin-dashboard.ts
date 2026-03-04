@@ -28,6 +28,7 @@ export class AdminDashboard implements OnInit {
   latestProjects: any[] = [];
   pieData: number[] = [];
   lineData: number[] = [];
+  lineLabels: string[] = [];
 
   constructor(
     private usersService: UsersService,
@@ -75,12 +76,33 @@ export class AdminDashboard implements OnInit {
   buildLineData(projects: any[]): number[] {
     const months: number[] = new Array(6).fill(0);
     const now = new Date();
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
     projects.forEach((p: any) => {
       const date = new Date(p.createdAt);
       const diff =
         (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
       if (diff >= 0 && diff < 6) months[5 - diff]++;
     });
+
+    this.lineLabels = Array.from({ length: 6 }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+      return monthNames[d.getMonth()];
+    });
+
     return months;
   }
 

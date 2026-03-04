@@ -23,6 +23,7 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
   @Input({ required: true }) title!: string;
   @Input({ required: true }) type!: 'doughnut' | 'line';
   @Input({ required: true }) data!: number[];
+  @Input() labels: string[] = [];
 
   @ViewChild('chartCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -120,7 +121,7 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
         },
       });
     } else {
-      const labels = this.data?.map((_, i) => `Output ${i + 1}`) || [];
+      const labels = this.data?.map((_, i) => this.labels[i] || `Output ${i + 1}`) || [];
       this.chart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -180,7 +181,7 @@ export class ChartCard implements OnInit, AfterViewInit, OnChanges {
     if (this.type === 'doughnut') {
       this.chart.data.datasets[0].data = this.data;
     } else {
-      this.chart.data.labels = this.data?.map((_, i) => `Output ${i + 1}`);
+      this.chart.data.labels = this.data?.map((_, i) => this.labels[i] || `Output ${i + 1}`);
       this.chart.data.datasets[0].data = this.data;
     }
     this.chart.update('active');
