@@ -4,6 +4,7 @@ import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angu
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
+import { AuthServices } from '../../../core/services/auth-services/auth-services';
 
 @Component({
   selector: 'app-admin-verify-email',
@@ -23,6 +24,7 @@ export class AdminVerifyEmail implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
+    private authServices: AuthServices,
   ) {}
 
   ngOnInit() {
@@ -37,8 +39,9 @@ export class AdminVerifyEmail implements OnInit {
       this.http.patch(`${environment.baseUrl}/api/v1/users/email/verify`, { token }).subscribe({
         next: () => {
           this.state = 'success';
+          this.authServices.logout();
           this.cdr.detectChanges();
-          setTimeout(() => this.router.navigate(['/admin/settings']), 3000);
+          setTimeout(() => this.router.navigate(['/auth/login']), 3000);
         },
         error: (err: any) => {
           this.state = 'error';
