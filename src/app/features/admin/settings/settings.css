@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -64,6 +66,27 @@ body {
 /* ============================================
    CI DESIGN SYSTEM — plain CSS (no @layer)
    ============================================ */
+
+/* Reset browser input defaults */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='date'],
+input[type='tel'],
+textarea,
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
 
 .ci-input {
   display: block !important;
