@@ -48,7 +48,8 @@ export class ClientDetails implements OnInit {
   projectPhotoPreview: string | null = null;
 
   // Edit modal data
-  editData = { name: '', email: '' };
+  editData = { name: '', email: '', password: '' };
+  showEditPassword = false;
   editLogoFile: File | null = null;
   editPhotoFile: File | null = null;
   editPatternFile: File | null = null;
@@ -177,7 +178,8 @@ export class ClientDetails implements OnInit {
   toggleEditModal() {
     this.showEditModal = !this.showEditModal;
     if (this.showEditModal) {
-      this.editData = { name: this.client.name, email: this.client.email };
+      this.editData = { name: this.client.name, email: this.client.email, password: '' };
+      this.showEditPassword = false;
       this.editLogoFile = this.editPhotoFile = this.editPatternFile = null;
       this.editLogoPreview = this.editPhotoPreview = this.editPatternPreview = null;
     }
@@ -212,6 +214,7 @@ export class ClientDetails implements OnInit {
     const formData = new FormData();
     formData.append('name', this.editData.name);
     formData.append('email', this.editData.email);
+    if (this.editData.password) formData.append('password', this.editData.password);
     if (this.editLogoFile) formData.append('logo', this.editLogoFile);
     if (this.editPhotoFile) formData.append('photo', this.editPhotoFile);
     if (this.editPatternFile) formData.append('pattern', this.editPatternFile);

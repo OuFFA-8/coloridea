@@ -66,6 +66,10 @@ export class Deliverables implements OnInit {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
+  isDriveFolder(url: string): boolean {
+    return url.includes('drive.google.com/drive') || url.includes('/folders/');
+  }
+
   getEmbedUrl(url: string): SafeResourceUrl {
     let embedUrl = url;
     // Google Drive: /file/d/ID/view → /file/d/ID/preview
