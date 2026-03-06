@@ -20,6 +20,7 @@ import { ForgotPassword } from './features/auth/forgot-password/forgot-password'
 import { ResetPassword } from './features/auth/reset-password/reset-password';
 import { VerifyEmail } from './features/client/verify-email/verify-email';
 import { ProjectSelect } from './features/client/project-select/project-select';
+import { AdminVerifyEmail } from './features/admin/admin-verify-email/admin-verify-email';
 
 export const routes: Routes = [
   // ===== AUTH =====
@@ -79,6 +80,7 @@ export const routes: Routes = [
       { path: 'projects', component: Projects },
       { path: 'projects/:id', component: AdminProjectDetails },
       { path: 'settings', component: Settings },
+      { path: 'verify-email/:token', component: AdminVerifyEmail },
     ],
   },
 
