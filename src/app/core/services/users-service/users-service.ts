@@ -8,6 +8,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class UsersService {
   private apiUrl = `${environment.baseUrl}/api/v1/users`;
+  private adminApiUrl = `${environment.baseUrl}/api/v1/admin`;
 
   constructor(private http: HttpClient) {}
 
@@ -23,8 +24,14 @@ export class UsersService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
+  // Client: PATCH /users/me — name, photo, logo, pattern
   updateMe(data: FormData): Observable<any> {
     return this.http.patch(`${this.apiUrl}/me`, data);
+  }
+
+  // Admin: PATCH /admin/me — name, photo
+  updateAdminMe(data: FormData): Observable<any> {
+    return this.http.patch(`${this.adminApiUrl}/me`, data);
   }
 
   updateUser(id: string, data: FormData): Observable<any> {

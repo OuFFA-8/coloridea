@@ -1,429 +1,469 @@
-<div
-  class="h-full w-full flex flex-col p-6 box-border transition-colors duration-500 bg-slate-50 text-slate-600 dark:bg-[#0b0f1a] dark:text-gray-300 overflow-hidden"
->
-  <!-- Header -->
-  <div class="flex-shrink-0 mb-8">
-    <h1 class="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
-      System <span class="text-blue-600 dark:text-blue-500">Configuration</span>
-    </h1>
-    <p
-      class="text-slate-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-1"
-    >
-      Control your studio environment
-    </p>
+<div class="min-h-screen bg-[#fff1e6] dark:bg-[#0e0e0e] transition-colors duration-500">
+  <!-- ===== HERO ===== -->
+  <div class="relative h-44 overflow-hidden bg-gradient-to-br from-[#444547] to-[#1c1c1c]">
+    <div
+      class="absolute inset-0 opacity-[0.04]"
+      style="
+        background-image: repeating-linear-gradient(
+          45deg,
+          #fa8728 0,
+          #fa8728 1px,
+          transparent 0,
+          transparent 50%
+        );
+        background-size: 18px 18px;
+      "
+    ></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
   </div>
 
-  <div class="flex-1 flex gap-6 min-h-0">
-    <!-- Sidebar Tabs -->
-    <div class="w-56 flex-shrink-0 space-y-1.5">
-      @for (tab of tabs; track tab.id) {
+  <div class="max-w-3xl mx-auto px-6">
+    <!-- ===== AVATAR + NAME ===== -->
+    <div class="flex items-end justify-between -mt-14 mb-8">
+      <div class="relative flex-shrink-0">
+        <div
+          class="w-24 h-24 rounded-3xl border-4 border-[#fff1e6] dark:border-[#0e0e0e] overflow-hidden shadow-xl bg-white dark:bg-[#1c1c1c]"
+        >
+          @if (photoPreview) {
+            <img [src]="photoPreview" class="w-full h-full object-cover" />
+          } @else if (user?.photo) {
+            <img
+              [src]="getPhotoUrl(user.photo)"
+              class="w-full h-full object-cover"
+              (error)="$any($event.target).style.display = 'none'"
+            />
+          } @else {
+            <div class="w-full h-full flex items-center justify-center bg-[#fa8728]/10">
+              <span class="text-4xl font-black text-[#fa8728]">{{ user?.name?.charAt(0) }}</span>
+            </div>
+          }
+        </div>
+        <label
+          class="absolute -bottom-2 -right-2 w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer shadow-lg bg-[#fa8728] hover:bg-[#f97316] transition-colors"
+        >
+          <span class="text-white text-sm">📷</span>
+          <input type="file" class="hidden" accept="image/*" (change)="onPhotoSelected($event)" />
+        </label>
+      </div>
+
+      <div class="ml-4 mb-2 flex-1 min-w-0">
+        <h1
+          class="text-2xl font-black text-[#444547] dark:text-white truncate"
+          style="font-family: 'Alexandria', sans-serif"
+        >
+          {{ user?.name }}
+        </h1>
+        <p class="text-sm text-[#5c5f63]/50 dark:text-gray-500 truncate">{{ user?.email }}</p>
+        <span
+          class="inline-block mt-1 px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-[#fa8728]/10 text-[#fa8728] border border-[#fa8728]/20"
+        >
+          Super Admin
+        </span>
+      </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    @if (successMsg) {
+      <div
+        class="mb-6 px-5 py-4 rounded-2xl flex items-center gap-3 bg-[#68ab1f]/10 border border-[#68ab1f]/25"
+      >
+        <span class="text-[#68ab1f] text-lg">✓</span>
+        <p class="text-sm font-bold text-[#68ab1f]">{{ successMsg }}</p>
+      </div>
+    }
+    @if (errorMsg) {
+      <div
+        class="mb-6 px-5 py-4 rounded-2xl flex items-center gap-3 bg-rose-50 border border-rose-200 dark:bg-rose-500/10 dark:border-rose-500/20"
+      >
+        <span class="text-rose-500 text-lg">✕</span>
+        <p class="text-sm font-bold text-rose-600 dark:text-rose-400">{{ errorMsg }}</p>
+      </div>
+    }
+
+    <!-- ===== TABS ===== -->
+    <div
+      class="flex gap-1 p-1 rounded-2xl border shadow-sm mb-8 bg-white border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
+    >
+      @for (
+        tab of [
+          { id: 'profile', label: 'Profile', icon: '👤' },
+          { id: 'password', label: 'Password', icon: '🔒' },
+          { id: 'email', label: 'Email', icon: '✉️' },
+        ];
+        track tab.id
+      ) {
         <button
           (click)="activeTab = $any(tab.id)"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border-none cursor-pointer transition-all"
-          [class.bg-blue-600]="activeTab === tab.id"
+          class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border-none cursor-pointer"
+          [class.bg-[#fa8728]]="activeTab === tab.id"
           [class.text-white]="activeTab === tab.id"
           [class.shadow-lg]="activeTab === tab.id"
-          [class.shadow-blue-500/20]="activeTab === tab.id"
+          [class.shadow-[#fa8728]/20]="activeTab === tab.id"
+          [class.text-[#5c5f63]/50]="activeTab !== tab.id"
+          [class.dark:text-gray-500]="activeTab !== tab.id"
           [class.bg-transparent]="activeTab !== tab.id"
-          [class.text-slate-400]="activeTab !== tab.id && tab.id !== 'danger'"
-          [class.dark:text-gray-500]="activeTab !== tab.id && tab.id !== 'danger'"
-          [class.hover:bg-slate-200]="activeTab !== tab.id && tab.id !== 'danger'"
-          [class.text-red-400]="tab.id === 'danger' && activeTab !== tab.id"
-          [class.hover:bg-red-50]="tab.id === 'danger'"
-          [class.dark:hover:bg-red-500/5]="tab.id === 'danger'"
         >
-          <span>{{ tab.icon }}</span> {{ tab.label }}
+          <span>{{ tab.icon }}</span>
+          <span class="hidden sm:inline">{{ tab.label }}</span>
         </button>
       }
     </div>
 
-    <!-- Content Panel -->
-    <div
-      class="flex-1 rounded-3xl border p-8 overflow-y-auto shadow-2xl bg-white border-slate-100 shadow-slate-200/50 dark:bg-[#111827] dark:border-gray-800 dark:shadow-black/40"
-    >
-      <!-- ===== GENERAL ===== -->
-      @if (activeTab === 'general') {
-        <div class="space-y-10">
-          <!-- Saved toast -->
-          @if (saved) {
-            <div
-              class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40"
-            >
-              <span class="text-emerald-500">✓</span>
-              <p class="text-sm font-bold text-emerald-700 dark:text-emerald-400">
-                Configuration saved successfully
+    <!-- ===== TAB: PROFILE ===== -->
+    @if (activeTab === 'profile') {
+      <form [formGroup]="profileForm" class="space-y-6 pb-16">
+        <div
+          class="ci-card bg-white dark:bg-[#1c1c1c] rounded-3xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm p-7"
+        >
+          <h2
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500 mb-6 flex items-center gap-2"
+          >
+            <span class="w-4 h-[1px] bg-[#fa8728]"></span>
+            Basic Info
+          </h2>
+          <div class="space-y-4">
+            <div class="space-y-1.5">
+              <label
+                class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+              >
+                {{ 'CLIENT.PROFILE.NAME' | translate }}
+              </label>
+              <input
+                formControlName="name"
+                type="text"
+                class="ci-input"
+                [class.!border-rose-400]="
+                  profileForm.get('name')?.invalid && profileForm.get('name')?.touched
+                "
+              />
+            </div>
+            <div class="space-y-1.5">
+              <label
+                class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+              >
+                {{ 'CLIENT.PROFILE.EMAIL' | translate }}
+              </label>
+              <input
+                [value]="user?.email"
+                disabled
+                type="text"
+                class="ci-input !bg-[#e6d5c3]/40 dark:!bg-[#444547]/20 !text-[#5c5f63]/40 cursor-not-allowed"
+              />
+              <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600">
+                {{ 'CLIENT.PROFILE.EMAIL_HINT' | translate }}
               </p>
             </div>
-          }
-
-          <!-- Branding -->
-          <section>
-            <h3
-              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
-            >
-              Studio Branding
-              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-            </h3>
-            <div class="grid grid-cols-2 gap-5">
-              <div class="space-y-1.5">
-                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-                  >Studio Name</label
-                >
-                <input
-                  type="text"
-                  [(ngModel)]="studioName"
-                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-900 dark:border-gray-800 dark:text-white"
-                />
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-                  >Support Email</label
-                >
-                <input
-                  type="email"
-                  [(ngModel)]="supportEmail"
-                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500/50 focus:bg-white dark:bg-gray-900 dark:border-gray-800 dark:text-white"
-                />
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-                  >Timezone</label
-                >
-                <select
-                  [(ngModel)]="timezone"
-                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 dark:bg-gray-900 dark:border-gray-800 dark:text-white"
-                >
-                  <option value="Africa/Cairo">Cairo (GMT+2)</option>
-                  <option value="Europe/London">London (GMT+0)</option>
-                  <option value="America/New_York">New York (GMT-5)</option>
-                  <option value="Asia/Dubai">Dubai (GMT+4)</option>
-                </select>
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-                  >Language</label
-                >
-                <select
-                  [(ngModel)]="language"
-                  class="w-full px-4 py-3 rounded-xl outline-none transition-all font-bold border bg-slate-50 border-slate-200 text-slate-900 dark:bg-gray-900 dark:border-gray-800 dark:text-white"
-                >
-                  <option value="en">English</option>
-                  <option value="ar">العربية</option>
-                </select>
-              </div>
-            </div>
-          </section>
-
-          <!-- System Preferences -->
-          <section>
-            <h3
-              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
-            >
-              System Preferences
-              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-            </h3>
-            <div class="space-y-3">
-              @for (
-                toggle of [
-                  {
-                    model: 'autoArchive',
-                    label: 'Project Auto-Archive',
-                    desc: 'Automatically archive projects after 30 days of completion',
-                  },
-                  {
-                    model: 'clientNotifications',
-                    label: 'Client Notifications',
-                    desc: 'Send automated progress updates to clients',
-                  },
-                  {
-                    model: 'weeklyReports',
-                    label: 'Weekly Reports',
-                    desc: 'Generate weekly performance reports automatically',
-                  },
-                  {
-                    model: 'maintenanceMode',
-                    label: 'Maintenance Mode',
-                    desc: 'Put the system in maintenance mode for all clients',
-                  },
-                ];
-                track toggle.model
-              ) {
-                <div
-                  class="flex items-center justify-between p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50 transition-all"
-                >
-                  <div>
-                    <p class="text-sm font-black text-slate-700 dark:text-gray-300">
-                      {{ toggle.label }}
-                    </p>
-                    <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">
-                      {{ toggle.desc }}
-                    </p>
-                  </div>
-                  <!-- Toggle Switch -->
-                  <button
-                    type="button"
-                    (click)="$any(this)[toggle.model] = !$any(this)[toggle.model]"
-                    class="w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-300 border-none flex-shrink-0"
-                    [class.bg-blue-600]="$any(this)[toggle.model]"
-                    [class.bg-slate-200]="!$any(this)[toggle.model]"
-                    [class.dark:bg-gray-700]="!$any(this)[toggle.model]"
-                  >
-                    <div
-                      class="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300"
-                      [class.left-1]="!$any(this)[toggle.model]"
-                      [class.left-6]="$any(this)[toggle.model]"
-                    ></div>
-                  </button>
-                </div>
-              }
-            </div>
-          </section>
-
-          <!-- Actions -->
-          <div class="pt-4 border-t border-slate-100 dark:border-gray-800 flex justify-end gap-3">
-            <button
-              type="button"
-              class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-transparent border-none cursor-pointer text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-            >
-              Discard
-            </button>
-            <button
-              type="button"
-              (click)="saveGeneral()"
-              class="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
-            >
-              Save Configuration
-            </button>
           </div>
         </div>
-      }
 
-      <!-- ===== SECURITY ===== -->
-      @if (activeTab === 'security') {
-        <div class="space-y-10">
-          <section>
-            <h3
-              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
-            >
-              Authentication
-              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-            </h3>
-            <div class="space-y-3">
-              <div
-                class="flex items-center justify-between p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
-              >
-                <div>
-                  <p class="text-sm font-black text-slate-700 dark:text-gray-300">
-                    Two-Factor Authentication
-                  </p>
-                  <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">
-                    Require 2FA for all admin accounts
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  (click)="twoFactor = !twoFactor"
-                  class="w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-300 border-none flex-shrink-0"
-                  [class.bg-blue-600]="twoFactor"
-                  [class.bg-slate-200]="!twoFactor"
-                  [class.dark:bg-gray-700]="!twoFactor"
-                >
-                  <div
-                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300"
-                    [class.left-1]="!twoFactor"
-                    [class.left-6]="twoFactor"
-                  ></div>
-                </button>
-              </div>
+        <button
+          type="button"
+          (click)="saveProfile()"
+          [disabled]="profileForm.invalid || isSavingProfile"
+          class="w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border-none cursor-pointer shadow-xl transition-all disabled:opacity-50 active:scale-[0.98] bg-[#fa8728] hover:bg-[#f97316] shadow-[#fa8728]/20"
+        >
+          {{
+            isSavingProfile ? ('COMMON.LOADING' | translate) : ('CLIENT.PROFILE.SAVE' | translate)
+          }}
+        </button>
+      </form>
+    }
 
-              <div
-                class="p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
-              >
-                <p class="text-sm font-black text-slate-700 dark:text-gray-300 mb-3">
-                  Session Timeout
-                </p>
-                <div class="flex items-center gap-4">
-                  @for (opt of ['15', '30', '60', '120']; track opt) {
-                    <button
-                      type="button"
-                      (click)="sessionTimeout = opt"
-                      class="px-4 py-2 rounded-xl text-xs font-black border-none cursor-pointer transition-all"
-                      [class.bg-blue-600]="sessionTimeout === opt"
-                      [class.text-white]="sessionTimeout === opt"
-                      [class.bg-slate-100]="sessionTimeout !== opt"
-                      [class.text-slate-500]="sessionTimeout !== opt"
-                      [class.dark:bg-gray-800]="sessionTimeout !== opt"
-                      [class.dark:text-gray-400]="sessionTimeout !== opt"
-                    >
-                      {{ opt }}m
-                    </button>
-                  }
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div class="pt-4 border-t border-slate-100 dark:border-gray-800 flex justify-end">
-            <button
-              type="button"
-              (click)="saveGeneral()"
-              class="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
-            >
-              Save Security Settings
-            </button>
-          </div>
-        </div>
-      }
-
-      <!-- ===== NOTIFICATIONS ===== -->
-      @if (activeTab === 'notifications') {
-        <div class="space-y-10">
-          <section>
-            <h3
-              class="font-black text-base mb-6 flex items-center gap-3 text-slate-900 dark:text-white"
-            >
-              Email Notifications
-              <span class="h-px flex-1 bg-slate-100 dark:bg-gray-800"></span>
-            </h3>
-            <div class="space-y-3">
-              @for (
-                n of [
-                  {
-                    model: 'emailOnNewProject',
-                    label: 'New Project Created',
-                    desc: 'Notify when a new project is assigned',
-                  },
-                  {
-                    model: 'emailOnPayment',
-                    label: 'Payment Received',
-                    desc: 'Notify when an installment is paid',
-                  },
-                  {
-                    model: 'emailOnDeliverable',
-                    label: 'Deliverable Uploaded',
-                    desc: 'Notify when a new deliverable is added',
-                  },
-                  {
-                    model: 'browserPush',
-                    label: 'Browser Push Notifications',
-                    desc: 'Enable push notifications in browser',
-                  },
-                ];
-                track n.model
-              ) {
-                <div
-                  class="flex items-center justify-between p-4 rounded-2xl border bg-slate-50/50 border-slate-100 dark:bg-gray-950/30 dark:border-gray-800/50"
-                >
-                  <div>
-                    <p class="text-sm font-black text-slate-700 dark:text-gray-300">
-                      {{ n.label }}
-                    </p>
-                    <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-0.5">{{ n.desc }}</p>
-                  </div>
-                  <button
-                    type="button"
-                    (click)="$any(this)[n.model] = !$any(this)[n.model]"
-                    class="w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-300 border-none flex-shrink-0"
-                    [class.bg-blue-600]="$any(this)[n.model]"
-                    [class.bg-slate-200]="!$any(this)[n.model]"
-                    [class.dark:bg-gray-700]="!$any(this)[n.model]"
-                  >
-                    <div
-                      class="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300"
-                      [class.left-1]="!$any(this)[n.model]"
-                      [class.left-6]="$any(this)[n.model]"
-                    ></div>
-                  </button>
-                </div>
-              }
-            </div>
-          </section>
-
-          <div class="pt-4 border-t border-slate-100 dark:border-gray-800 flex justify-end">
-            <button
-              type="button"
-              (click)="saveGeneral()"
-              class="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest border-none shadow-lg shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
-            >
-              Save Preferences
-            </button>
-          </div>
-        </div>
-      }
-
-      <!-- ===== DANGER ZONE ===== -->
-      @if (activeTab === 'danger') {
-        <div class="space-y-6">
-          <div
-            class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30"
+    <!-- ===== TAB: PASSWORD ===== -->
+    @if (activeTab === 'password') {
+      <form [formGroup]="passwordForm" class="space-y-6 pb-16">
+        <div
+          class="ci-card bg-white dark:bg-[#1c1c1c] rounded-3xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm p-7 space-y-5"
+        >
+          <h2
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500 flex items-center gap-2"
           >
-            <span class="text-red-500 text-xl">⚠️</span>
-            <p class="text-sm font-bold text-red-700 dark:text-red-400">
-              These actions are irreversible. Proceed with extreme caution.
-            </p>
+            <span class="w-4 h-[1px] bg-[#fa8728]"></span>
+            {{ 'CLIENT.PROFILE.CHANGE_PASSWORD' | translate }}
+          </h2>
+
+          <!-- Current Password -->
+          <div class="space-y-1.5">
+            <label
+              class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+            >
+              {{ 'CLIENT.PROFILE.CURRENT_PASSWORD' | translate }}
+            </label>
+            <div class="relative">
+              <input
+                formControlName="currentPassword"
+                [type]="showCurrent ? 'text' : 'password'"
+                class="ci-input !pr-12"
+              />
+              <button
+                type="button"
+                (click)="showCurrent = !showCurrent"
+                class="absolute inset-y-0 right-3 flex items-center text-[#5c5f63]/40 hover:text-[#fa8728] transition-colors cursor-pointer border-none bg-transparent"
+              >
+                @if (showCurrent) {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                } @else {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                }
+              </button>
+            </div>
           </div>
 
-          @for (
-            action of [
-              {
-                title: 'Archive All Projects',
-                desc: 'Move all active projects to archive. Clients will lose access.',
-                btn: 'Archive All',
-                color: 'amber',
-              },
-              {
-                title: 'Clear All Deliverables',
-                desc: 'Permanently delete all uploaded files and deliverables.',
-                btn: 'Clear Files',
-                color: 'orange',
-              },
-              {
-                title: 'Reset System Data',
-                desc: 'Wipe all projects, clients, and financial records. Cannot be undone.',
-                btn: 'Reset System',
-                color: 'red',
-              },
-            ];
-            track action.title
-          ) {
-            <div
-              class="p-6 rounded-2xl border transition-all"
-              [class.border-amber-200]="action.color === 'amber'"
-              [class.dark:border-amber-800/30]="action.color === 'amber'"
-              [class.border-orange-200]="action.color === 'orange'"
-              [class.dark:border-orange-800/30]="action.color === 'orange'"
-              [class.border-red-200]="action.color === 'red'"
-              [class.dark:border-red-800/30]="action.color === 'red'"
+          <!-- New Password -->
+          <div class="space-y-1.5">
+            <label
+              class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
             >
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm font-black text-slate-900 dark:text-white">
-                    {{ action.title }}
-                  </p>
-                  <p class="text-[10px] text-slate-400 dark:text-gray-500 mt-1">
-                    {{ action.desc }}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all ml-6 flex-shrink-0"
-                  [class.bg-amber-100]="action.color === 'amber'"
-                  [class.text-amber-700]="action.color === 'amber'"
-                  [class.hover:bg-amber-200]="action.color === 'amber'"
-                  [class.bg-orange-100]="action.color === 'orange'"
-                  [class.text-orange-700]="action.color === 'orange'"
-                  [class.bg-red-100]="action.color === 'red'"
-                  [class.text-red-700]="action.color === 'red'"
-                  [class.dark:bg-red-900/30]="action.color === 'red'"
-                  [class.dark:text-red-400]="action.color === 'red'"
+              {{ 'CLIENT.PROFILE.NEW_PASSWORD' | translate }}
+            </label>
+            <div class="relative">
+              <input
+                formControlName="password"
+                [type]="showNew ? 'text' : 'password'"
+                class="ci-input !pr-12"
+              />
+              <button
+                type="button"
+                (click)="showNew = !showNew"
+                class="absolute inset-y-0 right-3 flex items-center text-[#5c5f63]/40 hover:text-[#fa8728] transition-colors cursor-pointer border-none bg-transparent"
+              >
+                @if (showNew) {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                } @else {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="space-y-1.5">
+            <label
+              class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+            >
+              {{ 'CLIENT.PROFILE.CONFIRM_PASSWORD' | translate }}
+            </label>
+            <div class="relative">
+              <input
+                formControlName="confirmPassword"
+                [type]="showConfirm ? 'text' : 'password'"
+                class="ci-input !pr-12"
+              />
+              <button
+                type="button"
+                (click)="showConfirm = !showConfirm"
+                class="absolute inset-y-0 right-3 flex items-center text-[#5c5f63]/40 hover:text-[#fa8728] transition-colors cursor-pointer border-none bg-transparent"
+              >
+                @if (showConfirm) {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                } @else {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="savePassword()"
+          [disabled]="passwordForm.invalid || isSavingPassword"
+          class="w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border-none cursor-pointer shadow-xl transition-all disabled:opacity-50 active:scale-[0.98] bg-[#fa8728] hover:bg-[#f97316] shadow-[#fa8728]/20"
+        >
+          {{
+            isSavingPassword
+              ? ('COMMON.LOADING' | translate)
+              : ('CLIENT.PROFILE.UPDATE_PASSWORD' | translate)
+          }}
+        </button>
+      </form>
+    }
+
+    <!-- ===== TAB: EMAIL ===== -->
+    @if (activeTab === 'email') {
+      <div class="space-y-6 pb-16">
+        <div
+          class="ci-card bg-white dark:bg-[#1c1c1c] rounded-3xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm p-7"
+        >
+          <h2
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-[#5c5f63]/50 dark:text-gray-500 mb-1 flex items-center gap-2"
+          >
+            <span class="w-4 h-[1px] bg-[#fa8728]"></span>
+            {{ 'CLIENT.PROFILE.CHANGE_EMAIL_TITLE' | translate }}
+          </h2>
+          <p class="text-xs text-[#5c5f63]/50 dark:text-gray-500 mb-6">
+            {{ 'CLIENT.PROFILE.EMAIL_VERIFY_HINT' | translate }}
+          </p>
+
+          @if (!emailRequestSent) {
+            <form [formGroup]="emailRequestForm" class="space-y-4">
+              <div class="space-y-1.5">
+                <label
+                  class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
                 >
-                  {{ action.btn }}
-                </button>
+                  {{ 'CLIENT.PROFILE.CURRENT_EMAIL' | translate }}
+                </label>
+                <input
+                  [value]="user?.email"
+                  disabled
+                  type="text"
+                  class="ci-input !bg-[#e6d5c3]/40 dark:!bg-[#444547]/20 !text-[#5c5f63]/40 cursor-not-allowed"
+                />
               </div>
+              <div class="space-y-1.5">
+                <label
+                  class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+                >
+                  {{ 'CLIENT.PROFILE.NEW_EMAIL' | translate }}
+                </label>
+                <input
+                  formControlName="email"
+                  type="email"
+                  placeholder="new@email.com"
+                  class="ci-input"
+                />
+              </div>
+              <button
+                type="button"
+                (click)="requestEmailChange()"
+                [disabled]="emailRequestForm.invalid || isSendingEmail"
+                class="w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border-none cursor-pointer transition-all disabled:opacity-50 active:scale-[0.98] bg-[#fa8728] hover:bg-[#f97316]"
+              >
+                {{
+                  isSendingEmail
+                    ? ('COMMON.LOADING' | translate)
+                    : ('CLIENT.PROFILE.VERIFY' | translate)
+                }}
+              </button>
+            </form>
+          } @else {
+            <div class="text-center py-6">
+              <div
+                class="w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 bg-[#fa8728]/10"
+              >
+                <span class="text-3xl">✉️</span>
+              </div>
+              <h3
+                class="text-base font-black text-[#444547] dark:text-white mb-2"
+                style="font-family: 'Alexandria', sans-serif"
+              >
+                {{ 'CLIENT.PROFILE.CHECK_INBOX' | translate }}
+              </h3>
+              <p class="text-xs text-[#5c5f63]/50 dark:text-gray-500 mb-1">
+                {{ 'CLIENT.PROFILE.SENT_TO' | translate }}
+              </p>
+              <p class="text-sm font-black text-[#fa8728] mb-6">
+                {{ emailRequestForm.value.email }}
+              </p>
+              <p
+                class="text-[10px] text-[#5c5f63]/30 dark:text-gray-700 font-bold uppercase tracking-widest mb-4"
+              >
+                {{ 'CLIENT.PROFILE.CLICK_LINK' | translate }}
+              </p>
+              <button
+                type="button"
+                (click)="emailRequestSent = false"
+                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase text-[#5c5f63]/50 border-none cursor-pointer transition-all bg-[#e6d5c3]/40 hover:bg-[#e6d5c3]/70 dark:bg-[#444547]/20 dark:hover:bg-[#444547]/30"
+              >
+                ← {{ 'CLIENT.PROFILE.TRY_DIFFERENT' | translate }}
+              </button>
             </div>
           }
         </div>
-      }
-    </div>
+      </div>
+    }
   </div>
 </div>
