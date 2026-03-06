@@ -160,7 +160,7 @@
 
           <div class="p-2">
             <a
-              routerLink="/admin/profile"
+              [routerLink]="user?.role === 'admin' ? '/admin/settings' : '/client/profile'"
               (click)="dropdownOpen = false"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl no-underline text-sm font-bold text-[#444547] dark:text-gray-300 hover:bg-[#fa8728]/8 hover:text-[#fa8728] transition-all duration-200"
             >
