@@ -9,6 +9,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
+  // Skip auth headers for external APIs
+  if (req.url.includes('googleapis.com') || req.url.includes('googleusercontent.com')) {
+    return next(req);
+  }
+
   const token = localStorage.getItem('token');
   const lang = localStorage.getItem('lang') || 'en';
 
