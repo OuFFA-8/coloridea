@@ -177,6 +177,7 @@ export class Settings implements OnInit {
           this.isSendingEmail = false;
           this.loadingService.hide();
           this.emailRequestSent = true;
+          this.cdr.detectChanges();
         },
         error: (err: any) => {
           this.isSendingEmail = false;
