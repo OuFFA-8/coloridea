@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -20,7 +20,7 @@ export class AuthServices {
 
   // 2. PATCH Update Password
   updatePassword(data: any): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/updatePassword`, data);
+    return this.http.patch(`${this.apiUrl}/update-password`, data);
   }
 
   // 3. PATCH Forget Password
