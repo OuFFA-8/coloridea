@@ -6,6 +6,8 @@ import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
+import { ThemeServices } from '../../../core/services/theme-services/theme-services';
+import { MyTranslate } from '../../../core/services/my-translate/my-translate';
 
 @Component({
   selector: 'app-project-select',
@@ -28,6 +30,8 @@ export class ProjectSelect implements OnInit {
     private authServices: AuthServices,
     private projectsService: ProjectsService,
     private router: Router,
+    public themeService: ThemeServices,
+    public myTrans: MyTranslate,
   ) {}
 
   ngOnInit() {
@@ -71,6 +75,10 @@ export class ProjectSelect implements OnInit {
 
   getPhotoUrl(path: string | null): string {
     return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
+  }
+
+  toggleLanguage() {
+    this.myTrans.changeLang(this.myTrans.currentLang === 'en' ? 'ar' : 'en');
   }
 
   logout() {
