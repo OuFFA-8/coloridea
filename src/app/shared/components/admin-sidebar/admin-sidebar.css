@@ -1,7 +1,18 @@
-@keyframes sidebar-slide {
+@keyframes sidebar-slide-ltr {
   from {
     opacity: 0;
     transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sidebar-slide-rtl {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
   }
   to {
     opacity: 1;
@@ -20,12 +31,47 @@
   }
 }
 
-/* Sidebar entrance */
-.ci-sidebar-slide {
-  animation: sidebar-slide 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+/* Sidebar entrance — LTR (English) */
+[dir='ltr'] .ci-sidebar-slide {
+  animation: sidebar-slide-ltr 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Nav items stagger — only when sidebar is animating */
+/* Sidebar entrance — RTL (Arabic) */
+[dir='rtl'] .ci-sidebar-slide {
+  animation: sidebar-slide-rtl 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Mobile drawer — RTL */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile drawer — LTR */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+[dir='rtl'] aside.sidebar-open {
+  display: flex;
+  animation: slideInFromRight 0.3s ease;
+}
+
+[dir='ltr'] aside.sidebar-open {
+  display: flex;
+  animation: slideInFromLeft 0.3s ease;
+}
+
+/* Nav items stagger */
 .ci-sidebar-slide .ci-nav-item:nth-child(1) {
   animation: nav-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
 }
