@@ -1,5 +1,14 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,6 +26,9 @@ export class ClientSidebar implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private routerSub!: Subscription;
   private themeObserver?: MutationObserver;
+
+  @Input() isOpen = false;
+  @Output() closeEvent = new EventEmitter<void>();
 
   animated = true;
   isDark = true;
@@ -63,6 +75,7 @@ export class ClientSidebar implements OnInit, OnDestroy {
       this.routerSub = this.router.events
         .pipe(filter((e) => e instanceof NavigationEnd))
         .subscribe(() => {
+          this.closeEvent.emit(); // غلق الـ drawer عند التنقل على الموبايل
           this.readProjectFromStorage();
           this.extractProjectFromUrl();
         });

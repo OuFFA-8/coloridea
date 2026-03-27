@@ -1,10 +1,26 @@
 <header
   class="h-16 flex items-center justify-between px-6 sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 bg-[#fff1e6]/90 border-b border-[#e6d5c3] dark:bg-[#0e0e0e]/90 dark:border-[#444547]/30 ci-header-slide"
 >
-  <!-- Left: Live badge only (no logo — sidebar handles branding) -->
+  <!-- Left: Hamburger (mobile only) + Live badge -->
   <div class="flex items-center gap-3">
+    <!-- Hamburger — mobile only -->
+    <button
+      (click)="toggleSidebar.emit()"
+      class="md:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/40 text-[#444547] dark:text-gray-400 hover:border-[#fa8728] hover:text-[#fa8728] transition-all duration-300"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
+      </svg>
+    </button>
+
+    <!-- Live badge -->
     <div
-      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#68ab1f]/10 border border-[#68ab1f]/20"
+      class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#68ab1f]/10 border border-[#68ab1f]/20"
     >
       <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f] animate-pulse"></span>
       <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest">Live</span>
@@ -30,34 +46,25 @@
         (click)="themeService.toggleTheme()"
         class="w-9 h-9 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-300 bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/40 text-[#444547] dark:text-gray-400 hover:border-[#fa8728] hover:text-[#fa8728]"
       >
-        <svg
-          *ngIf="themeService.isDarkMode()"
-          class="w-4 h-4 text-[#fa8728]"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-          />
-        </svg>
-        <svg
-          *ngIf="!themeService.isDarkMode()"
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          />
-        </svg>
+        @if (themeService.isDarkMode()) {
+          <svg class="w-4 h-4 text-[#fa8728]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+            />
+          </svg>
+        } @else {
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+            />
+          </svg>
+        }
       </button>
 
       <!-- Bell -->

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, Output, EventEmitter } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MyTranslate } from '../../../core/services/my-translate/my-translate';
@@ -16,6 +16,8 @@ import { AuthServices } from '../../../core/services/auth-services/auth-services
 })
 export class Header implements OnInit {
   private platformId = inject(PLATFORM_ID);
+
+  @Output() toggleSidebar = new EventEmitter<void>();
 
   user: any = null;
   clientLogo = '';
@@ -37,7 +39,6 @@ export class Header implements OnInit {
   }
 
   loadClientLogo() {
-    // لو user عنده logo (كلاينت) يعرضه في الهيدر
     const logo = this.user?.logo || this.user?.photo;
     if (logo) {
       this.clientLogo = `${this.baseUrl}/${logo.replace(/\\/g, '/')}`;

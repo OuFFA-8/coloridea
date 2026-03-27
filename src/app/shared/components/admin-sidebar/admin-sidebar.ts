@@ -1,5 +1,15 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, effect, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
@@ -16,6 +26,9 @@ export class AdminSidebar implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private loadingService = inject(LoadingService);
   private themeObserver?: MutationObserver;
+
+  @Input() isOpen = false;
+  @Output() closeEvent = new EventEmitter<void>();
 
   user: any = null;
   baseUrl = environment.baseUrl;

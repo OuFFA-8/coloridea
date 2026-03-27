@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Header } from '../../shared/components/header/header';
 import { RouterOutlet } from '@angular/router';
 import { ClientSidebar } from '../../shared/components/client-sidebar/client-sidebar';
@@ -10,4 +10,14 @@ import { Footer } from '../../shared/components/footer/footer';
   templateUrl: './client-layout.html',
   styleUrl: './client-layout.css',
 })
-export class ClientLayout {}
+export class ClientLayout {
+  sidebarOpen = signal(false);
+
+  toggleSidebar() {
+    this.sidebarOpen.update((v) => !v);
+  }
+
+  closeSidebar() {
+    this.sidebarOpen.set(false);
+  }
+}

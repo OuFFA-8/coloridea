@@ -1,5 +1,16 @@
+<!-- Overlay — mobile only -->
+@if (isOpen) {
+  <div
+    (click)="closeEvent.emit()"
+    class="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+    style="animation: fadeIn 0.2s ease"
+  ></div>
+}
+
+<!-- Sidebar -->
 <aside
-  class="w-64 h-screen flex flex-col border-e transition-colors duration-500 relative overflow-hidden bg-[#111827] border-[#444547]/30 text-gray-400"
+  class="w-64 h-screen flex flex-col border-e transition-all duration-300 relative overflow-hidden bg-[#111827] border-[#444547]/30 text-gray-400 fixed md:relative z-50 md:z-auto top-0 end-0 hidden md:flex"
+  [class.!flex]="isOpen"
   [class.ci-sidebar-slide]="animated"
 >
   <!-- Top accent line -->
@@ -14,7 +25,6 @@
       [style.backgroundImage]="'url(' + pattern + ')'"
       style="background-size: cover; background-position: center"
     >
-      <!-- Fade from top -->
       <div
         class="absolute inset-0"
         style="

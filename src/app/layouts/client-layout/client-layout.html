@@ -3,24 +3,19 @@
 >
   <!-- Sidebar — full height -->
   <app-client-sidebar
-    class="hidden md:block flex-shrink-0 border-e border-[#e6d5c3] dark:border-[#444547]/30 shadow-2xl shadow-[#e6d5c3]/40 dark:shadow-none transition-all duration-500"
+    class="flex-shrink-0 border-e border-[#e6d5c3] dark:border-[#444547]/30 shadow-2xl shadow-[#e6d5c3]/40 dark:shadow-none transition-all duration-500"
+    [isOpen]="sidebarOpen()"
+    (closeEvent)="closeSidebar()"
   ></app-client-sidebar>
 
   <!-- Right column: header + main + footer -->
   <div class="flex flex-col flex-1 overflow-hidden">
     <app-header
       class="flex-shrink-0 z-50 border-b border-[#e6d5c3]/60 dark:border-[#444547]/30 backdrop-blur-md bg-white/80 dark:bg-[#0e0e0e]/80 shadow-sm"
+      (toggleSidebar)="toggleSidebar()"
     ></app-header>
 
     <main class="flex-1 overflow-y-auto ci-scrollbar relative bg-transparent">
-      <!-- Blobs
-      <div
-        class="absolute top-[-10%] left-1/4 w-[500px] h-[500px] bg-[#fa8728]/8 dark:bg-[#fa8728]/5 blur-[120px] pointer-events-none rounded-full"
-      ></div>
-      <div
-        class="absolute bottom-[-10%] right-10 w-[400px] h-[400px] bg-[#68ab1f]/5 dark:bg-[#68ab1f]/4 blur-[100px] pointer-events-none rounded-full"
-      ></div> -->
-
       <div class="max-w-[1400px] mx-auto p-4 md:p-10 relative z-10">
         <router-outlet></router-outlet>
       </div>
