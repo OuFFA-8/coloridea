@@ -139,7 +139,7 @@
   font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
   cursor: pointer;
   border: none;
   color: white;
@@ -169,7 +169,7 @@
   font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
   cursor: pointer;
   border: none;
   background-color: rgba(230, 213, 195, 0.4);
