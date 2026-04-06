@@ -31,6 +31,7 @@ export class Clients implements OnInit {
   photoFile: File | null = null;
   logoPreview: string | null = null;
   patternPreview: string | null = null;
+  showPassword = false;
 
   constructor(
     private router: Router,
