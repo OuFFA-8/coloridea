@@ -19,7 +19,7 @@ export class OutputsService {
     return this.http.post(`${this.apiUrl}/outputs/${projectId}`, data);
   }
 
-  updateOutput(outputId: string, data: { numberOfItems: number }): Observable<any> {
+  updateOutput(outputId: string, data: { numberOfItems: number; name: string }): Observable<any> {
     return this.http.patch(`${this.apiUrl}/outputs/${outputId}`, data);
   }
 

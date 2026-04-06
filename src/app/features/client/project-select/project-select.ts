@@ -46,10 +46,6 @@ export class ProjectSelect implements OnInit {
         next: (res) => {
           this.projects = res.data || [];
           this.loadingService.hide();
-          if (this.projects.length === 0) {
-            this.router.navigate(['/client/dashboard']);
-            return;
-          }
           if (this.projects.length === 1) {
             this.selectProject(this.projects[0]);
             return;

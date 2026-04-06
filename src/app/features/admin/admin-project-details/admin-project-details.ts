@@ -71,6 +71,7 @@ export class AdminProjectDetails implements OnInit {
       numberOfItems: [1, [Validators.required, Validators.min(1)]],
     });
     this.editOutputForm = this.fb.group({
+      name: ['', Validators.required],
       numberOfItems: [1, [Validators.required, Validators.min(1)]],
     });
     this.itemForm = this.fb.group({
@@ -221,7 +222,10 @@ export class AdminProjectDetails implements OnInit {
 
   openEditOutputModal(output: any) {
     this.selectedOutput = output;
-    this.editOutputForm.patchValue({ numberOfItems: output.numberOfItems });
+    this.editOutputForm.patchValue({
+      name: output.name,
+      numberOfItems: output.numberOfItems,
+    });
     this.showEditOutputModal = true;
   }
 

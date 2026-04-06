@@ -789,6 +789,14 @@
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
               >
+                {{ 'ADMIN.PROJECTS.NAME' | translate }}
+              </label>
+              <input formControlName="name" type="text" class="ci-input" />
+            </div>
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+              >
                 {{ 'ADMIN.PROJECTS.ITEMS' | translate }}
               </label>
               <input formControlName="numberOfItems" type="number" min="1" class="ci-input" />
