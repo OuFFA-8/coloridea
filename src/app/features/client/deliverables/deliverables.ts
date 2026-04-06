@@ -53,7 +53,9 @@ export class Deliverables implements OnInit {
       this.projectsService.getUserProjects(user._id).subscribe({
         next: (res) => {
           const project = (res.data || []).find((p: any) => p._id === projectId);
-          this.outputs = project?.outputs || [];
+          this.outputs = (project?.outputs || []).sort(
+            (a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0),
+          );
           this.isLoading = false;
           this.loadingService.hide();
           this.cdr.detectChanges();
