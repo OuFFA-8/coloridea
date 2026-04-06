@@ -801,6 +801,14 @@
               </label>
               <input formControlName="numberOfItems" type="number" min="1" class="ci-input" />
             </div>
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+              >
+                {{ 'ADMIN.DASHBOARD.ORDER' | translate }}
+              </label>
+              <input formControlName="displayOrder" type="number" min="1" class="ci-input" />
+            </div>
             <div class="flex gap-3 pt-2">
               <button
                 type="button"
@@ -817,14 +825,6 @@
               >
                 {{ isSaving ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
               </button>
-            </div>
-            <div>
-              <label
-                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
-              >
-                Display Order
-              </label>
-              <input formControlName="displayOrder" type="number" min="1" class="ci-input" />
             </div>
           </form>
         </div>
