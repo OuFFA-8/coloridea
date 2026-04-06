@@ -73,6 +73,7 @@ export class AdminProjectDetails implements OnInit {
     this.editOutputForm = this.fb.group({
       name: ['', Validators.required],
       numberOfItems: [1, [Validators.required, Validators.min(1)]],
+      displayOrder: [1, [Validators.required, Validators.min(1)]],
     });
     this.itemForm = this.fb.group({
       name: ['', Validators.required],
@@ -104,7 +105,9 @@ export class AdminProjectDetails implements OnInit {
     this.projectsService.getProjectById(id).subscribe({
       next: (res) => {
         this.project = res.data;
-        this.outputs = res.data.outputs || [];
+        this.outputs = (res.data.outputs || []).sort(
+          (a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0),
+        );
         this.isLoading = false;
         this.loadingService.hide();
         this.cdr.detectChanges();
@@ -225,6 +228,7 @@ export class AdminProjectDetails implements OnInit {
     this.editOutputForm.patchValue({
       name: output.name,
       numberOfItems: output.numberOfItems,
+      displayOrder: output.displayOrder || 1,
     });
     this.showEditOutputModal = true;
   }
@@ -234,13 +238,12 @@ export class AdminProjectDetails implements OnInit {
     this.isSaving = true;
     this.loadingService.show('Updating output...');
     this.outputsService.updateOutput(this.selectedOutput._id, this.editOutputForm.value).subscribe({
-      next: (res) => {
-        const idx = this.outputs.findIndex((o) => o._id === this.selectedOutput._id);
-        if (idx !== -1) this.outputs[idx] = { ...this.outputs[idx], ...res.data };
+      next: () => {
+        // ← بدل res
         this.showEditOutputModal = false;
         this.isSaving = false;
         this.loadingService.hide();
-        this.cdr.detectChanges();
+        this.loadProject(); // ← reload بدل التحديث اليدوي
         this.alert.success('Output updated successfully');
       },
       error: (err) => {
