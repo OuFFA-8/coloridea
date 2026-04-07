@@ -277,4 +277,24 @@ export class ClientDetails implements OnInit {
       },
     });
   }
+
+  onDeleteProject(id: string) {
+    this.alert.confirm('Delete this project?').then((result: any) => {
+      if (result.isConfirmed) {
+        this.loadingService.show('Deleting project...');
+        this.projectsService.deleteProject(id).subscribe({
+          next: () => {
+            this.client.projects = this.client.projects.filter((p: any) => p._id !== id);
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+            this.alert.success('Project deleted');
+          },
+          error: (err) => {
+            this.loadingService.hide();
+            this.alert.error(err.error?.message || 'Failed to delete project');
+          },
+        });
+      }
+    });
+  }
 }

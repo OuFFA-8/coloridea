@@ -139,6 +139,8 @@
                   <span class="text-4xl opacity-10">📁</span>
                 </div>
               }
+
+              <!-- Status -->
               <div class="absolute top-3 right-3">
                 <span
                   class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest backdrop-blur-sm"
@@ -151,6 +153,18 @@
                 >
                   {{ project.status || 'pending' }}
                 </span>
+              </div>
+
+              <!-- Delete button -->
+              <div
+                class="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              >
+                <button
+                  (click)="$event.stopPropagation(); onDeleteProject(project._id)"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer bg-rose-500/90 hover:bg-rose-600 text-white text-xs backdrop-blur-sm transition-colors duration-200"
+                >
+                  ✕
+                </button>
               </div>
             </div>
 
