@@ -118,6 +118,23 @@
       "PHOTO_OPTIONAL": "صورة (اختياري)",
       "OUTPUT_NAME_PLACEHOLDER": "اسم المخرج (مثال: جلسة تصوير جوي)"
     },
+    "CAMERAS": {
+      "TITLE": "الكاميرات",
+      "ADD_CAMERA": "إضافة كاميرا",
+      "EDIT_CAMERA": "تعديل الكاميرا",
+      "NO_CAMERAS": "لا توجد كاميرات بعد",
+      "NAME": "اسم الكاميرا",
+      "NAME_PLACEHOLDER": "مثال: المشروع الأول",
+      "LAST_PIC": "رابط آخر صورة",
+      "CAMERA_VIDEO": "رابط فيديو الكاميرا",
+      "DRIVE_VIDEO": "رابط Drive",
+      "PROMO_VIDEO": "رفع فيديو دعائي",
+      "CURRENT_VIDEO": "يوجد فيديو — اختر ملف جديد للاستبدال",
+      "SELECT_VIDEO": "اختر ملف فيديو",
+      "CAMERA_LINK": "كاميرا",
+      "DRIVE_LINK": "درايف",
+      "VIDEO_LINK": "فيديو"
+    },
     "SETTINGS": {
       "TITLE": "الإعدادات",
       "SUBTITLE": "تكوين النظام والتفضيلات",

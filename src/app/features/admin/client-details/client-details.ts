@@ -23,6 +23,7 @@ import { AlertService } from '../../../core/services/alert-service/alert-service
 import { environment } from '../../../../environments/environment';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
+import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
 
 const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
@@ -57,9 +58,19 @@ export class ClientDetails implements OnInit {
   editPhotoPreview: string | null = null;
   editPatternPreview: string | null = null;
 
+  // Cameras
+  cameras: any[] = [];
+  isLoadingCameras = false;
+  showCameraModal = false;
+  editingCamera: any = null;
+  isSavingCamera = false;
+  cameraForm: FormGroup;
+  cameraVideoFile: File | null = null;
+
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
   private loadingService = inject(LoadingService);
+  private camerasService = inject(CamerasService);
 
   constructor(
     private route: ActivatedRoute,
@@ -77,6 +88,13 @@ export class ClientDetails implements OnInit {
       totalInstallments: [1, [Validators.required, Validators.min(1)]],
       installments: this.fb.array([]),
       agreedItems: this.fb.array([]),
+    });
+
+    this.cameraForm = this.fb.group({
+      name: ['', Validators.required],
+      lastPic: [''],
+      cameraVideo: [''],
+      driveVideo: [''],
     });
   }
 
@@ -100,6 +118,7 @@ export class ClientDetails implements OnInit {
         this.client = res.data.find((c: any) => c._id === id) || null;
         this.isLoading = false;
         this.loadingService.hide();
+        if (this.client) this.loadCameras(this.client._id);
         this.cdr.detectChanges();
         if (!this.client) this.alert.error('Client not found');
       },
@@ -292,6 +311,107 @@ export class ClientDetails implements OnInit {
           error: (err) => {
             this.loadingService.hide();
             this.alert.error(err.error?.message || 'Failed to delete project');
+          },
+        });
+      }
+    });
+  }
+
+  loadCameras(userId: string) {
+    this.isLoadingCameras = true;
+    this.camerasService.getUserCameras(userId).subscribe({
+      next: (res) => {
+        this.cameras = res.data || [];
+        this.isLoadingCameras = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoadingCameras = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  toggleCameraModal(camera?: any) {
+    this.showCameraModal = !this.showCameraModal;
+    if (this.showCameraModal) {
+      this.editingCamera = camera || null;
+      this.cameraVideoFile = null;
+      if (camera) {
+        this.cameraForm.patchValue({
+          name: camera.name,
+          lastPic: camera.lastPic || '',
+          cameraVideo: camera.cameraVideo || '',
+          driveVideo: camera.driveVideo || '',
+        });
+      } else {
+        this.cameraForm.reset();
+      }
+    } else {
+      this.editingCamera = null;
+    }
+  }
+
+  onCameraVideoSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.cameraVideoFile = file;
+    this.cdr.detectChanges();
+  }
+
+  saveCamera() {
+    if (this.cameraForm.invalid) {
+      this.cameraForm.markAllAsTouched();
+      return;
+    }
+    this.isSavingCamera = true;
+    const val = this.cameraForm.value;
+    const lastPic = val.lastPic?.trim();
+    const cameraVideo = val.cameraVideo?.trim();
+    const driveVideo = val.driveVideo?.trim();
+    const formData = new FormData();
+    formData.append('name', val.name.trim());
+    formData.append('user', this.client._id);
+    if (lastPic) formData.append('lastPic', lastPic);
+    if (cameraVideo) formData.append('cameraVideo', cameraVideo);
+    if (driveVideo) formData.append('driveVideo', driveVideo);
+    if (this.cameraVideoFile) formData.append('video', this.cameraVideoFile);
+
+    const request = this.editingCamera
+      ? this.camerasService.updateCamera(this.editingCamera._id, formData)
+      : this.camerasService.createCamera(formData);
+
+    request.subscribe({
+      next: (res: any) => {
+        this.isSavingCamera = false;
+        if (this.editingCamera) {
+          this.cameras = this.cameras.map((c) => (c._id === this.editingCamera._id ? res.data : c));
+          this.alert.success('تم تحديث الكاميرا بنجاح');
+        } else {
+          this.cameras = [...this.cameras, res.data];
+          this.alert.success('تم إضافة الكاميرا بنجاح');
+        }
+        this.toggleCameraModal();
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.isSavingCamera = false;
+        this.alert.error(err.error?.message || 'فشل حفظ الكاميرا');
+      },
+    });
+  }
+
+  deleteCamera(id: string) {
+    this.alert.confirm('حذف هذه الكاميرا؟').then((result: any) => {
+      if (result.isConfirmed) {
+        this.camerasService.deleteCamera(id).subscribe({
+          next: () => {
+            this.cameras = this.cameras.filter((c) => c._id !== id);
+            this.cdr.detectChanges();
+            this.alert.success('تم حذف الكاميرا');
+          },
+          error: (err: any) => {
+            this.alert.error(err.error?.message || 'فشل الحذف');
           },
         });
       }

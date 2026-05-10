@@ -1,0 +1,163 @@
+<div class="w-screen h-screen bg-black flex flex-col overflow-hidden">
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="flex items-center justify-between px-4 py-2.5 bg-[#0a0a0a] border-b border-white/5 shrink-0 z-10">
+    <div class="flex items-center gap-3">
+      <a
+        routerLink="/client/profile"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors text-white/40 hover:text-white hover:bg-white/5"
+      >
+        ← Back
+      </a>
+      <div class="w-px h-4 bg-white/10"></div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f] animate-pulse"></span>
+        <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest">Live</span>
+      </div>
+      <div class="w-px h-4 bg-white/10"></div>
+      <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">
+        {{ cameras.length }} cameras
+      </span>
+    </div>
+
+    <!-- Layout picker toggle -->
+    <div class="relative z-50">
+      <button
+        (click)="showLayoutPicker = !showLayoutPicker"
+        class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border-none transition-colors bg-transparent text-white/40 hover:text-white hover:bg-white/5"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+        </svg>
+        Layout
+        <span class="px-1.5 py-0.5 rounded bg-white/10 text-white/60">{{ getCurrentLayout()?.label }}</span>
+      </button>
+
+      @if (showLayoutPicker) {
+        <div class="absolute top-full end-0 mt-2 p-3 rounded-2xl border border-white/10 bg-[#111] shadow-2xl" style="min-width: 260px">
+          <p class="text-[8px] font-black uppercase tracking-widest text-white/25 mb-3">Display Layout</p>
+          <div class="grid grid-cols-3 gap-2">
+            @for (layout of layouts; track layout.id) {
+              <button
+                (click)="setLayout(layout.id)"
+                class="flex flex-col items-center gap-1.5 p-2 rounded-xl cursor-pointer border transition-all hover:bg-white/5"
+                [class.border-[#68ab1f]]="layoutId === layout.id"
+                [class.bg-[#68ab1f]/10]="layoutId === layout.id"
+                [class.border-white/10]="layoutId !== layout.id"
+              >
+                <!-- Mini icon: grid of cells -->
+                <div
+                  class="w-10 h-8"
+                  style="display: grid; gap: 1px"
+                  [style.gridTemplateColumns]="'repeat(' + layout.cols + ', 1fr)'"
+                  [style.gridTemplateRows]="'repeat(' + layout.rows + ', 1fr)'"
+                >
+                  @for (i of range(layout.maxCams); track i) {
+                    <div
+                      class="rounded-[1px]"
+                      [class.bg-[#68ab1f]/60]="layoutId === layout.id"
+                      [class.bg-white/20]="layoutId !== layout.id"
+                      [style.gridRow]="layout.featured && i === 0 && layout.id !== 'f1+1' ? (layout.id === 'f1+4' ? '1 / 5' : '1 / 3') : null"
+                    ></div>
+                  }
+                </div>
+                <span
+                  class="text-[8px] font-black uppercase tracking-wider"
+                  [class.text-[#68ab1f]]="layoutId === layout.id"
+                  [class.text-white/30]="layoutId !== layout.id"
+                >
+                  {{ layout.label }}
+                </span>
+              </button>
+            }
+          </div>
+        </div>
+        <div class="fixed inset-0 z-[-1]" (click)="showLayoutPicker = false"></div>
+      }
+    </div>
+  </div>
+
+  <!-- ===== CAMERA GRID ===== -->
+  <div class="flex-1 overflow-hidden relative">
+
+    @if (isLoading) {
+      <div class="w-full h-full flex items-center justify-center">
+        <div class="flex flex-col items-center gap-3">
+          <div class="w-8 h-8 rounded-full border-2 border-[#68ab1f]/30 border-t-[#68ab1f] animate-spin"></div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-white/20">Loading cameras...</span>
+        </div>
+      </div>
+    } @else if (cameras.length === 0) {
+      <div class="w-full h-full flex items-center justify-center">
+        <div class="text-center">
+          <div class="text-6xl opacity-10 mb-4">📷</div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-white/20">No cameras configured</p>
+        </div>
+      </div>
+    } @else {
+      <div
+        class="w-full h-full"
+        style="display: grid; gap: 2px; background: #111"
+        [style.gridTemplateColumns]="getGridTemplateColumns()"
+        [style.gridTemplateRows]="getGridTemplateRows()"
+      >
+        @for (camera of getDisplayedCameras(); track camera._id; let i = $index) {
+          <div
+            class="relative overflow-hidden bg-[#0a0a0a]"
+            [style.gridRow]="getCellGridRow(i)"
+          >
+            @if (camera.lastPic) {
+              <img
+                [src]="getLastPicUrl(camera)"
+                class="w-full h-full object-cover"
+                alt=""
+              />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center">
+                <span class="text-5xl opacity-5">📷</span>
+              </div>
+            }
+            <!-- Camera label -->
+            <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-3 py-2 pointer-events-none">
+              <span class="text-white text-[10px] font-black drop-shadow">{{ camera.name }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- Filler cells for empty slots -->
+        @for (i of range(getFillerCount()); track i) {
+          <div class="bg-[#080808] flex items-center justify-center">
+            <span class="text-3xl opacity-5">📷</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ===== PROMO VIDEO OVERLAY ===== -->
+    @if (showVideo) {
+      <div class="absolute inset-0 z-30 bg-black flex items-center justify-center">
+        @if (promoIsFile) {
+          <video
+            [src]="promoVideoUrl"
+            class="w-full h-full object-contain"
+            autoplay
+            (ended)="onVideoEnded()"
+          ></video>
+        } @else {
+          <iframe
+            [src]="safePromoUrl"
+            class="w-full h-full border-none"
+            allowfullscreen
+          ></iframe>
+        }
+        <button
+          (click)="stopPromo()"
+          class="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/80 transition-colors"
+        >
+          Skip ✕
+        </button>
+      </div>
+    }
+  </div>
+</div>

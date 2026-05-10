@@ -118,6 +118,23 @@
       "PHOTO_OPTIONAL": "Photo (Optional)",
       "OUTPUT_NAME_PLACEHOLDER": "Output name (e.g. Aerial shoot session)"
     },
+    "CAMERAS": {
+      "TITLE": "Cameras",
+      "ADD_CAMERA": "Add Camera",
+      "EDIT_CAMERA": "Edit Camera",
+      "NO_CAMERAS": "No Cameras Yet",
+      "NAME": "Camera Name",
+      "NAME_PLACEHOLDER": "e.g. Project One",
+      "LAST_PIC": "Last Picture URL",
+      "CAMERA_VIDEO": "Camera Video URL",
+      "DRIVE_VIDEO": "Drive Video URL",
+      "PROMO_VIDEO": "Upload Promo Video",
+      "CURRENT_VIDEO": "Video exists — select a new file to replace",
+      "SELECT_VIDEO": "Select video file",
+      "CAMERA_LINK": "Camera",
+      "DRIVE_LINK": "Drive",
+      "VIDEO_LINK": "Video"
+    },
     "SETTINGS": {
       "TITLE": "Settings",
       "SUBTITLE": "System configuration & preferences",
