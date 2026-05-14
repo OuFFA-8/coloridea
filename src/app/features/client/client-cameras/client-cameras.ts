@@ -220,7 +220,10 @@ export class ClientCameras implements OnInit, OnDestroy {
       this.adVideoFileUrl = `${this.baseUrl}/${vid.video.replace(/\\/g, '/')}`;
       this.adIsFile = true;
     } else if (vid.driveVideo) {
-      this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(vid.driveVideo);
+      const embedUrl = vid.driveVideo
+        .replace('/view', '/preview')
+        .replace('/edit', '/preview');
+      this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
       this.adIsFile = false;
       this.iframeAdTimeout = setTimeout(() => this.stopAdVideo(), 30_000);
     } else {
