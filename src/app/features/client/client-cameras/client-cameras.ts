@@ -84,7 +84,7 @@ export class ClientCameras implements OnInit, OnDestroy {
   userDisplayDuration = 60;
 
   private refreshInterval?: ReturnType<typeof setInterval>;
-  private adVideoInterval?: ReturnType<typeof setInterval>;
+  private adVideoTimeout?: ReturnType<typeof setTimeout>;
   private iframeAdTimeout?: ReturnType<typeof setTimeout>;
   private iframeCellTimeout?: ReturnType<typeof setTimeout>;
   private cameraVideoTimers = new Map<string, ReturnType<typeof setInterval>>();
@@ -124,19 +124,14 @@ export class ClientCameras implements OnInit, OnDestroy {
       await this.loadCameras();
     }, 60_000);
 
-    console.log('[ad] adVideos.length:', this.adVideos.length, '| displayDuration:', this.userDisplayDuration);
-
     if (this.adVideos.length > 0) {
       this.showNextAdVideo();
-      this.adVideoInterval = setInterval(() => {
-        this.showNextAdVideo();
-      }, this.userDisplayDuration * 1_000);
     }
   }
 
   ngOnDestroy() {
     clearInterval(this.refreshInterval);
-    clearInterval(this.adVideoInterval);
+    clearTimeout(this.adVideoTimeout);
     clearTimeout(this.iframeAdTimeout);
     clearTimeout(this.iframeCellTimeout);
     this.cameraVideoTimers.forEach((t) => clearInterval(t));
@@ -148,11 +143,18 @@ export class ClientCameras implements OnInit, OnDestroy {
       this.cameras = (res.data || []).filter((c: Camera) => c.isActive !== false);
       this.isLoading = false;
       this.setupCameraVideoTimers();
+      this.autoplayCameraTimelapse();
       this.cdr.detectChanges();
     } catch {
       this.isLoading = false;
       this.cdr.detectChanges();
     }
+  }
+
+  autoplayCameraTimelapse() {
+    if (this.playingVideoCamId || this.showAdVideo) return;
+    const first = this.cameras.find((c) => c.cameraVideo);
+    if (first) this.playCellVideo(first);
   }
 
   getLastPicUrl(camera: Camera): string {
@@ -248,7 +250,14 @@ export class ClientCameras implements OnInit, OnDestroy {
     this.showAdVideo = false;
     this.adVideoFileUrl = '';
     clearTimeout(this.iframeAdTimeout);
+    clearTimeout(this.adVideoTimeout);
     this.cdr.detectChanges();
+
+    if (this.adVideos.length > 0) {
+      this.adVideoTimeout = setTimeout(() => {
+        this.showNextAdVideo();
+      }, this.userDisplayDuration * 1_000);
+    }
   }
 
   // ── Layout ──────────────────────────────────────────────────────────────────

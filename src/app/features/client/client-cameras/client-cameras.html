@@ -128,6 +128,8 @@
                     [src]="cellVideoFileUrl"
                     class="w-full h-full object-cover"
                     autoplay
+                    muted
+                    playsinline
                     (ended)="stopCellVideo()"
                   ></video>
                 } @else {
@@ -191,6 +193,8 @@
                     [src]="cellVideoFileUrl"
                     class="w-full h-full object-cover"
                     autoplay
+                    muted
+                    playsinline
                     (ended)="stopCellVideo()"
                   ></video>
                 } @else {
