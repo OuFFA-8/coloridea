@@ -231,6 +231,8 @@
             [src]="adVideoFileUrl"
             class="w-full h-full object-contain"
             autoplay
+            muted
+            playsinline
             (ended)="onAdVideoEnded()"
           ></video>
         } @else {

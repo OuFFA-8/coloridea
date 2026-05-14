@@ -14,6 +14,7 @@ import { firstValueFrom } from 'rxjs';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
 import { AdVideoService } from '../../../core/services/ad-video-service/ad-video-service';
 import { UsersService } from '../../../core/services/users-service/users-service';
+import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { environment } from '../../../../environments/environment';
 
 interface Camera {
@@ -52,6 +53,7 @@ export class ClientCameras implements OnInit, OnDestroy {
   private camerasService = inject(CamerasService);
   private adVideoService = inject(AdVideoService);
   private usersService = inject(UsersService);
+  private authServices = inject(AuthServices);
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
   private sanitizer = inject(DomSanitizer);
@@ -105,17 +107,25 @@ export class ClientCameras implements OnInit, OnDestroy {
 
     const saved = localStorage.getItem('ci-camera-layout');
     if (saved) this.layoutId = saved;
-    this.refreshTs = Date.now();
+
+    const storedUser = this.authServices.getUser();
+    const userId = storedUser?._id;
 
     try {
       const userRes = await firstValueFrom(this.usersService.getMe());
-      const user = userRes.data;
-      this.userDisplayDuration = user.displayDuration ?? 60;
-      if (user._id) {
-        const adRes = await firstValueFrom(this.adVideoService.getUserAdVideos(user._id));
+      this.userDisplayDuration = userRes.data?.displayDuration ?? 60;
+    } catch (err) {
+      console.error('getMe failed:', err);
+    }
+
+    if (userId) {
+      try {
+        const adRes = await firstValueFrom(this.adVideoService.getUserAdVideos(userId));
         this.adVideos = adRes.data || [];
+      } catch (err) {
+        console.error('getUserAdVideos failed:', err);
       }
-    } catch {}
+    }
 
     await this.loadCameras();
 
@@ -124,6 +134,7 @@ export class ClientCameras implements OnInit, OnDestroy {
     }, 60_000);
 
     if (this.adVideos.length > 0) {
+      this.showNextAdVideo();
       this.adVideoInterval = setInterval(() => {
         this.showNextAdVideo();
       }, this.userDisplayDuration * 1_000);
