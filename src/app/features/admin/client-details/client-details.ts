@@ -24,6 +24,7 @@ import { environment } from '../../../../environments/environment';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
+import { AdVideoService } from '../../../core/services/ad-video-service/ad-video-service';
 
 const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
@@ -48,8 +49,10 @@ export class ClientDetails implements OnInit {
   projectPhotoFile: File | null = null;
   projectPhotoPreview: string | null = null;
 
-  // Edit modal data
+  // Edit modal
   editData = { name: '', email: '', password: '' };
+  editDisplayDuration = 60;
+  isUpdatingDuration = false;
   showEditPassword = false;
   editLogoFile: File | null = null;
   editPhotoFile: File | null = null;
@@ -65,12 +68,21 @@ export class ClientDetails implements OnInit {
   editingCamera: any = null;
   isSavingCamera = false;
   cameraForm: FormGroup;
-  cameraVideoFile: File | null = null;
+
+  // Ad Videos
+  adVideos: any[] = [];
+  isLoadingAdVideos = false;
+  showAdVideoModal = false;
+  isSavingAdVideo = false;
+  adVideoInputType: 'file' | 'link' = 'file';
+  adVideoFile: File | null = null;
+  adVideoLink = '';
 
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
   private loadingService = inject(LoadingService);
   private camerasService = inject(CamerasService);
+  private adVideoService = inject(AdVideoService);
 
   constructor(
     private route: ActivatedRoute,
@@ -94,7 +106,8 @@ export class ClientDetails implements OnInit {
       name: ['', Validators.required],
       lastPic: [''],
       cameraVideo: [''],
-      driveVideo: [''],
+      displayDuration: [60, [Validators.required, Validators.min(1)]],
+      isActive: [true],
     });
   }
 
@@ -107,6 +120,9 @@ export class ClientDetails implements OnInit {
       this.client = clients.find((c: any) => c._id === id) || null;
       if (this.client) {
         this.isLoading = false;
+        this.editDisplayDuration = this.client.displayDuration ?? 60;
+        this.loadCameras(this.client._id);
+        this.loadAdVideos(this.client._id);
         this.cdr.detectChanges();
         return;
       }
@@ -118,7 +134,11 @@ export class ClientDetails implements OnInit {
         this.client = res.data.find((c: any) => c._id === id) || null;
         this.isLoading = false;
         this.loadingService.hide();
-        if (this.client) this.loadCameras(this.client._id);
+        if (this.client) {
+          this.editDisplayDuration = this.client.displayDuration ?? 60;
+          this.loadCameras(this.client._id);
+          this.loadAdVideos(this.client._id);
+        }
         this.cdr.detectChanges();
         if (!this.client) this.alert.error('Client not found');
       },
@@ -138,6 +158,8 @@ export class ClientDetails implements OnInit {
   getPhotoUrl(path: string | null): string {
     return path ? `${this.baseUrl}/${path.replace(/\\/g, '/')}` : '';
   }
+
+  // ── Projects ────────────────────────────────────────────────────────────────
 
   get installmentsControls() {
     return (this.projectForm.get('installments') as FormArray).controls;
@@ -192,67 +214,6 @@ export class ClientDetails implements OnInit {
       this.projectPhotoFile = null;
       this.projectPhotoPreview = null;
     }
-  }
-
-  toggleEditModal() {
-    this.showEditModal = !this.showEditModal;
-    if (this.showEditModal) {
-      this.editData = { name: this.client.name, email: this.client.email, password: '' };
-      this.showEditPassword = false;
-      this.editLogoFile = this.editPhotoFile = this.editPatternFile = null;
-      this.editLogoPreview = this.editPhotoPreview = this.editPatternPreview = null;
-    }
-  }
-
-  onEditFile(event: any, type: 'logo' | 'photo' | 'pattern') {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      if (type === 'logo') {
-        this.editLogoFile = file;
-        this.editLogoPreview = result;
-      }
-      if (type === 'photo') {
-        this.editPhotoFile = file;
-        this.editPhotoPreview = result;
-      }
-      if (type === 'pattern') {
-        this.editPatternFile = file;
-        this.editPatternPreview = result;
-      }
-      this.cdr.detectChanges();
-    };
-    reader.readAsDataURL(file);
-  }
-
-  saveEdit() {
-    this.isEditing = true;
-    this.loadingService.show('Saving...');
-    const formData = new FormData();
-    formData.append('name', this.editData.name);
-    formData.append('email', this.editData.email);
-    if (this.editData.password) formData.append('password', this.editData.password);
-    if (this.editLogoFile) formData.append('logo', this.editLogoFile);
-    if (this.editPhotoFile) formData.append('photo', this.editPhotoFile);
-    if (this.editPatternFile) formData.append('pattern', this.editPatternFile);
-
-    this.usersService.updateUser(this.client._id, formData).subscribe({
-      next: (res: any) => {
-        this.isEditing = false;
-        this.loadingService.hide();
-        this.client = { ...this.client, ...res.data };
-        this.toggleEditModal();
-        this.cdr.detectChanges();
-        this.alert.success('تم تحديث بيانات العميل بنجاح');
-      },
-      error: (err: any) => {
-        this.isEditing = false;
-        this.loadingService.hide();
-        this.alert.error(err.error?.message || 'فشل التحديث');
-      },
-    });
   }
 
   saveProject() {
@@ -317,6 +278,80 @@ export class ClientDetails implements OnInit {
     });
   }
 
+  // ── Edit Client ─────────────────────────────────────────────────────────────
+
+  toggleEditModal() {
+    this.showEditModal = !this.showEditModal;
+    if (this.showEditModal) {
+      this.editData = { name: this.client.name, email: this.client.email, password: '' };
+      this.editDisplayDuration = this.client.displayDuration ?? 60;
+      this.showEditPassword = false;
+      this.editLogoFile = this.editPhotoFile = this.editPatternFile = null;
+      this.editLogoPreview = this.editPhotoPreview = this.editPatternPreview = null;
+    }
+  }
+
+  onEditFile(event: any, type: 'logo' | 'photo' | 'pattern') {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      if (type === 'logo') { this.editLogoFile = file; this.editLogoPreview = result; }
+      if (type === 'photo') { this.editPhotoFile = file; this.editPhotoPreview = result; }
+      if (type === 'pattern') { this.editPatternFile = file; this.editPatternPreview = result; }
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  saveEdit() {
+    this.isEditing = true;
+    this.loadingService.show('Saving...');
+    const formData = new FormData();
+    formData.append('name', this.editData.name);
+    formData.append('email', this.editData.email);
+    if (this.editData.password) formData.append('password', this.editData.password);
+    if (this.editLogoFile) formData.append('logo', this.editLogoFile);
+    if (this.editPhotoFile) formData.append('photo', this.editPhotoFile);
+    if (this.editPatternFile) formData.append('pattern', this.editPatternFile);
+
+    this.usersService.updateUser(this.client._id, formData).subscribe({
+      next: (res: any) => {
+        this.isEditing = false;
+        this.loadingService.hide();
+        this.client = { ...this.client, ...res.data };
+        this.toggleEditModal();
+        this.cdr.detectChanges();
+        this.alert.success('تم تحديث بيانات العميل بنجاح');
+      },
+      error: (err: any) => {
+        this.isEditing = false;
+        this.loadingService.hide();
+        this.alert.error(err.error?.message || 'فشل التحديث');
+      },
+    });
+  }
+
+  updateDisplayDuration() {
+    if (!this.editDisplayDuration || this.editDisplayDuration < 1) return;
+    this.isUpdatingDuration = true;
+    this.usersService.updateDisplayDuration(this.client._id, this.editDisplayDuration).subscribe({
+      next: (res: any) => {
+        this.isUpdatingDuration = false;
+        this.client.displayDuration = res.data.displayDuration;
+        this.cdr.detectChanges();
+        this.alert.success('تم تحديث مدة العرض');
+      },
+      error: (err: any) => {
+        this.isUpdatingDuration = false;
+        this.alert.error(err.error?.message || 'فشل التحديث');
+      },
+    });
+  }
+
+  // ── Cameras ─────────────────────────────────────────────────────────────────
+
   loadCameras(userId: string) {
     this.isLoadingCameras = true;
     this.camerasService.getUserCameras(userId).subscribe({
@@ -336,27 +371,20 @@ export class ClientDetails implements OnInit {
     this.showCameraModal = !this.showCameraModal;
     if (this.showCameraModal) {
       this.editingCamera = camera || null;
-      this.cameraVideoFile = null;
       if (camera) {
         this.cameraForm.patchValue({
           name: camera.name,
           lastPic: camera.lastPic || '',
           cameraVideo: camera.cameraVideo || '',
-          driveVideo: camera.driveVideo || '',
+          displayDuration: camera.displayDuration ?? 60,
+          isActive: camera.isActive ?? true,
         });
       } else {
-        this.cameraForm.reset();
+        this.cameraForm.reset({ displayDuration: 60, isActive: true });
       }
     } else {
       this.editingCamera = null;
     }
-  }
-
-  onCameraVideoSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-    this.cameraVideoFile = file;
-    this.cdr.detectChanges();
   }
 
   saveCamera() {
@@ -368,14 +396,12 @@ export class ClientDetails implements OnInit {
     const val = this.cameraForm.value;
     const lastPic = val.lastPic?.trim();
     const cameraVideo = val.cameraVideo?.trim();
-    const driveVideo = val.driveVideo?.trim();
     const formData = new FormData();
     formData.append('name', val.name.trim());
     formData.append('user', this.client._id);
+    formData.append('displayDuration', String(val.displayDuration));
     if (lastPic) formData.append('lastPic', lastPic);
     if (cameraVideo) formData.append('cameraVideo', cameraVideo);
-    if (driveVideo) formData.append('driveVideo', driveVideo);
-    if (this.cameraVideoFile) formData.append('video', this.cameraVideoFile);
 
     const request = this.editingCamera
       ? this.camerasService.updateCamera(this.editingCamera._id, formData)
@@ -401,6 +427,20 @@ export class ClientDetails implements OnInit {
     });
   }
 
+  toggleCameraActive(camera: any) {
+    this.camerasService.toggleStatus(camera._id).subscribe({
+      next: (res: any) => {
+        this.cameras = this.cameras.map((c) =>
+          c._id === camera._id ? { ...c, isActive: res.data.isActive } : c,
+        );
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.alert.error(err.error?.message || 'فشل التحديث');
+      },
+    });
+  }
+
   deleteCamera(id: string) {
     this.alert.confirm('حذف هذه الكاميرا؟').then((result: any) => {
       if (result.isConfirmed) {
@@ -409,6 +449,88 @@ export class ClientDetails implements OnInit {
             this.cameras = this.cameras.filter((c) => c._id !== id);
             this.cdr.detectChanges();
             this.alert.success('تم حذف الكاميرا');
+          },
+          error: (err: any) => {
+            this.alert.error(err.error?.message || 'فشل الحذف');
+          },
+        });
+      }
+    });
+  }
+
+  // ── Ad Videos ────────────────────────────────────────────────────────────────
+
+  loadAdVideos(userId: string) {
+    this.isLoadingAdVideos = true;
+    this.adVideoService.getUserAdVideos(userId).subscribe({
+      next: (res) => {
+        this.adVideos = res.data || [];
+        this.isLoadingAdVideos = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoadingAdVideos = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  toggleAdVideoModal() {
+    this.showAdVideoModal = !this.showAdVideoModal;
+    if (this.showAdVideoModal) {
+      this.adVideoInputType = 'file';
+      this.adVideoFile = null;
+      this.adVideoLink = '';
+    }
+  }
+
+  onAdVideoFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.adVideoFile = file;
+    this.cdr.detectChanges();
+  }
+
+  saveAdVideo() {
+    if (this.adVideoInputType === 'file' && !this.adVideoFile) {
+      this.alert.error('اختر ملف فيديو');
+      return;
+    }
+    if (this.adVideoInputType === 'link' && !this.adVideoLink.trim()) {
+      this.alert.error('أدخل رابط الفيديو');
+      return;
+    }
+    this.isSavingAdVideo = true;
+    const formData = new FormData();
+    if (this.adVideoInputType === 'file' && this.adVideoFile) {
+      formData.append('video', this.adVideoFile);
+    } else {
+      formData.append('driveVideo', this.adVideoLink.trim());
+    }
+
+    this.adVideoService.createAdVideo(this.client._id, formData).subscribe({
+      next: (res: any) => {
+        this.isSavingAdVideo = false;
+        this.adVideos = [...this.adVideos, res.data];
+        this.toggleAdVideoModal();
+        this.cdr.detectChanges();
+        this.alert.success('تم إضافة الفيديو بنجاح');
+      },
+      error: (err: any) => {
+        this.isSavingAdVideo = false;
+        this.alert.error(err.error?.message || 'فشل رفع الفيديو');
+      },
+    });
+  }
+
+  deleteAdVideo(id: string) {
+    this.alert.confirm('حذف هذا الفيديو؟').then((result: any) => {
+      if (result.isConfirmed) {
+        this.adVideoService.deleteAdVideo(id).subscribe({
+          next: () => {
+            this.adVideos = this.adVideos.filter((v) => v._id !== id);
+            this.cdr.detectChanges();
+            this.alert.success('تم حذف الفيديو');
           },
           error: (err: any) => {
             this.alert.error(err.error?.message || 'فشل الحذف');

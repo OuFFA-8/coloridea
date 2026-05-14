@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -11,7 +11,14 @@ export class AuthServices {
   private apiUrl = `${environment.baseUrl}/api/v1/auth`;
   private platformId = inject(PLATFORM_ID);
 
-  constructor(private http: HttpClient) {}
+  private userSubject = new BehaviorSubject<any>(null);
+  user$ = this.userSubject.asObservable();
+
+  constructor(private http: HttpClient) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.userSubject.next(this.getUser());
+    }
+  }
 
   // 1. POST Login
   login(credentials: any): Observable<any> {
@@ -53,6 +60,7 @@ export class AuthServices {
   updateStoredUser(updatedUser: any) {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      this.userSubject.next(updatedUser);
     }
   }
 

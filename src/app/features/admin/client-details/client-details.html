@@ -263,6 +263,22 @@
                   </div>
                 }
 
+                <!-- isActive toggle -->
+                <div class="absolute top-3 left-3">
+                  <button
+                    (click)="$event.stopPropagation(); toggleCameraActive(camera)"
+                    class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest backdrop-blur-sm border-none cursor-pointer transition-all duration-200"
+                    [class.bg-[#68ab1f]/90]="camera.isActive"
+                    [class.hover:bg-[#68ab1f]]="camera.isActive"
+                    [class.text-white]="camera.isActive"
+                    [class.bg-black/40]="!camera.isActive"
+                    [class.hover:bg-black/60]="!camera.isActive"
+                    [class.text-white/70]="!camera.isActive"
+                  >
+                    {{ camera.isActive ? ('ADMIN.CAMERAS.ACTIVE' | translate) : ('ADMIN.CAMERAS.INACTIVE' | translate) }}
+                  </button>
+                </div>
+
                 <!-- Action buttons -->
                 <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
@@ -282,44 +298,27 @@
 
               <!-- Content -->
               <div class="p-4">
-                <h4
-                  class="text-sm font-black text-[#444547] dark:text-white truncate mb-3"
-                  style="font-family: 'Alexandria', sans-serif"
-                >
-                  {{ camera.name }}
-                </h4>
-                <div class="flex flex-wrap gap-2">
-                  @if (camera.cameraVideo) {
-                    <a
-                      [href]="camera.cameraVideo"
-                      target="_blank"
-                      rel="noopener"
-                      class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors bg-[#444547]/8 hover:bg-[#444547]/15 text-[#444547] dark:bg-white/8 dark:hover:bg-white/15 dark:text-white"
-                    >
-                      🎥 {{ 'ADMIN.CAMERAS.CAMERA_LINK' | translate }}
-                    </a>
-                  }
-                  @if (camera.driveVideo) {
-                    <a
-                      [href]="camera.driveVideo"
-                      target="_blank"
-                      rel="noopener"
-                      class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors bg-[#444547]/8 hover:bg-[#444547]/15 text-[#444547] dark:bg-white/8 dark:hover:bg-white/15 dark:text-white"
-                    >
-                      ☁️ {{ 'ADMIN.CAMERAS.DRIVE_LINK' | translate }}
-                    </a>
-                  }
-                  @if (camera.video) {
-                    <a
-                      [href]="getPhotoUrl(camera.video)"
-                      target="_blank"
-                      rel="noopener"
-                      class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors bg-[#fa8728]/10 hover:bg-[#fa8728]/20 text-[#fa8728]"
-                    >
-                      📹 {{ 'ADMIN.CAMERAS.VIDEO_LINK' | translate }}
-                    </a>
-                  }
+                <div class="flex items-start justify-between gap-2 mb-3">
+                  <h4
+                    class="text-sm font-black text-[#444547] dark:text-white truncate"
+                    style="font-family: 'Alexandria', sans-serif"
+                  >
+                    {{ camera.name }}
+                  </h4>
+                  <span class="text-[9px] font-black text-[#5c5f63]/40 dark:text-gray-600 shrink-0 whitespace-nowrap">
+                    ⏱ {{ camera.displayDuration }}s
+                  </span>
                 </div>
+                @if (camera.cameraVideo) {
+                  <a
+                    [href]="camera.cameraVideo"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors bg-[#444547]/8 hover:bg-[#444547]/15 text-[#444547] dark:bg-white/8 dark:hover:bg-white/15 dark:text-white"
+                  >
+                    🎥 {{ 'ADMIN.CAMERAS.CAMERA_LINK' | translate }}
+                  </a>
+                }
               </div>
             </div>
           } @empty {
@@ -335,6 +334,115 @@
                 class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#444547] hover:bg-[#5c5f63]"
               >
                 + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }}
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ===== AD VIDEOS ===== -->
+    <div class="max-w-6xl mx-auto px-8 mt-10">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
+          <h2 class="text-xs font-black uppercase text-[#5c5f63]/50 dark:text-gray-500">
+            {{ 'ADMIN.AD_VIDEOS.TITLE' | translate }} ({{ adVideos.length }})
+          </h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <!-- Display duration inline control -->
+          <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30">
+            <span class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 whitespace-nowrap">
+              {{ 'ADMIN.AD_VIDEOS.DISPLAY_DURATION' | translate }}
+            </span>
+            <div class="relative">
+              <input
+                [(ngModel)]="editDisplayDuration"
+                type="number"
+                min="1"
+                class="w-16 text-center text-[10px] font-black bg-transparent border-none outline-none text-[#444547] dark:text-white"
+                dir="ltr"
+              />
+              <span class="text-[9px] font-black text-[#5c5f63]/40 dark:text-gray-600">s</span>
+            </div>
+            <button
+              (click)="updateDisplayDuration()"
+              [disabled]="isUpdatingDuration"
+              class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316] disabled:opacity-50"
+            >
+              {{ isUpdatingDuration ? '...' : ('COMMON.SAVE' | translate) }}
+            </button>
+          </div>
+          <button
+            (click)="toggleAdVideoModal()"
+            class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316]"
+          >
+            + {{ 'ADMIN.AD_VIDEOS.ADD' | translate }}
+          </button>
+        </div>
+      </div>
+
+      @if (isLoadingAdVideos) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          @for (_ of [1, 2, 3]; track $index) {
+            <div class="h-24 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
+          }
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (vid of adVideos; track vid._id) {
+            <div class="group flex items-center gap-4 p-4 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm">
+              <div class="w-12 h-12 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0 text-xl">
+                🎬
+              </div>
+              <div class="min-w-0 flex-1">
+                @if (vid.video) {
+                  <p class="text-xs font-black text-[#444547] dark:text-white truncate">
+                    {{ 'ADMIN.AD_VIDEOS.UPLOADED_FILE' | translate }}
+                  </p>
+                  <a
+                    [href]="getPhotoUrl(vid.video)"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
+                  >
+                    {{ 'ADMIN.AD_VIDEOS.VIEW' | translate }} →
+                  </a>
+                } @else if (vid.driveVideo) {
+                  <p class="text-xs font-black text-[#444547] dark:text-white truncate">
+                    {{ 'ADMIN.AD_VIDEOS.DRIVE_LINK' | translate }}
+                  </p>
+                  <a
+                    [href]="vid.driveVideo"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
+                  >
+                    {{ 'ADMIN.AD_VIDEOS.VIEW' | translate }} →
+                  </a>
+                }
+              </div>
+              <button
+                (click)="deleteAdVideo(vid._id)"
+                class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer shrink-0 opacity-0 group-hover:opacity-100 transition-all bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:text-rose-600 text-xs"
+              >
+                ✕
+              </button>
+            </div>
+          } @empty {
+            <div
+              class="col-span-full py-16 text-center border-2 border-dashed border-[#fa8728]/15 dark:border-[#fa8728]/20 rounded-2xl"
+            >
+              <div class="text-4xl mb-3 opacity-20">🎬</div>
+              <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest">
+                {{ 'ADMIN.AD_VIDEOS.NO_VIDEOS' | translate }}
+              </p>
+              <button
+                (click)="toggleAdVideoModal()"
+                class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316]"
+              >
+                + {{ 'ADMIN.AD_VIDEOS.ADD' | translate }}
               </button>
             </div>
           }
@@ -424,56 +532,53 @@
                 />
               </div>
 
-              <!-- Drive Video URL -->
+              <!-- Display Duration -->
               <div class="space-y-1.5">
                 <label
                   class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
                 >
-                  {{ 'ADMIN.CAMERAS.DRIVE_VIDEO' | translate }}
+                  {{ 'ADMIN.CAMERAS.DISPLAY_DURATION' | translate }} *
                 </label>
-                <input
-                  formControlName="driveVideo"
-                  type="url"
-                  placeholder="https://..."
-                  class="ci-input"
-                  dir="ltr"
-                />
-              </div>
-
-              <!-- Video Upload -->
-              <div class="space-y-1.5">
-                <label
-                  class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
-                >
-                  {{ 'ADMIN.CAMERAS.PROMO_VIDEO' | translate }}
-                </label>
-                <div
-                  class="relative h-20 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#444547]/40 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center gap-3"
-                >
-                  @if (cameraVideoFile) {
-                    <span class="text-xl">🎬</span>
-                    <p class="text-[10px] font-black text-[#444547] dark:text-white truncate max-w-50">
-                      {{ cameraVideoFile.name }}
-                    </p>
-                  } @else if (editingCamera?.video) {
-                    <span class="text-xl">🎬</span>
-                    <p class="text-[10px] font-black text-[#5c5f63]/50 dark:text-gray-500">
-                      {{ 'ADMIN.CAMERAS.CURRENT_VIDEO' | translate }}
-                    </p>
-                  } @else {
-                    <span class="text-xl opacity-20">📹</span>
-                    <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/30">
-                      {{ 'ADMIN.CAMERAS.SELECT_VIDEO' | translate }}
-                    </p>
-                  }
+                <div class="relative">
                   <input
-                    type="file"
-                    accept="video/*"
-                    (change)="onCameraVideoSelected($event)"
-                    class="absolute inset-0 opacity-0 cursor-pointer"
+                    formControlName="displayDuration"
+                    type="number"
+                    min="1"
+                    placeholder="60"
+                    class="ci-input"
+                    dir="ltr"
                   />
+                  <span class="absolute inset-y-0 end-3 flex items-center text-[10px] font-black text-[#5c5f63]/40 dark:text-gray-600 pointer-events-none">s</span>
                 </div>
               </div>
+
+              <!-- isActive toggle (edit only) -->
+              @if (editingCamera) {
+              <div class="flex items-center justify-between p-4 rounded-2xl bg-[#fff1e6] dark:bg-[#0e0e0e] border border-[#e6d5c3] dark:border-[#444547]/20">
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-widest text-[#444547] dark:text-white">
+                    {{ 'ADMIN.CAMERAS.IS_ACTIVE' | translate }}
+                  </p>
+                  <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 mt-0.5">
+                    {{ 'ADMIN.CAMERAS.IS_ACTIVE_DESC' | translate }}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  (click)="cameraForm.get('isActive')!.setValue(!cameraForm.get('isActive')!.value)"
+                  class="relative w-11 h-6 rounded-full transition-colors duration-300 border-none cursor-pointer shrink-0"
+                  [class.bg-[#68ab1f]]="cameraForm.get('isActive')!.value"
+                  [class.bg-[#e6d5c3]]="!cameraForm.get('isActive')!.value"
+                  [class.dark:bg-[#444547]]="!cameraForm.get('isActive')!.value"
+                >
+                  <span
+                    class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                    [class.left-5]="cameraForm.get('isActive')!.value"
+                    [class.left-0.5]="!cameraForm.get('isActive')!.value"
+                  ></span>
+                </button>
+              </div>
+              }
             </form>
           </div>
 
@@ -494,6 +599,131 @@
                   ? ('COMMON.LOADING' | translate)
                   : (editingCamera ? ('COMMON.SAVE' | translate) : ('ADMIN.CAMERAS.ADD_CAMERA' | translate))
               }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ===== AD VIDEO MODAL ===== -->
+    @if (showAdVideoModal) {
+      <div class="fixed inset-0 z-100 flex items-center justify-center p-4">
+        <div
+          class="fixed inset-0 bg-[#0e0e0e]/75 backdrop-blur-md"
+          (click)="toggleAdVideoModal()"
+        ></div>
+
+        <div
+          class="ci-modal relative w-full max-w-md rounded-3xl shadow-2xl flex flex-col bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
+        >
+          <!-- Header -->
+          <div
+            class="px-8 py-6 border-b border-[#e6d5c3] dark:border-[#444547]/20 flex items-center justify-between shrink-0"
+          >
+            <div>
+              <h2
+                class="text-xl font-black text-[#444547] dark:text-white"
+                style="font-family: 'Alexandria', sans-serif"
+              >
+                {{ 'ADMIN.AD_VIDEOS.ADD' | translate }}
+              </h2>
+              <div class="w-8 h-0.5 bg-[#fa8728] rounded-full mt-1"></div>
+            </div>
+            <button
+              (click)="toggleAdVideoModal()"
+              class="w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer border-none transition-all bg-[#e6d5c3]/40 dark:bg-[#444547]/20 text-[#5c5f63] dark:text-gray-400 hover:bg-[#e6d5c3]"
+            >
+              ✕
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="p-8 space-y-5">
+            <!-- Toggle: File vs Link -->
+            <div class="flex rounded-xl overflow-hidden border border-[#e6d5c3] dark:border-[#444547]/30">
+              <button
+                type="button"
+                (click)="adVideoInputType = 'file'"
+                class="flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest cursor-pointer border-none transition-all"
+                [class.bg-[#fa8728]]="adVideoInputType === 'file'"
+                [class.text-white]="adVideoInputType === 'file'"
+                [class.bg-transparent]="adVideoInputType !== 'file'"
+                [class.text-[#5c5f63]]="adVideoInputType !== 'file'"
+                [class.dark:text-gray-400]="adVideoInputType !== 'file'"
+              >
+                {{ 'ADMIN.AD_VIDEOS.UPLOAD_FILE' | translate }}
+              </button>
+              <button
+                type="button"
+                (click)="adVideoInputType = 'link'"
+                class="flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest cursor-pointer border-none transition-all"
+                [class.bg-[#fa8728]]="adVideoInputType === 'link'"
+                [class.text-white]="adVideoInputType === 'link'"
+                [class.bg-transparent]="adVideoInputType !== 'link'"
+                [class.text-[#5c5f63]]="adVideoInputType !== 'link'"
+                [class.dark:text-gray-400]="adVideoInputType !== 'link'"
+              >
+                {{ 'ADMIN.AD_VIDEOS.DRIVE_LINK' | translate }}
+              </button>
+            </div>
+
+            <!-- File upload -->
+            @if (adVideoInputType === 'file') {
+              <div
+                class="relative h-28 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all duration-300 border-[#fa8728]/30 hover:border-[#fa8728]/60 bg-[#fff1e6] dark:bg-[#0e0e0e] flex flex-col items-center justify-center gap-2"
+              >
+                @if (adVideoFile) {
+                  <span class="text-2xl">🎬</span>
+                  <p class="text-[10px] font-black text-[#444547] dark:text-white truncate max-w-xs px-4">
+                    {{ adVideoFile.name }}
+                  </p>
+                } @else {
+                  <span class="text-2xl opacity-20">📹</span>
+                  <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/30">
+                    {{ 'ADMIN.AD_VIDEOS.SELECT_FILE' | translate }}
+                  </p>
+                }
+                <input
+                  type="file"
+                  accept="video/*"
+                  (change)="onAdVideoFileSelected($event)"
+                  class="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              </div>
+            }
+
+            <!-- Drive link -->
+            @if (adVideoInputType === 'link') {
+              <div class="space-y-1.5">
+                <label
+                  class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+                >
+                  {{ 'ADMIN.AD_VIDEOS.DRIVE_URL' | translate }}
+                </label>
+                <input
+                  [(ngModel)]="adVideoLink"
+                  type="url"
+                  placeholder="https://drive.google.com/..."
+                  class="ci-input"
+                  dir="ltr"
+                />
+              </div>
+            }
+          </div>
+
+          <!-- Footer -->
+          <div
+            class="px-8 py-5 border-t border-[#e6d5c3] dark:border-[#444547]/20 flex gap-3 shrink-0"
+          >
+            <button (click)="toggleAdVideoModal()" class="ci-btn-secondary flex-1">
+              {{ 'COMMON.CANCEL' | translate }}
+            </button>
+            <button
+              (click)="saveAdVideo()"
+              [disabled]="isSavingAdVideo"
+              class="ci-btn-primary flex-1"
+            >
+              {{ isSavingAdVideo ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
             </button>
           </div>
         </div>
@@ -858,6 +1088,34 @@
                       />
                     </svg>
                   }
+                </button>
+              </div>
+            </div>
+
+            <!-- Display Duration -->
+            <div class="space-y-2 pt-2 border-t border-[#e6d5c3] dark:border-[#444547]/20">
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+              >
+                {{ 'ADMIN.AD_VIDEOS.DISPLAY_DURATION' | translate }}
+              </label>
+              <div class="flex gap-3">
+                <div class="relative flex-1">
+                  <input
+                    [(ngModel)]="editDisplayDuration"
+                    type="number"
+                    min="1"
+                    class="ci-input"
+                    dir="ltr"
+                  />
+                  <span class="absolute inset-y-0 end-3 flex items-center text-[10px] font-black text-[#5c5f63]/40 dark:text-gray-600 pointer-events-none">s</span>
+                </div>
+                <button
+                  (click)="updateDisplayDuration()"
+                  [disabled]="isUpdatingDuration"
+                  class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316] shrink-0 disabled:opacity-50"
+                >
+                  {{ isUpdatingDuration ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
                 </button>
               </div>
             </div>

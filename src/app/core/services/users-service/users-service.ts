@@ -37,4 +37,12 @@ export class UsersService {
   updateUser(id: string, data: FormData): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}`, data);
   }
+
+  getMe(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/me`);
+  }
+
+  updateDisplayDuration(userId: string, displayDuration: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${userId}/display-duration`, { displayDuration });
+  }
 }

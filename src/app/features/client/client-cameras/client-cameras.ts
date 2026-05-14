@@ -10,16 +10,26 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { firstValueFrom } from 'rxjs';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
+import { AdVideoService } from '../../../core/services/ad-video-service/ad-video-service';
+import { UsersService } from '../../../core/services/users-service/users-service';
 import { environment } from '../../../../environments/environment';
 
 interface Camera {
   _id: string;
   name: string;
   lastPic?: string;
+  lastPicDate?: string;
   cameraVideo?: string;
-  driveVideo?: string;
+  displayDuration?: number;
+  isActive?: boolean;
+}
+
+interface AdVideo {
+  _id: string;
   video?: string;
+  driveVideo?: string;
 }
 
 export interface LayoutOption {
@@ -40,6 +50,8 @@ export interface LayoutOption {
 })
 export class ClientCameras implements OnInit, OnDestroy {
   private camerasService = inject(CamerasService);
+  private adVideoService = inject(AdVideoService);
+  private usersService = inject(UsersService);
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
   private sanitizer = inject(DomSanitizer);
@@ -47,18 +59,34 @@ export class ClientCameras implements OnInit, OnDestroy {
   readonly baseUrl = environment.baseUrl;
 
   cameras: Camera[] = [];
+  adVideos: AdVideo[] = [];
   isLoading = true;
   layoutId = '4';
-  showVideo = false;
-  promoVideoUrl = '';
-  safePromoUrl: SafeResourceUrl | string = '';
-  promoIsFile = true;
-  refreshTs = 0;
   showLayoutPicker = false;
+  refreshTs = 0;
+
+  // Per-camera in-cell timelapse
+  playingVideoCamId: string | null = null;
+  cellVideoFileUrl = '';
+  safeCellIframeUrl: SafeResourceUrl | string = '';
+  cellVideoIsFile = false;
+
+  // Expanded camera overlay
+  expandedCamId: string | null = null;
+
+  // Ad video fullscreen
+  showAdVideo = false;
+  adVideoFileUrl = '';
+  safeAdVideoUrl: SafeResourceUrl | string = '';
+  adIsFile = false;
+  currentAdVideoIndex = 0;
+  userDisplayDuration = 60;
 
   private refreshInterval?: ReturnType<typeof setInterval>;
-  private promoInterval?: ReturnType<typeof setInterval>;
-  private iframePromoTimeout?: ReturnType<typeof setTimeout>;
+  private adVideoInterval?: ReturnType<typeof setInterval>;
+  private iframeAdTimeout?: ReturnType<typeof setTimeout>;
+  private iframeCellTimeout?: ReturnType<typeof setTimeout>;
+  private cameraVideoTimers = new Map<string, ReturnType<typeof setInterval>>();
 
   readonly layouts: LayoutOption[] = [
     { id: '1',    label: '1',   maxCams: 1,  cols: 1, rows: 1 },
@@ -72,56 +100,155 @@ export class ClientCameras implements OnInit, OnDestroy {
     { id: 'f1+4', label: '1+4', maxCams: 5,  cols: 2, rows: 4, featured: true },
   ];
 
-  ngOnInit() {
+  async ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const saved = localStorage.getItem('ci-camera-layout');
     if (saved) this.layoutId = saved;
-
     this.refreshTs = Date.now();
-    this.loadCameras();
 
-    this.refreshInterval = setInterval(() => {
-      this.refreshTs = Date.now();
-      this.cdr.detectChanges();
+    try {
+      const userRes = await firstValueFrom(this.usersService.getMe());
+      const user = userRes.data;
+      this.userDisplayDuration = user.displayDuration ?? 60;
+      if (user._id) {
+        const adRes = await firstValueFrom(this.adVideoService.getUserAdVideos(user._id));
+        this.adVideos = adRes.data || [];
+      }
+    } catch {}
+
+    await this.loadCameras();
+
+    this.refreshInterval = setInterval(async () => {
+      await this.loadCameras();
     }, 60_000);
 
-    this.promoInterval = setInterval(() => {
-      this.triggerPromo();
-    }, 60_000);
+    if (this.adVideos.length > 0) {
+      this.adVideoInterval = setInterval(() => {
+        this.showNextAdVideo();
+      }, this.userDisplayDuration * 1_000);
+    }
   }
 
   ngOnDestroy() {
     clearInterval(this.refreshInterval);
-    clearInterval(this.promoInterval);
-    clearTimeout(this.iframePromoTimeout);
+    clearInterval(this.adVideoInterval);
+    clearTimeout(this.iframeAdTimeout);
+    clearTimeout(this.iframeCellTimeout);
+    this.cameraVideoTimers.forEach((t) => clearInterval(t));
   }
 
-  loadCameras() {
-    this.camerasService.getMyCameras().subscribe({
-      next: (res) => {
-        this.cameras = res.data || [];
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-    });
+  async loadCameras() {
+    try {
+      const res = await firstValueFrom(this.camerasService.getMyCameras());
+      this.cameras = (res.data || []).filter((c: Camera) => c.isActive !== false);
+      this.isLoading = false;
+      this.setupCameraVideoTimers();
+      this.cdr.detectChanges();
+    } catch {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
   }
+
+  getLastPicUrl(camera: Camera): string {
+    return camera.lastPic ?? '';
+  }
+
+  // ── Per-camera timelapse ────────────────────────────────────────────────────
+
+  setupCameraVideoTimers() {
+    this.cameraVideoTimers.forEach((t) => clearInterval(t));
+    this.cameraVideoTimers.clear();
+
+    for (const cam of this.cameras) {
+      if (!cam.cameraVideo || !cam.displayDuration) continue;
+      const timer = setInterval(() => {
+        this.playCellVideo(cam);
+      }, cam.displayDuration * 1_000);
+      this.cameraVideoTimers.set(cam._id, timer);
+    }
+  }
+
+  playCellVideo(cam: Camera) {
+    if (!cam.cameraVideo || this.showAdVideo) return;
+    const url = cam.cameraVideo;
+    const isFile = url.startsWith(this.baseUrl) || !url.includes('://');
+    this.cellVideoIsFile = isFile;
+    if (isFile) {
+      this.cellVideoFileUrl = url.startsWith('http') ? url : `${this.baseUrl}/${url.replace(/\\/g, '/')}`;
+    } else {
+      this.safeCellIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+    this.playingVideoCamId = cam._id;
+    this.cdr.detectChanges();
+
+    if (!isFile) {
+      clearTimeout(this.iframeCellTimeout);
+      this.iframeCellTimeout = setTimeout(() => this.stopCellVideo(), 30_000);
+    }
+  }
+
+  stopCellVideo() {
+    this.playingVideoCamId = null;
+    this.cellVideoFileUrl = '';
+    clearTimeout(this.iframeCellTimeout);
+    this.cdr.detectChanges();
+  }
+
+  // ── Expand camera ───────────────────────────────────────────────────────────
+
+  toggleExpand(camId: string) {
+    this.expandedCamId = this.expandedCamId === camId ? null : camId;
+    this.cdr.detectChanges();
+  }
+
+  getExpandedCamera(): Camera | undefined {
+    return this.cameras.find((c) => c._id === this.expandedCamId);
+  }
+
+  // ── Ad videos ───────────────────────────────────────────────────────────────
+
+  showNextAdVideo() {
+    if (this.adVideos.length === 0) return;
+    const vid = this.adVideos[this.currentAdVideoIndex % this.adVideos.length];
+    this.currentAdVideoIndex = (this.currentAdVideoIndex + 1) % this.adVideos.length;
+    this.playAdVideo(vid);
+  }
+
+  playAdVideo(vid: AdVideo) {
+    if (vid.video) {
+      this.adVideoFileUrl = `${this.baseUrl}/${vid.video.replace(/\\/g, '/')}`;
+      this.adIsFile = true;
+    } else if (vid.driveVideo) {
+      this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(vid.driveVideo);
+      this.adIsFile = false;
+      this.iframeAdTimeout = setTimeout(() => this.stopAdVideo(), 30_000);
+    } else {
+      return;
+    }
+    this.showAdVideo = true;
+    this.cdr.detectChanges();
+  }
+
+  onAdVideoEnded() {
+    this.stopAdVideo();
+  }
+
+  stopAdVideo() {
+    this.showAdVideo = false;
+    this.adVideoFileUrl = '';
+    clearTimeout(this.iframeAdTimeout);
+    this.cdr.detectChanges();
+  }
+
+  // ── Layout ──────────────────────────────────────────────────────────────────
 
   setLayout(id: string) {
     this.layoutId = id;
     localStorage.setItem('ci-camera-layout', id);
     this.showLayoutPicker = false;
     this.cdr.detectChanges();
-  }
-
-  getLastPicUrl(camera: Camera): string {
-    if (!camera.lastPic) return '';
-    const sep = camera.lastPic.includes('?') ? '&' : '?';
-    return `${camera.lastPic}${sep}_t=${this.refreshTs}`;
   }
 
   getGridTemplateColumns(): string {
@@ -175,34 +302,7 @@ export class ClientCameras implements OnInit, OnDestroy {
     return Array.from({ length: Math.max(0, n) }, (_, i) => i);
   }
 
-  triggerPromo() {
-    const cam = this.cameras.find((c) => c.video || c.cameraVideo || c.driveVideo);
-    if (!cam) return;
-
-    if (cam.video) {
-      this.promoVideoUrl = `${this.baseUrl}/${cam.video.replace(/\\/g, '/')}`;
-      this.promoIsFile = true;
-    } else {
-      const url = cam.cameraVideo || cam.driveVideo || '';
-      if (!url) return;
-      this.promoVideoUrl = url;
-      this.safePromoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-      this.promoIsFile = false;
-      this.iframePromoTimeout = setTimeout(() => this.stopPromo(), 30_000);
-    }
-
-    this.showVideo = true;
-    this.cdr.detectChanges();
-  }
-
-  onVideoEnded() {
-    this.stopPromo();
-  }
-
-  stopPromo() {
-    this.showVideo = false;
-    this.promoVideoUrl = '';
-    clearTimeout(this.iframePromoTimeout);
-    this.cdr.detectChanges();
+  getFileUrl(path: string): string {
+    return `${this.baseUrl}/${path.replace(/\\/g, '/')}`;
   }
 }

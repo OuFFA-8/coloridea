@@ -20,7 +20,7 @@
       </span>
     </div>
 
-    <!-- Layout picker toggle -->
+    <!-- Layout picker -->
     <div class="relative z-50">
       <button
         (click)="showLayoutPicker = !showLayoutPicker"
@@ -46,7 +46,6 @@
                 [class.bg-[#68ab1f]/10]="layoutId === layout.id"
                 [class.border-white/10]="layoutId !== layout.id"
               >
-                <!-- Mini icon: grid of cells -->
                 <div
                   class="w-10 h-8"
                   style="display: grid; gap: 1px"
@@ -98,16 +97,18 @@
     } @else {
       <div
         class="w-full h-full"
-        style="display: grid; gap: 2px; background: #111"
+        style="display: grid; gap: 2px; background: #111; grid-auto-rows: 1fr"
         [style.gridTemplateColumns]="getGridTemplateColumns()"
         [style.gridTemplateRows]="getGridTemplateRows()"
       >
         @for (camera of getDisplayedCameras(); track camera._id; let i = $index) {
           <div
-            class="relative overflow-hidden bg-[#0a0a0a]"
+            class="relative overflow-hidden bg-[#0a0a0a] cursor-pointer group"
             [style.gridRow]="getCellGridRow(i)"
+            (click)="toggleExpand(camera._id)"
           >
-            @if (camera.lastPic) {
+            <!-- Last pic image -->
+            @if (getLastPicUrl(camera)) {
               <img
                 [src]="getLastPicUrl(camera)"
                 class="w-full h-full object-cover"
@@ -118,14 +119,45 @@
                 <span class="text-5xl opacity-5">📷</span>
               </div>
             }
-            <!-- Camera label -->
-            <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-3 py-2 pointer-events-none">
+
+            <!-- In-cell timelapse video -->
+            @if (playingVideoCamId === camera._id) {
+              <div class="absolute inset-0 z-10 bg-black">
+                @if (cellVideoIsFile) {
+                  <video
+                    [src]="cellVideoFileUrl"
+                    class="w-full h-full object-cover"
+                    autoplay
+                    (ended)="stopCellVideo()"
+                  ></video>
+                } @else {
+                  <iframe
+                    [src]="safeCellIframeUrl"
+                    class="w-full h-full border-none"
+                    allowfullscreen
+                  ></iframe>
+                }
+              </div>
+            }
+
+            <!-- Camera label (always visible) -->
+            <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-3 py-2 pointer-events-none z-20">
               <span class="text-white text-[10px] font-black drop-shadow">{{ camera.name }}</span>
+            </div>
+
+            <!-- Hover overlay: name + date -->
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 flex flex-col items-center justify-center gap-1 px-3">
+              <p class="text-white text-sm font-black text-center drop-shadow">{{ camera.name }}</p>
+              @if (camera.lastPicDate) {
+                <p class="text-white/60 text-[10px] font-bold text-center">
+                  {{ camera.lastPicDate | date: 'dd MMM yyyy — HH:mm' }}
+                </p>
+              }
             </div>
           </div>
         }
 
-        <!-- Filler cells for empty slots -->
+        <!-- Filler cells -->
         @for (i of range(getFillerCount()); track i) {
           <div class="bg-[#080808] flex items-center justify-center">
             <span class="text-3xl opacity-5">📷</span>
@@ -134,25 +166,82 @@
       </div>
     }
 
-    <!-- ===== PROMO VIDEO OVERLAY ===== -->
-    @if (showVideo) {
+    <!-- ===== EXPANDED CAMERA OVERLAY ===== -->
+    @if (expandedCamId) {
+      <div
+        class="absolute inset-0 z-20 bg-black/90 flex items-center justify-center"
+        (click)="expandedCamId = null"
+      >
+        @if (getExpandedCamera(); as cam) {
+          <div class="w-full h-full relative" (click)="$event.stopPropagation()">
+            @if (getLastPicUrl(cam)) {
+              <img
+                [src]="getLastPicUrl(cam)"
+                class="w-full h-full object-contain"
+                alt=""
+              />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center">
+                <span class="text-8xl opacity-10">📷</span>
+              </div>
+            }
+
+            <!-- In-cell video when expanded too -->
+            @if (playingVideoCamId === cam._id) {
+              <div class="absolute inset-0 bg-black">
+                @if (cellVideoIsFile) {
+                  <video
+                    [src]="cellVideoFileUrl"
+                    class="w-full h-full object-cover"
+                    autoplay
+                    (ended)="stopCellVideo()"
+                  ></video>
+                } @else {
+                  <iframe
+                    [src]="safeCellIframeUrl"
+                    class="w-full h-full border-none"
+                    allowfullscreen
+                  ></iframe>
+                }
+              </div>
+            }
+
+            <!-- Camera name -->
+            <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-6 py-5 pointer-events-none">
+              <p class="text-white text-lg font-black drop-shadow">{{ cam.name }}</p>
+            </div>
+
+            <!-- Close button -->
+            <button
+              (click)="expandedCamId = null"
+              class="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/80 transition-colors"
+            >
+              ✕ Close
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ===== AD VIDEO OVERLAY ===== -->
+    @if (showAdVideo) {
       <div class="absolute inset-0 z-30 bg-black flex items-center justify-center">
-        @if (promoIsFile) {
+        @if (adIsFile) {
           <video
-            [src]="promoVideoUrl"
+            [src]="adVideoFileUrl"
             class="w-full h-full object-contain"
             autoplay
-            (ended)="onVideoEnded()"
+            (ended)="onAdVideoEnded()"
           ></video>
         } @else {
           <iframe
-            [src]="safePromoUrl"
+            [src]="safeAdVideoUrl"
             class="w-full h-full border-none"
             allowfullscreen
           ></iframe>
         }
         <button
-          (click)="stopPromo()"
+          (click)="stopAdVideo()"
           class="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/80 transition-colors"
         >
           Skip ✕

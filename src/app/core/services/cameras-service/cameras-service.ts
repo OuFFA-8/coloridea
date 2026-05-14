@@ -27,6 +27,10 @@ export class CamerasService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
+  toggleStatus(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/toggle-status`, {});
+  }
+
   getMyCameras(): Observable<any> {
     return this.http.get(`${environment.baseUrl}/api/v1/users/me/cameras`);
   }
