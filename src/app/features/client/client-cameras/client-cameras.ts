@@ -109,22 +109,30 @@ export class ClientCameras implements OnInit, OnDestroy {
     if (saved) this.layoutId = saved;
 
     const storedUser = this.authServices.getUser();
-    const userId = storedUser?._id;
+    let userId: string | null = storedUser?._id || storedUser?.id || null;
 
     try {
       const userRes = await firstValueFrom(this.usersService.getMe());
-      this.userDisplayDuration = userRes.data?.displayDuration ?? 60;
+      const me = userRes.data;
+      this.userDisplayDuration = me?.displayDuration ?? storedUser?.displayDuration ?? 60;
+      userId = me?._id || me?.id || userId;
     } catch (err) {
-      console.error('getMe failed:', err);
+      console.error('[cameras] getMe failed:', err);
+      this.userDisplayDuration = storedUser?.displayDuration ?? 60;
     }
+
+    console.log('[cameras] userId:', userId, '| displayDuration:', this.userDisplayDuration);
 
     if (userId) {
       try {
         const adRes = await firstValueFrom(this.adVideoService.getUserAdVideos(userId));
         this.adVideos = adRes.data || [];
+        console.log('[cameras] adVideos loaded:', this.adVideos.length, this.adVideos);
       } catch (err) {
-        console.error('getUserAdVideos failed:', err);
+        console.error('[cameras] getUserAdVideos failed:', err);
       }
+    } else {
+      console.warn('[cameras] no userId found — ad videos skipped');
     }
 
     await this.loadCameras();
@@ -138,6 +146,8 @@ export class ClientCameras implements OnInit, OnDestroy {
       this.adVideoInterval = setInterval(() => {
         this.showNextAdVideo();
       }, this.userDisplayDuration * 1_000);
+    } else {
+      console.warn('[cameras] adVideos is empty — no ad video interval set');
     }
   }
 

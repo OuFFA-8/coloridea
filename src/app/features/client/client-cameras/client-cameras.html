@@ -140,19 +140,16 @@
               </div>
             }
 
-            <!-- Camera label (always visible) -->
-            <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-3 py-2 pointer-events-none z-20">
-              <span class="text-white text-[10px] font-black drop-shadow">{{ camera.name }}</span>
-            </div>
-
-            <!-- Hover overlay: name + date -->
-            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 flex flex-col items-center justify-center gap-1 px-3">
-              <p class="text-white text-sm font-black text-center drop-shadow">{{ camera.name }}</p>
+            <!-- Bottom bar: date left — name right -->
+            <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-3 py-2 pointer-events-none z-20 flex items-end justify-between gap-2">
               @if (camera.lastPicDate) {
-                <p class="text-white/60 text-[10px] font-bold text-center">
-                  {{ camera.lastPicDate | date: 'dd MMM yyyy — HH:mm' }}
-                </p>
+                <span class="text-white/60 text-[9px] font-bold drop-shadow leading-tight">
+                  {{ camera.lastPicDate | date: 'dd MMM — HH:mm' }}
+                </span>
+              } @else {
+                <span></span>
               }
+              <span class="text-white text-[10px] font-black drop-shadow leading-tight text-right">{{ camera.name }}</span>
             </div>
           </div>
         }
