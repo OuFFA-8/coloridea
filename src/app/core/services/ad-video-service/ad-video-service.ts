@@ -12,6 +12,10 @@ export class AdVideoService {
     return this.http.get(`${this.apiUrl}/${userId}/user`);
   }
 
+  getMyAdVideos(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/my`);
+  }
+
   createAdVideo(userId: string, data: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/${userId}/user`, data);
   }

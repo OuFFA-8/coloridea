@@ -13,7 +13,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
 import { AdVideoService } from '../../../core/services/ad-video-service/ad-video-service';
-import { UsersService } from '../../../core/services/users-service/users-service';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { environment } from '../../../../environments/environment';
 
@@ -52,7 +51,6 @@ export interface LayoutOption {
 export class ClientCameras implements OnInit, OnDestroy {
   private camerasService = inject(CamerasService);
   private adVideoService = inject(AdVideoService);
-  private usersService = inject(UsersService);
   private authServices = inject(AuthServices);
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
@@ -109,31 +107,12 @@ export class ClientCameras implements OnInit, OnDestroy {
     if (saved) this.layoutId = saved;
 
     const storedUser = this.authServices.getUser();
-    let userId: string | null = storedUser?._id || storedUser?.id || null;
+    this.userDisplayDuration = storedUser?.displayDuration ?? 60;
 
     try {
-      const userRes = await firstValueFrom(this.usersService.getMe());
-      const me = userRes.data;
-      this.userDisplayDuration = me?.displayDuration ?? storedUser?.displayDuration ?? 60;
-      userId = me?._id || me?.id || userId;
-    } catch (err) {
-      console.error('[cameras] getMe failed:', err);
-      this.userDisplayDuration = storedUser?.displayDuration ?? 60;
-    }
-
-    console.log('[cameras] userId:', userId, '| displayDuration:', this.userDisplayDuration);
-
-    if (userId) {
-      try {
-        const adRes = await firstValueFrom(this.adVideoService.getUserAdVideos(userId));
-        this.adVideos = adRes.data || [];
-        console.log('[cameras] adVideos loaded:', this.adVideos.length, this.adVideos);
-      } catch (err) {
-        console.error('[cameras] getUserAdVideos failed:', err);
-      }
-    } else {
-      console.warn('[cameras] no userId found — ad videos skipped');
-    }
+      const adRes = await firstValueFrom(this.adVideoService.getMyAdVideos());
+      this.adVideos = adRes.data || [];
+    } catch {}
 
     await this.loadCameras();
 
@@ -146,8 +125,6 @@ export class ClientCameras implements OnInit, OnDestroy {
       this.adVideoInterval = setInterval(() => {
         this.showNextAdVideo();
       }, this.userDisplayDuration * 1_000);
-    } else {
-      console.warn('[cameras] adVideos is empty — no ad video interval set');
     }
   }
 
