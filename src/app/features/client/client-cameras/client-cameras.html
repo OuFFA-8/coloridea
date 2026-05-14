@@ -3,12 +3,12 @@
   <!-- ===== TOP BAR ===== -->
   <div class="flex items-center justify-between px-4 py-2.5 bg-[#0a0a0a] border-b border-white/5 shrink-0 z-10">
     <div class="flex items-center gap-3">
-      <a
-        routerLink="/client/profile"
-        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors text-white/40 hover:text-white hover:bg-white/5"
+      <button
+        (click)="location.back()"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border-none bg-transparent cursor-pointer transition-colors text-white/40 hover:text-white hover:bg-white/5"
       >
         ← Back
-      </a>
+      </button>
       <div class="w-px h-4 bg-white/10"></div>
       <div class="flex items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f] animate-pulse"></span>

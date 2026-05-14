@@ -7,8 +7,7 @@ import {
   PLATFORM_ID,
   inject,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
@@ -45,11 +44,12 @@ export interface LayoutOption {
 @Component({
   selector: 'app-client-cameras',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './client-cameras.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientCameras implements OnInit, OnDestroy {
+  readonly location = inject(Location);
   private camerasService = inject(CamerasService);
   private adVideoService = inject(AdVideoService);
   private authServices = inject(AuthServices);
