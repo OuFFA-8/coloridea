@@ -130,7 +130,7 @@
                     autoplay
                     muted
                     playsinline
-                    loop
+                    (ended)="stopCellVideo(camera._id)"
                   ></video>
                 } @else {
                   <iframe
@@ -195,7 +195,7 @@
                     autoplay
                     muted
                     playsinline
-                    loop
+                    (ended)="stopCellVideo(cam._id)"
                   ></video>
                 } @else {
                   <iframe

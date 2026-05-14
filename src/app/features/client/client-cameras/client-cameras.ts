@@ -88,7 +88,7 @@ export class ClientCameras implements OnInit, OnDestroy {
   private adVideoTimeout?: ReturnType<typeof setTimeout>;
   private iframeAdTimeout?: ReturnType<typeof setTimeout>;
   private iframeCellTimeout?: ReturnType<typeof setTimeout>;
-  private cameraVideoTimers = new Map<string, ReturnType<typeof setInterval>>();
+  private nextPlayTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
   readonly layouts: LayoutOption[] = [
     { id: '1',    label: '1',   maxCams: 1,  cols: 1, rows: 1 },
@@ -136,7 +136,7 @@ export class ClientCameras implements OnInit, OnDestroy {
     clearTimeout(this.adVideoTimeout);
     clearTimeout(this.iframeAdTimeout);
     this.iframeCellTimeouts.forEach((t) => clearTimeout(t));
-    this.cameraVideoTimers.forEach((t) => clearInterval(t));
+    this.nextPlayTimers.forEach((t) => clearTimeout(t));
   }
 
   async loadCameras() {
@@ -144,7 +144,6 @@ export class ClientCameras implements OnInit, OnDestroy {
       const res = await firstValueFrom(this.camerasService.getMyCameras());
       this.cameras = (res.data || []).filter((c: Camera) => c.isActive !== false);
       this.isLoading = false;
-      this.setupCameraVideoTimers();
       this.autoplayCameraTimelapse();
       this.cdr.detectChanges();
     } catch {
@@ -168,21 +167,10 @@ export class ClientCameras implements OnInit, OnDestroy {
 
   // ── Per-camera timelapse ────────────────────────────────────────────────────
 
-  setupCameraVideoTimers() {
-    this.cameraVideoTimers.forEach((t) => clearInterval(t));
-    this.cameraVideoTimers.clear();
-
-    for (const cam of this.cameras) {
-      if (!cam.cameraVideo || !cam.displayDuration) continue;
-      const timer = setInterval(() => {
-        this.playCellVideo(cam);
-      }, cam.displayDuration * 1_000);
-      this.cameraVideoTimers.set(cam._id, timer);
-    }
-  }
-
   playCellVideo(cam: Camera) {
     if (!cam.cameraVideo || this.showAdVideo) return;
+    clearTimeout(this.nextPlayTimers.get(cam._id));
+    this.nextPlayTimers.delete(cam._id);
     const url = cam.cameraVideo;
     const isFile = url.startsWith(this.baseUrl) || !url.includes('://');
     this.cellIsFile.set(cam._id, isFile);
@@ -207,6 +195,13 @@ export class ClientCameras implements OnInit, OnDestroy {
     clearTimeout(this.iframeCellTimeouts.get(camId));
     this.iframeCellTimeouts.delete(camId);
     this.cdr.detectChanges();
+
+    const cam = this.cameras.find((c) => c._id === camId);
+    if (cam?.cameraVideo) {
+      const delay = (cam.displayDuration ?? 30) * 1_000;
+      const t = setTimeout(() => this.playCellVideo(cam), delay);
+      this.nextPlayTimers.set(camId, t);
+    }
   }
 
   // ── Expand camera ───────────────────────────────────────────────────────────
