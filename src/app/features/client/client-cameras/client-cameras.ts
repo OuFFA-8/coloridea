@@ -7,7 +7,8 @@ import {
   PLATFORM_ID,
   inject,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
@@ -49,7 +50,7 @@ export interface LayoutOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientCameras implements OnInit, OnDestroy {
-  readonly location = inject(Location);
+  private router = inject(Router);
   private camerasService = inject(CamerasService);
   private adVideoService = inject(AdVideoService);
   private authServices = inject(AuthServices);
@@ -321,6 +322,14 @@ export class ClientCameras implements OnInit, OnDestroy {
 
   range(n: number): number[] {
     return Array.from({ length: Math.max(0, n) }, (_, i) => i);
+  }
+
+  goBack() {
+    if (this.authServices.isAdmin()) {
+      this.router.navigate(['/admin/clients']);
+    } else {
+      this.router.navigate(['/client/profile']);
+    }
   }
 
   getFileUrl(path: string): string {
