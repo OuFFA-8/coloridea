@@ -144,7 +144,7 @@ export class ClientCameras implements OnInit, OnDestroy {
       const res = await firstValueFrom(this.camerasService.getMyCameras());
       this.cameras = (res.data || []).filter((c: Camera) => c.isActive !== false);
       this.isLoading = false;
-      this.autoplayCameraTimelapse();
+      this.scheduleCameraTimelapse();
       this.cdr.detectChanges();
     } catch {
       this.isLoading = false;
@@ -152,12 +152,13 @@ export class ClientCameras implements OnInit, OnDestroy {
     }
   }
 
-  autoplayCameraTimelapse() {
-    if (this.showAdVideo) return;
+  scheduleCameraTimelapse() {
     for (const cam of this.cameras) {
-      if (cam.cameraVideo && !this.playingCamIds.has(cam._id)) {
-        this.playCellVideo(cam);
-      }
+      if (!cam.cameraVideo) continue;
+      if (this.playingCamIds.has(cam._id) || this.nextPlayTimers.has(cam._id)) continue;
+      const delay = (cam.displayDuration || 30) * 1_000;
+      const t = setTimeout(() => this.playCellVideo(cam), delay);
+      this.nextPlayTimers.set(cam._id, t);
     }
   }
 
@@ -198,7 +199,7 @@ export class ClientCameras implements OnInit, OnDestroy {
 
     const cam = this.cameras.find((c) => c._id === camId);
     if (cam?.cameraVideo) {
-      const delay = (cam.displayDuration ?? 30) * 1_000;
+      const delay = (cam.displayDuration || 30) * 1_000;
       const t = setTimeout(() => this.playCellVideo(cam), delay);
       this.nextPlayTimers.set(camId, t);
     }
