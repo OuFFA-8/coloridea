@@ -66,11 +66,12 @@ export class ClientCameras implements OnInit, OnDestroy {
   showLayoutPicker = false;
   refreshTs = 0;
 
-  // Per-camera in-cell timelapse
-  playingVideoCamId: string | null = null;
-  cellVideoFileUrl = '';
-  safeCellIframeUrl: SafeResourceUrl | string = '';
-  cellVideoIsFile = false;
+  // Per-camera in-cell timelapse (each camera independent)
+  playingCamIds = new Set<string>();
+  cellVideoUrls = new Map<string, string>();
+  cellIframeUrls = new Map<string, SafeResourceUrl>();
+  cellIsFile = new Map<string, boolean>();
+  private iframeCellTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
   // Expanded camera overlay
   expandedCamId: string | null = null;
@@ -125,7 +126,9 @@ export class ClientCameras implements OnInit, OnDestroy {
     }, 60_000);
 
     if (this.adVideos.length > 0) {
-      this.showNextAdVideo();
+      this.adVideoTimeout = setTimeout(() => {
+        this.showNextAdVideo();
+      }, this.userDisplayDuration * 1_000);
     }
   }
 
@@ -133,7 +136,7 @@ export class ClientCameras implements OnInit, OnDestroy {
     clearInterval(this.refreshInterval);
     clearTimeout(this.adVideoTimeout);
     clearTimeout(this.iframeAdTimeout);
-    clearTimeout(this.iframeCellTimeout);
+    this.iframeCellTimeouts.forEach((t) => clearTimeout(t));
     this.cameraVideoTimers.forEach((t) => clearInterval(t));
   }
 
@@ -152,9 +155,12 @@ export class ClientCameras implements OnInit, OnDestroy {
   }
 
   autoplayCameraTimelapse() {
-    if (this.playingVideoCamId || this.showAdVideo) return;
-    const first = this.cameras.find((c) => c.cameraVideo);
-    if (first) this.playCellVideo(first);
+    if (this.showAdVideo) return;
+    for (const cam of this.cameras) {
+      if (cam.cameraVideo && !this.playingCamIds.has(cam._id)) {
+        this.playCellVideo(cam);
+      }
+    }
   }
 
   getLastPicUrl(camera: Camera): string {
@@ -180,25 +186,27 @@ export class ClientCameras implements OnInit, OnDestroy {
     if (!cam.cameraVideo || this.showAdVideo) return;
     const url = cam.cameraVideo;
     const isFile = url.startsWith(this.baseUrl) || !url.includes('://');
-    this.cellVideoIsFile = isFile;
+    this.cellIsFile.set(cam._id, isFile);
     if (isFile) {
-      this.cellVideoFileUrl = url.startsWith('http') ? url : `${this.baseUrl}/${url.replace(/\\/g, '/')}`;
+      this.cellVideoUrls.set(cam._id, url.startsWith('http') ? url : `${this.baseUrl}/${url.replace(/\\/g, '/')}`);
     } else {
-      this.safeCellIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      this.cellIframeUrls.set(cam._id, this.sanitizer.bypassSecurityTrustResourceUrl(url));
     }
-    this.playingVideoCamId = cam._id;
+    this.playingCamIds.add(cam._id);
     this.cdr.detectChanges();
 
     if (!isFile) {
-      clearTimeout(this.iframeCellTimeout);
-      this.iframeCellTimeout = setTimeout(() => this.stopCellVideo(), 30_000);
+      clearTimeout(this.iframeCellTimeouts.get(cam._id));
+      this.iframeCellTimeouts.set(cam._id, setTimeout(() => this.stopCellVideo(cam._id), 30_000));
     }
   }
 
-  stopCellVideo() {
-    this.playingVideoCamId = null;
-    this.cellVideoFileUrl = '';
-    clearTimeout(this.iframeCellTimeout);
+  stopCellVideo(camId: string) {
+    this.playingCamIds.delete(camId);
+    this.cellVideoUrls.delete(camId);
+    this.cellIframeUrls.delete(camId);
+    clearTimeout(this.iframeCellTimeouts.get(camId));
+    this.iframeCellTimeouts.delete(camId);
     this.cdr.detectChanges();
   }
 

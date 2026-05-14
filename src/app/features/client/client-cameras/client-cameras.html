@@ -121,20 +121,20 @@
             }
 
             <!-- In-cell timelapse video -->
-            @if (playingVideoCamId === camera._id) {
+            @if (playingCamIds.has(camera._id)) {
               <div class="absolute inset-0 z-10 bg-black">
-                @if (cellVideoIsFile) {
+                @if (cellIsFile.get(camera._id)) {
                   <video
-                    [src]="cellVideoFileUrl"
+                    [src]="cellVideoUrls.get(camera._id)"
                     class="w-full h-full object-cover"
                     autoplay
                     muted
                     playsinline
-                    (ended)="stopCellVideo()"
+                    (ended)="stopCellVideo(camera._id)"
                   ></video>
                 } @else {
                   <iframe
-                    [src]="safeCellIframeUrl"
+                    [src]="cellIframeUrls.get(camera._id)"
                     class="w-full h-full border-none"
                     allowfullscreen
                   ></iframe>
@@ -186,20 +186,20 @@
             }
 
             <!-- In-cell video when expanded too -->
-            @if (playingVideoCamId === cam._id) {
+            @if (playingCamIds.has(cam._id)) {
               <div class="absolute inset-0 bg-black">
-                @if (cellVideoIsFile) {
+                @if (cellIsFile.get(cam._id)) {
                   <video
-                    [src]="cellVideoFileUrl"
+                    [src]="cellVideoUrls.get(cam._id)"
                     class="w-full h-full object-cover"
                     autoplay
                     muted
                     playsinline
-                    (ended)="stopCellVideo()"
+                    (ended)="stopCellVideo(cam._id)"
                   ></video>
                 } @else {
                   <iframe
-                    [src]="safeCellIframeUrl"
+                    [src]="cellIframeUrls.get(cam._id)"
                     class="w-full h-full border-none"
                     allowfullscreen
                   ></iframe>
