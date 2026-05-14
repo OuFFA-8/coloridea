@@ -251,7 +251,7 @@
         </div>
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          @for (camera of cameras; track camera._id) {
+          @for (camera of cameras; track $index) {
             <div class="group bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm overflow-hidden">
               <!-- Thumbnail -->
               <div class="w-full h-40 bg-[#444547]/10 dark:bg-[#444547]/20 overflow-hidden relative">
