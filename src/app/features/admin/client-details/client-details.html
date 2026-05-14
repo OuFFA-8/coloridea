@@ -232,9 +232,14 @@
         </div>
         <button
           (click)="toggleCameraModal()"
-          class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#444547]/20 dark:hover:bg-white/20"
+          [disabled]="cameras.length >= 12"
+          class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#444547]/20 dark:hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }}
+          @if (cameras.length >= 12) {
+            12/12 Max
+          } @else {
+            + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }} ({{ cameras.length }}/12)
+          }
         </button>
       </div>
 
@@ -333,7 +338,7 @@
                 (click)="toggleCameraModal()"
                 class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#444547] hover:bg-[#5c5f63]"
               >
-                + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }}
+                + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }} (0/12)
               </button>
             </div>
           }
@@ -376,9 +381,14 @@
           </div>
           <button
             (click)="toggleAdVideoModal()"
-            class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316]"
+            [disabled]="adVideos.length >= 10"
+            class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none transition-all text-white bg-[#fa8728] hover:bg-[#f97316] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            + {{ 'ADMIN.AD_VIDEOS.ADD' | translate }}
+            @if (adVideos.length >= 10) {
+              10/10 Max
+            } @else {
+              + {{ 'ADMIN.AD_VIDEOS.ADD' | translate }} ({{ adVideos.length }}/10)
+            }
           </button>
         </div>
       </div>
