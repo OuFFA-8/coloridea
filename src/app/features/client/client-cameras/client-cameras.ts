@@ -113,13 +113,18 @@ export class ClientCameras implements OnInit, OnDestroy {
     try {
       const adRes = await firstValueFrom(this.adVideoService.getMyAdVideos());
       this.adVideos = adRes.data || [];
-    } catch {}
+      console.log('[ad] loaded:', this.adVideos.length, this.adVideos[0]);
+    } catch (err) {
+      console.error('[ad] failed:', err);
+    }
 
     await this.loadCameras();
 
     this.refreshInterval = setInterval(async () => {
       await this.loadCameras();
     }, 60_000);
+
+    console.log('[ad] adVideos.length:', this.adVideos.length, '| displayDuration:', this.userDisplayDuration);
 
     if (this.adVideos.length > 0) {
       this.showNextAdVideo();

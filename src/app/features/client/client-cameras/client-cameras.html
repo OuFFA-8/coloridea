@@ -222,7 +222,7 @@
 
     <!-- ===== AD VIDEO OVERLAY ===== -->
     @if (showAdVideo) {
-      <div class="absolute inset-0 z-30 bg-black flex items-center justify-center">
+      <div class="fixed inset-0 z-50 bg-black flex items-center justify-center">
         @if (adIsFile) {
           <video
             [src]="adVideoFileUrl"
