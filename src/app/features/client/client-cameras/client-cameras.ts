@@ -20,6 +20,7 @@ interface Camera {
   _id: string;
   name: string;
   lastPic?: string;
+  lastPicUrl?: string;
   lastPicDate?: string;
   cameraVideo?: string;
   displayDuration?: number;
@@ -150,7 +151,7 @@ export class ClientCameras implements OnInit, OnDestroy {
   }
 
   getLastPicUrl(camera: Camera): string {
-    return camera.lastPic ?? '';
+    return camera.lastPicUrl ?? camera.lastPic ?? '';
   }
 
   // ── Per-camera timelapse ────────────────────────────────────────────────────
