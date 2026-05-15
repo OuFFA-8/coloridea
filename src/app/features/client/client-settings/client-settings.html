@@ -152,46 +152,53 @@
       </div>
 
       @if (isLoadingAdVideos) {
-        <div class="space-y-3">
-          @for (_ of [1,2]; track $index) {
-            <div class="h-16 rounded-xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (_ of [1,2,3]; track $index) {
+            <div class="h-24 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
           }
         </div>
       } @else {
-        <div class="space-y-3">
-          @for (vid of adVideos; track $index) {
-            <div class="flex items-center gap-4 bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6d5c3] dark:border-[#444547]/30 px-4 py-3">
-              <div class="w-10 h-10 rounded-lg bg-[#fa8728]/10 flex items-center justify-center shrink-0">
-                <span class="text-lg">🎬</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (vid of adVideos; track vid._id) {
+            <div class="group flex items-center gap-4 p-4 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm">
+              <div class="w-12 h-12 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0 text-xl">
+                🎬
               </div>
-              <div class="flex-1 min-w-0">
+              <div class="min-w-0 flex-1">
                 @if (vid.video) {
                   <p class="text-xs font-black text-[#444547] dark:text-white truncate">
-                    {{ vid.video.split('/').pop() || 'video' }}
-                  </p>
-                  <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 font-bold uppercase tracking-widest">
                     {{ 'CLIENT.SETTINGS.AD_UPLOADED' | translate }}
                   </p>
-                } @else {
+                  <a
+                    [href]="baseUrl + '/' + vid.video"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
+                  >
+                    {{ 'COMMON.OPEN' | translate }} →
+                  </a>
+                } @else if (vid.driveVideo) {
+                  <p class="text-xs font-black text-[#444547] dark:text-white truncate">
+                    {{ 'CLIENT.SETTINGS.AD_DRIVE' | translate }}
+                  </p>
                   <a
                     [href]="vid.driveVideo"
                     target="_blank"
                     rel="noopener"
-                    class="text-xs font-black text-[#fa8728] truncate block hover:underline no-underline"
-                  >{{ vid.driveVideo }}</a>
-                  <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 font-bold uppercase tracking-widest">
-                    {{ 'CLIENT.SETTINGS.AD_DRIVE' | translate }}
-                  </p>
+                    class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
+                  >
+                    {{ 'COMMON.OPEN' | translate }} →
+                  </a>
                 }
               </div>
               <button
                 (click)="deleteAdVideo(vid._id)"
-                class="w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors text-sm shrink-0"
+                class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer shrink-0 opacity-0 group-hover:opacity-100 transition-all bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:text-rose-600 text-xs"
                 [title]="'COMMON.DELETE' | translate"
               >✕</button>
             </div>
           } @empty {
-            <div class="py-16 text-center border-2 border-dashed border-[#fa8728]/20 rounded-2xl">
+            <div class="col-span-full py-16 text-center border-2 border-dashed border-[#fa8728]/20 rounded-2xl">
               <div class="text-4xl mb-3 opacity-20">🎬</div>
               <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest mb-4">
                 {{ 'CLIENT.SETTINGS.AD_NO' | translate }}

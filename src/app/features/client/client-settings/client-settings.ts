@@ -253,6 +253,10 @@ export class ClientSettings implements OnInit {
     this.usersService.updateMyDisplayDuration(this.editDisplayDuration).subscribe({
       next: () => {
         this.isUpdatingDuration = false;
+        const user = this.authServices.getUser();
+        if (user) {
+          this.authServices.updateStoredUser({ ...user, displayDuration: this.editDisplayDuration });
+        }
         this.alert.success('تم تحديث مدة العرض');
         this.cdr.detectChanges();
       },
