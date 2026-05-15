@@ -328,7 +328,13 @@ export class ClientCameras implements OnInit, OnDestroy {
     if (this.authServices.isAdmin()) {
       this.router.navigate(['/admin/clients']);
     } else {
-      this.router.navigate(['/client/profile']);
+      const stored = localStorage.getItem('selectedProject');
+      const projectId = stored ? JSON.parse(stored)?._id : null;
+      if (projectId) {
+        this.router.navigate(['/client/projects', projectId]);
+      } else {
+        this.router.navigate(['/select-project']);
+      }
     }
   }
 
