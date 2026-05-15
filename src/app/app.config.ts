@@ -30,7 +30,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: TRANSLATE_HTTP_LOADER_CONFIG,
       useValue: {
-        prefix: './i18n/',
+        prefix: '/i18n/',
         suffix: '.json',
       },
     },
