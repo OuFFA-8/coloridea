@@ -1,75 +1,55 @@
-import { Deliverables } from './features/client/deliverables/deliverables';
-import { Projects } from './features/admin/projects/projects';
 import { adminGuard } from './core/guards/admin-guard';
 import { Routes } from '@angular/router';
-import { AuthLayout } from './layouts/auth-layout/auth-layout';
-import { ClientLayout } from './layouts/client-layout/client-layout';
-import { AdminLayout } from './layouts/admin-layout/admin-layout';
-import { Login } from './features/auth/login/login';
-import { Clients } from './features/admin/clients/clients';
 import { authGuard } from './core/guards/auth-guard';
-import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
-import { ProjectDetails } from './features/client/project-details/project-details';
-import { AdminProjectDetails } from './features/admin/admin-project-details/admin-project-details';
-import { ClientDetails } from './features/admin/client-details/client-details';
-import { Settings } from './features/admin/settings/settings';
-import { Profile } from './features/client/profile/profile';
-import { Financials } from './features/client/financials/financials';
-import { Files } from './features/client/files/files';
-import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
-import { ResetPassword } from './features/auth/reset-password/reset-password';
-import { VerifyEmail } from './features/client/verify-email/verify-email';
-import { ProjectSelect } from './features/client/project-select/project-select';
-import { AdminVerifyEmail } from './features/admin/admin-verify-email/admin-verify-email';
-import { ClientCameras } from './features/client/client-cameras/client-cameras';
-import { ClientSettings } from './features/client/client-settings/client-settings';
 
 export const routes: Routes = [
   // ===== AUTH =====
   {
     path: 'login',
-    component: AuthLayout,
+    loadComponent: () => import('./layouts/auth-layout/auth-layout').then(m => m.AuthLayout),
     children: [
-      { path: '', component: Login },
-      { path: 'forget-password', component: ForgotPassword },
-      { path: 'reset-password/:token', component: ResetPassword },
+      { path: '', loadComponent: () => import('./features/auth/login/login').then(m => m.Login) },
+      { path: 'forget-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password').then(m => m.ForgotPassword) },
+      { path: 'reset-password/:token', loadComponent: () => import('./features/auth/reset-password/reset-password').then(m => m.ResetPassword) },
     ],
   },
 
   {
     path: 'client/reset-password/:token',
-    component: AuthLayout,
-    children: [{ path: '', component: ResetPassword }],
+    loadComponent: () => import('./layouts/auth-layout/auth-layout').then(m => m.AuthLayout),
+    children: [
+      { path: '', loadComponent: () => import('./features/auth/reset-password/reset-password').then(m => m.ResetPassword) },
+    ],
   },
 
   {
     path: 'select-project',
-    component: ProjectSelect,
+    loadComponent: () => import('./features/client/project-select/project-select').then(m => m.ProjectSelect),
     canActivate: [authGuard],
   },
 
   {
     path: 'cameras',
-    component: ClientCameras,
+    loadComponent: () => import('./features/client/client-cameras/client-cameras').then(m => m.ClientCameras),
     canActivate: [authGuard],
   },
 
   // ===== CLIENT =====
   {
     path: 'client',
-    component: ClientLayout,
+    loadComponent: () => import('./layouts/client-layout/client-layout').then(m => m.ClientLayout),
     canActivate: [authGuard],
     children: [
-      { path: 'profile', component: Profile },
-      { path: 'settings', component: ClientSettings },
-      { path: 'verify-email/:token', component: VerifyEmail },
-      { path: 'files', component: Files },
+      { path: 'profile', loadComponent: () => import('./features/client/profile/profile').then(m => m.Profile) },
+      { path: 'settings', loadComponent: () => import('./features/client/client-settings/client-settings').then(m => m.ClientSettings) },
+      { path: 'verify-email/:token', loadComponent: () => import('./features/client/verify-email/verify-email').then(m => m.VerifyEmail) },
+      { path: 'files', loadComponent: () => import('./features/client/files/files').then(m => m.Files) },
       {
         path: 'projects/:id',
         children: [
-          { path: '', component: ProjectDetails },
-          { path: 'deliverables', component: Deliverables },
-          { path: 'financials', component: Financials },
+          { path: '', loadComponent: () => import('./features/client/project-details/project-details').then(m => m.ProjectDetails) },
+          { path: 'deliverables', loadComponent: () => import('./features/client/deliverables/deliverables').then(m => m.Deliverables) },
+          { path: 'financials', loadComponent: () => import('./features/client/financials/financials').then(m => m.Financials) },
         ],
       },
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
@@ -79,17 +59,17 @@ export const routes: Routes = [
   // ===== ADMIN =====
   {
     path: 'admin',
-    component: AdminLayout,
+    loadComponent: () => import('./layouts/admin-layout/admin-layout').then(m => m.AdminLayout),
     canActivate: [adminGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: AdminDashboard },
-      { path: 'clients', component: Clients },
-      { path: 'clients/:id', component: ClientDetails },
-      { path: 'projects', component: Projects },
-      { path: 'projects/:id', component: AdminProjectDetails },
-      { path: 'settings', component: Settings },
-      { path: 'verify-email/:token', component: AdminVerifyEmail },
+      { path: 'dashboard', loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard) },
+      { path: 'clients', loadComponent: () => import('./features/admin/clients/clients').then(m => m.Clients) },
+      { path: 'clients/:id', loadComponent: () => import('./features/admin/client-details/client-details').then(m => m.ClientDetails) },
+      { path: 'projects', loadComponent: () => import('./features/admin/projects/projects').then(m => m.Projects) },
+      { path: 'projects/:id', loadComponent: () => import('./features/admin/admin-project-details/admin-project-details').then(m => m.AdminProjectDetails) },
+      { path: 'settings', loadComponent: () => import('./features/admin/settings/settings').then(m => m.Settings) },
+      { path: 'verify-email/:token', loadComponent: () => import('./features/admin/admin-verify-email/admin-verify-email').then(m => m.AdminVerifyEmail) },
     ],
   },
 
