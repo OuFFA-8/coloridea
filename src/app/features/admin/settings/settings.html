@@ -57,7 +57,7 @@
         <span
           class="inline-block mt-1 px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-[#fa8728]/10 text-[#fa8728] border border-[#fa8728]/20"
         >
-          Super Admin
+          {{ 'SIDEBAR.SUPER_ADMIN' | translate }}
         </span>
       </div>
     </div>
@@ -86,9 +86,9 @@
     >
       @for (
         tab of [
-          { id: 'profile', label: 'Profile', icon: '👤' },
-          { id: 'password', label: 'Password', icon: '🔒' },
-          { id: 'email', label: 'Email', icon: '✉️' },
+          { id: 'profile', label: 'CLIENT.PROFILE.TAB_PROFILE', icon: '👤' },
+          { id: 'password', label: 'CLIENT.PROFILE.TAB_PASSWORD', icon: '🔒' },
+          { id: 'email', label: 'CLIENT.PROFILE.TAB_EMAIL', icon: '✉️' },
         ];
         track tab.id
       ) {
@@ -104,7 +104,7 @@
           [class.bg-transparent]="activeTab !== tab.id"
         >
           <span>{{ tab.icon }}</span>
-          <span class="hidden sm:inline">{{ tab.label }}</span>
+          <span class="hidden sm:inline">{{ tab.label | translate }}</span>
         </button>
       }
     </div>
@@ -119,7 +119,7 @@
             class="text-[10px] font-black uppercase text-[#5c5f63]/50 dark:text-gray-500 mb-6 flex items-center gap-2"
           >
             <span class="w-4 h-[1px] bg-[#fa8728]"></span>
-            Basic Info
+            {{ 'CLIENT.PROFILE.BASIC_INFO' | translate }}
           </h2>
           <div class="space-y-4">
             <div class="space-y-1.5">

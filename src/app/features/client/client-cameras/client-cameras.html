@@ -7,7 +7,7 @@
         (click)="goBack()"
         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border-none bg-transparent cursor-pointer transition-colors text-white/40 hover:text-white hover:bg-white/5"
       >
-        ← Back
+        {{ 'CAMERAS.BACK' | translate }}
       </button>
       <div class="w-px h-4 bg-white/10"></div>
       <div class="flex items-center gap-1.5">
@@ -16,7 +16,7 @@
       </div>
       <div class="w-px h-4 bg-white/10"></div>
       <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">
-        {{ cameras.length }} cameras
+        {{ cameras.length }} {{ 'CAMERAS.CAMERAS_LABEL' | translate }}
       </span>
     </div>
 
@@ -30,13 +30,13 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
         </svg>
-        Layout
+        {{ 'CAMERAS.LAYOUT' | translate }}
         <span class="px-1.5 py-0.5 rounded bg-white/10 text-white/60">{{ getCurrentLayout()?.label }}</span>
       </button>
 
       @if (showLayoutPicker) {
         <div class="absolute top-full end-0 mt-2 p-3 rounded-2xl border border-white/10 bg-[#111] shadow-2xl" style="min-width: 260px">
-          <p class="text-[8px] font-black uppercase tracking-widest text-white/25 mb-3">Display Layout</p>
+          <p class="text-[8px] font-black uppercase tracking-widest text-white/25 mb-3">{{ 'CAMERAS.DISPLAY_LAYOUT' | translate }}</p>
           <div class="grid grid-cols-3 gap-2">
             @for (layout of layouts; track layout.id) {
               <button
@@ -84,14 +84,14 @@
       <div class="w-full h-full flex items-center justify-center">
         <div class="flex flex-col items-center gap-3">
           <div class="w-8 h-8 rounded-full border-2 border-[#68ab1f]/30 border-t-[#68ab1f] animate-spin"></div>
-          <span class="text-[10px] font-black uppercase tracking-widest text-white/20">Loading cameras...</span>
+          <span class="text-[10px] font-black uppercase tracking-widest text-white/20">{{ 'CAMERAS.LOADING' | translate }}</span>
         </div>
       </div>
     } @else if (cameras.length === 0) {
       <div class="w-full h-full flex items-center justify-center">
         <div class="text-center">
           <div class="text-6xl opacity-10 mb-4">📷</div>
-          <p class="text-[10px] font-black uppercase tracking-widest text-white/20">No cameras configured</p>
+          <p class="text-[10px] font-black uppercase tracking-widest text-white/20">{{ 'CAMERAS.NO_CAMERAS' | translate }}</p>
         </div>
       </div>
     } @else {
@@ -217,7 +217,7 @@
               (click)="expandedCamId = null"
               class="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/80 transition-colors"
             >
-              ✕ Close
+              {{ 'CAMERAS.CLOSE' | translate }}
             </button>
           </div>
         }
@@ -248,7 +248,7 @@
           (click)="stopAdVideo()"
           class="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/80 transition-colors"
         >
-          Skip ✕
+          {{ 'CAMERAS.SKIP' | translate }}
         </button>
       </div>
     }

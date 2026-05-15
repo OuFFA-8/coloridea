@@ -289,8 +289,25 @@
       "CHECK_INBOX": "Check your inbox",
       "SENT_TO": "We sent a verification link to",
       "CLICK_LINK": "Click the link in the email to confirm the change",
-      "TRY_DIFFERENT": "Try different email"
+      "TRY_DIFFERENT": "Try different email",
+      "BASIC_INFO": "Basic Info"
     }
+  },
+  "CAMERAS": {
+    "BACK": "← Back",
+    "CAMERAS_LABEL": "cameras",
+    "LAYOUT": "Layout",
+    "DISPLAY_LAYOUT": "Display Layout",
+    "LOADING": "Loading cameras...",
+    "NO_CAMERAS": "No cameras configured",
+    "CLOSE": "✕ Close",
+    "SKIP": "Skip ✕",
+    "LIVE": "Live"
+  },
+  "FOOTER": {
+    "OPERATIONAL": "Operational",
+    "HELP": "Help",
+    "PRIVACY": "Privacy"
   },
   "STATUS": {
     "ACTIVE": "Active",
