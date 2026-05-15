@@ -22,6 +22,7 @@ import { VerifyEmail } from './features/client/verify-email/verify-email';
 import { ProjectSelect } from './features/client/project-select/project-select';
 import { AdminVerifyEmail } from './features/admin/admin-verify-email/admin-verify-email';
 import { ClientCameras } from './features/client/client-cameras/client-cameras';
+import { ClientSettings } from './features/client/client-settings/client-settings';
 
 export const routes: Routes = [
   // ===== AUTH =====
@@ -60,6 +61,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'profile', component: Profile },
+      { path: 'settings', component: ClientSettings },
       { path: 'verify-email/:token', component: VerifyEmail },
       { path: 'files', component: Files },
       {

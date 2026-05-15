@@ -45,4 +45,8 @@ export class UsersService {
   updateDisplayDuration(userId: string, displayDuration: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${userId}/display-duration`, { displayDuration });
   }
+
+  updateMyDisplayDuration(displayDuration: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/me/display-duration`, { displayDuration });
+  }
 }

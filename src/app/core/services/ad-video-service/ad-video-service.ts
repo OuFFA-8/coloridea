@@ -23,4 +23,12 @@ export class AdVideoService {
   deleteAdVideo(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  createMyAdVideo(data: FormData): Observable<any> {
+    return this.http.post(`${environment.baseUrl}/api/v1/users/me/adVideos`, data);
+  }
+
+  deleteMyAdVideo(id: string): Observable<any> {
+    return this.http.delete(`${environment.baseUrl}/api/v1/users/me/adVideos/${id}`);
+  }
 }

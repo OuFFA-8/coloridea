@@ -34,4 +34,8 @@ export class CamerasService {
   getMyCameras(): Observable<any> {
     return this.http.get(`${environment.baseUrl}/api/v1/users/me/cameras`);
   }
+
+  updateMyCamera(id: string, data: FormData): Observable<any> {
+    return this.http.patch(`${environment.baseUrl}/api/v1/users/me/cameras/${id}`, data);
+  }
 }

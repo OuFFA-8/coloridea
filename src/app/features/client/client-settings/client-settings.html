@@ -1,0 +1,362 @@
+<div class="min-h-screen bg-[#fff1e6] dark:bg-[#0e0e0e] py-10">
+  <div class="max-w-5xl mx-auto px-6">
+
+    <!-- Page Header -->
+    <div class="mb-10">
+      <h1 class="text-2xl font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+        {{ 'CLIENT.SETTINGS.TITLE' | translate }}
+      </h1>
+      <p class="text-xs text-[#5c5f63]/50 dark:text-gray-500 mt-1 font-bold uppercase tracking-widest">
+        {{ 'CLIENT.SETTINGS.SUBTITLE' | translate }}
+      </p>
+    </div>
+
+    <!-- ===== CAMERAS ===== -->
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
+          <h2 class="text-xs font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500">
+            {{ 'CLIENT.SETTINGS.CAMERAS_TITLE' | translate }} ({{ cameras.length }}/12)
+          </h2>
+        </div>
+        <button
+          (click)="toggleCameraModal()"
+          [disabled]="cameras.length >= 12"
+          class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#fa8728]/15 hover:text-[#fa8728] disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          @if (cameras.length >= 12) {
+            12/12 {{ 'CLIENT.SETTINGS.CAMERAS_MAX' | translate }}
+          } @else {
+            + {{ 'CLIENT.SETTINGS.CAMERAS_ADD' | translate }} ({{ cameras.length }}/12)
+          }
+        </button>
+      </div>
+
+      @if (isLoadingCameras) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          @for (_ of [1,2,3]; track $index) {
+            <div class="h-52 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
+          }
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          @for (camera of cameras; track $index) {
+            <div class="group bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm overflow-hidden">
+              <div class="w-full h-40 bg-[#444547]/8 dark:bg-[#444547]/20 overflow-hidden relative">
+                @if (camera.lastPicUrl || camera.lastPic) {
+                  <img
+                    [src]="camera.lastPicUrl || camera.lastPic"
+                    [alt]="camera.name"
+                    class="w-full h-full object-cover"
+                    (error)="$any($event.target).style.display='none'"
+                  />
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center">
+                    <span class="text-5xl opacity-10">📷</span>
+                  </div>
+                }
+                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button
+                    (click)="toggleCameraModal(camera)"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer bg-white/90 hover:bg-white text-[#444547] text-xs backdrop-blur-sm transition-colors"
+                    [title]="'COMMON.EDIT' | translate"
+                  >✏️</button>
+                  <button
+                    (click)="deleteCamera(camera._id)"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer bg-rose-500/90 hover:bg-rose-600 text-white text-xs backdrop-blur-sm transition-colors"
+                    [title]="'COMMON.DELETE' | translate"
+                  >✕</button>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <h4 class="text-sm font-black text-[#444547] dark:text-white truncate" style="font-family:'Alexandria',sans-serif">
+                    {{ camera.name }}
+                  </h4>
+                  <span class="text-[9px] font-black text-[#5c5f63]/40 dark:text-gray-600 shrink-0">
+                    ⏱ {{ camera.displayDuration }}{{ 'CLIENT.SETTINGS.AD_DURATION_UNIT' | translate }}
+                  </span>
+                </div>
+                @if (camera.cameraVideo) {
+                  <a
+                    [href]="camera.cameraVideo"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase no-underline transition-colors bg-[#444547]/8 hover:bg-[#fa8728]/10 hover:text-[#fa8728] text-[#444547] dark:bg-white/8 dark:text-white"
+                  >
+                    🎥 {{ 'CLIENT.SETTINGS.CAMERAS_VIDEO_LINK' | translate }}
+                  </a>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="col-span-full py-20 text-center border-2 border-dashed border-[#fa8728]/20 rounded-2xl">
+              <div class="text-4xl mb-3 opacity-20">📷</div>
+              <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest mb-4">
+                {{ 'CLIENT.SETTINGS.CAMERAS_NO' | translate }}
+              </p>
+              <button
+                (click)="toggleCameraModal()"
+                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316] transition-colors"
+              >+ {{ 'CLIENT.SETTINGS.CAMERAS_ADD' | translate }}</button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- ===== AD VIDEOS ===== -->
+    <section>
+      <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
+          <h2 class="text-xs font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500">
+            {{ 'CLIENT.SETTINGS.AD_TITLE' | translate }} ({{ adVideos.length }}/10)
+          </h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 rounded-xl px-3 py-1.5">
+            <span class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 whitespace-nowrap">
+              {{ 'CLIENT.SETTINGS.AD_DURATION_LABEL' | translate }}
+            </span>
+            <input
+              type="number"
+              [(ngModel)]="editDisplayDuration"
+              min="1"
+              class="w-14 text-center text-xs font-black text-[#444547] dark:text-white bg-transparent border-none outline-none"
+            />
+            <span class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600">
+              {{ 'CLIENT.SETTINGS.AD_DURATION_UNIT' | translate }}
+            </span>
+            <button
+              (click)="updateDisplayDuration()"
+              [disabled]="isUpdatingDuration"
+              class="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border-none cursor-pointer transition-colors text-white bg-[#fa8728] hover:bg-[#f97316] disabled:opacity-50"
+            >
+              {{ isUpdatingDuration ? ('CLIENT.SETTINGS.AD_DURATION_SAVING' | translate) : ('CLIENT.SETTINGS.AD_DURATION_SAVE' | translate) }}
+            </button>
+          </div>
+          <button
+            (click)="toggleAdVideoModal()"
+            [disabled]="adVideos.length >= 10"
+            class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#fa8728]/15 hover:text-[#fa8728] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            @if (adVideos.length >= 10) {
+              10/10 {{ 'CLIENT.SETTINGS.AD_MAX' | translate }}
+            } @else {
+              + {{ 'CLIENT.SETTINGS.AD_ADD' | translate }} ({{ adVideos.length }}/10)
+            }
+          </button>
+        </div>
+      </div>
+
+      @if (isLoadingAdVideos) {
+        <div class="space-y-3">
+          @for (_ of [1,2]; track $index) {
+            <div class="h-16 rounded-xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
+          }
+        </div>
+      } @else {
+        <div class="space-y-3">
+          @for (vid of adVideos; track $index) {
+            <div class="flex items-center gap-4 bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e6d5c3] dark:border-[#444547]/30 px-4 py-3">
+              <div class="w-10 h-10 rounded-lg bg-[#fa8728]/10 flex items-center justify-center shrink-0">
+                <span class="text-lg">🎬</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                @if (vid.video) {
+                  <p class="text-xs font-black text-[#444547] dark:text-white truncate">
+                    {{ vid.video.split('/').pop() || 'video' }}
+                  </p>
+                  <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 font-bold uppercase tracking-widest">
+                    {{ 'CLIENT.SETTINGS.AD_UPLOADED' | translate }}
+                  </p>
+                } @else {
+                  <a
+                    [href]="vid.driveVideo"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-xs font-black text-[#fa8728] truncate block hover:underline no-underline"
+                  >{{ vid.driveVideo }}</a>
+                  <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 font-bold uppercase tracking-widest">
+                    {{ 'CLIENT.SETTINGS.AD_DRIVE' | translate }}
+                  </p>
+                }
+              </div>
+              <button
+                (click)="deleteAdVideo(vid._id)"
+                class="w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors text-sm shrink-0"
+                [title]="'COMMON.DELETE' | translate"
+              >✕</button>
+            </div>
+          } @empty {
+            <div class="py-16 text-center border-2 border-dashed border-[#fa8728]/20 rounded-2xl">
+              <div class="text-4xl mb-3 opacity-20">🎬</div>
+              <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest mb-4">
+                {{ 'CLIENT.SETTINGS.AD_NO' | translate }}
+              </p>
+              <button
+                (click)="toggleAdVideoModal()"
+                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316] transition-colors"
+              >+ {{ 'CLIENT.SETTINGS.AD_ADD' | translate }}</button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </div>
+</div>
+
+<!-- ===== CAMERA MODAL ===== -->
+@if (showCameraModal) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" (click)="toggleCameraModal()">
+    <div class="w-full max-w-md bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-2xl border border-[#e6d5c3] dark:border-[#444547]/30" (click)="$event.stopPropagation()">
+      <div class="px-6 py-5 border-b border-[#e6d5c3] dark:border-[#444547]/20">
+        <h3 class="text-sm font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+          {{ (editingCamera ? 'CLIENT.SETTINGS.CAMERA_MODAL_EDIT' : 'CLIENT.SETTINGS.CAMERA_MODAL_ADD') | translate }}
+        </h3>
+      </div>
+      <form [formGroup]="cameraForm" (ngSubmit)="saveCamera()" class="p-6 space-y-4">
+        <div>
+          <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+            {{ 'CLIENT.SETTINGS.CAMERA_NAME' | translate }} <span class="text-rose-400">*</span>
+          </label>
+          <input
+            formControlName="name"
+            type="text"
+            [placeholder]="'CLIENT.SETTINGS.CAMERA_NAME_PH' | translate"
+            class="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#111] border border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors"
+            [class.border-rose-400]="cameraForm.get('name')?.invalid && cameraForm.get('name')?.touched"
+          />
+        </div>
+        <div>
+          <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+            {{ 'CLIENT.SETTINGS.CAMERA_LAST_PIC' | translate }}
+          </label>
+          <input
+            formControlName="lastPic"
+            type="url"
+            placeholder="https://..."
+            class="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#111] border border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors"
+          />
+        </div>
+        <div>
+          <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+            {{ 'CLIENT.SETTINGS.CAMERA_VIDEO' | translate }}
+          </label>
+          <input
+            formControlName="cameraVideo"
+            type="url"
+            placeholder="https://..."
+            class="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#111] border border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors"
+          />
+        </div>
+        <div>
+          <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+            {{ 'CLIENT.SETTINGS.CAMERA_DISPLAY_DURATION' | translate }} <span class="text-rose-400">*</span>
+          </label>
+          <input
+            formControlName="displayDuration"
+            type="number"
+            min="1"
+            class="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#111] border border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors"
+            [class.border-rose-400]="cameraForm.get('displayDuration')?.invalid && cameraForm.get('displayDuration')?.touched"
+          />
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button
+            type="button"
+            (click)="toggleCameraModal()"
+            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-[#e6d5c3] dark:border-[#444547]/30 bg-transparent text-[#5c5f63] dark:text-gray-400 hover:bg-[#444547]/5 cursor-pointer transition-colors"
+          >{{ 'COMMON.CANCEL' | translate }}</button>
+          <button
+            type="submit"
+            [disabled]="isSavingCamera"
+            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316] disabled:opacity-60 transition-colors"
+          >
+            @if (isSavingCamera) {
+              {{ 'CLIENT.SETTINGS.CAMERA_SAVING' | translate }}
+            } @else {
+              {{ (editingCamera ? 'CLIENT.SETTINGS.CAMERA_SAVE_EDIT' : 'CLIENT.SETTINGS.CAMERA_SAVE_ADD') | translate }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ===== AD VIDEO MODAL ===== -->
+@if (showAdVideoModal) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" (click)="toggleAdVideoModal()">
+    <div class="w-full max-w-md bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-2xl border border-[#e6d5c3] dark:border-[#444547]/30" (click)="$event.stopPropagation()">
+      <div class="px-6 py-5 border-b border-[#e6d5c3] dark:border-[#444547]/20">
+        <h3 class="text-sm font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+          {{ 'CLIENT.SETTINGS.AD_MODAL_TITLE' | translate }}
+        </h3>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="flex rounded-xl overflow-hidden border border-[#e6d5c3] dark:border-[#444547]/30">
+          <button
+            (click)="adVideoInputType = 'file'"
+            class="flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-colors"
+            [class.bg-[#fa8728]]="adVideoInputType === 'file'"
+            [class.text-white]="adVideoInputType === 'file'"
+            [class.bg-transparent]="adVideoInputType !== 'file'"
+            [class.text-[#5c5f63]]="adVideoInputType !== 'file'"
+          >{{ 'CLIENT.SETTINGS.AD_UPLOAD_FILE' | translate }}</button>
+          <button
+            (click)="adVideoInputType = 'link'"
+            class="flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-colors"
+            [class.bg-[#fa8728]]="adVideoInputType === 'link'"
+            [class.text-white]="adVideoInputType === 'link'"
+            [class.bg-transparent]="adVideoInputType !== 'link'"
+            [class.text-[#5c5f63]]="adVideoInputType !== 'link'"
+          >{{ 'CLIENT.SETTINGS.AD_GOOGLE_DRIVE' | translate }}</button>
+        </div>
+
+        @if (adVideoInputType === 'file') {
+          <div>
+            <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-2">
+              {{ 'CLIENT.SETTINGS.AD_FILE_LABEL' | translate }}
+            </label>
+            <label class="flex flex-col items-center gap-2 p-6 rounded-xl border-2 border-dashed border-[#e6d5c3] dark:border-[#444547]/30 cursor-pointer hover:border-[#fa8728]/50 transition-colors">
+              <span class="text-2xl">🎬</span>
+              <span class="text-[10px] font-black text-[#5c5f63]/50 dark:text-gray-500 uppercase tracking-widest text-center">
+                {{ adVideoFile ? adVideoFile.name : ('CLIENT.SETTINGS.AD_FILE_CLICK' | translate) }}
+              </span>
+              <input type="file" accept="video/*" class="hidden" (change)="onAdVideoFileSelected($event)" />
+            </label>
+          </div>
+        } @else {
+          <div>
+            <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+              {{ 'CLIENT.SETTINGS.AD_DRIVE_LABEL' | translate }}
+            </label>
+            <input
+              type="url"
+              [(ngModel)]="adVideoLink"
+              [placeholder]="'CLIENT.SETTINGS.AD_DRIVE_PH' | translate"
+              class="w-full px-4 py-2.5 rounded-xl text-sm font-bold text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#111] border border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors"
+            />
+          </div>
+        }
+
+        <div class="flex gap-3 pt-2">
+          <button
+            (click)="toggleAdVideoModal()"
+            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-[#e6d5c3] dark:border-[#444547]/30 bg-transparent text-[#5c5f63] dark:text-gray-400 hover:bg-[#444547]/5 cursor-pointer transition-colors"
+          >{{ 'COMMON.CANCEL' | translate }}</button>
+          <button
+            (click)="saveAdVideo()"
+            [disabled]="isSavingAdVideo"
+            class="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316] disabled:opacity-60 transition-colors"
+          >
+            {{ isSavingAdVideo ? ('CLIENT.SETTINGS.AD_UPLOADING' | translate) : ('CLIENT.SETTINGS.AD_ADD_BTN' | translate) }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
