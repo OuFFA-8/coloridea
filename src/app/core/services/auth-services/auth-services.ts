@@ -44,10 +44,19 @@ export class AuthServices {
   }
 
   // ===== Helpers =====
+  saveSession(token: string, user: any) {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      this.userSubject.next(user);
+    }
+  }
+
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      this.userSubject.next(null);
     }
   }
 

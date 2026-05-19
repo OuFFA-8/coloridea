@@ -44,8 +44,7 @@ export class Login {
       next: (res) => {
         this.isLoading = false;
         this.loadingService.hide();
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify(res.data));
+        this.authService.saveSession(res.token, res.data);
         if (this.authService.isAdmin()) {
           this.router.navigate(['/admin/dashboard']);
         } else {
