@@ -235,7 +235,7 @@
             muted
             playsinline
             (ended)="onAdVideoEnded()"
-            (error)="onAdVideoEnded()"
+            (error)="onAdVideoError()"
           ></video>
         } @else {
           <iframe
@@ -243,6 +243,7 @@
             class="w-full h-full border-none"
             allowfullscreen
             allow="autoplay; fullscreen; picture-in-picture"
+            (load)="onAdIframeLoad($event)"
           ></iframe>
         }
         <button

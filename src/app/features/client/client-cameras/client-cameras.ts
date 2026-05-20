@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  NgZone,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
@@ -57,6 +58,7 @@ export class ClientCameras implements OnInit, OnDestroy {
   private adVideoService = inject(AdVideoService);
   private authServices = inject(AuthServices);
   private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   private platformId = inject(PLATFORM_ID);
   private sanitizer = inject(DomSanitizer);
 
@@ -92,6 +94,8 @@ export class ClientCameras implements OnInit, OnDestroy {
   private iframeAdTimeout?: ReturnType<typeof setTimeout>;
   private iframeCellTimeout?: ReturnType<typeof setTimeout>;
   private nextPlayTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private adYoutubeHandler?: (e: MessageEvent) => void;
+  private adEndFallbackTimer?: ReturnType<typeof setTimeout>;
 
   readonly layouts: LayoutOption[] = [
     { id: '1',    label: '1',   maxCams: 1,  cols: 1, rows: 1 },
@@ -138,8 +142,10 @@ export class ClientCameras implements OnInit, OnDestroy {
     clearInterval(this.refreshInterval);
     clearTimeout(this.adVideoTimeout);
     clearTimeout(this.iframeAdTimeout);
+    clearTimeout(this.adEndFallbackTimer);
     this.iframeCellTimeouts.forEach((t) => clearTimeout(t));
     this.nextPlayTimers.forEach((t) => clearTimeout(t));
+    this.removeYoutubeHandler();
   }
 
   async loadCameras() {
@@ -229,41 +235,143 @@ export class ClientCameras implements OnInit, OnDestroy {
   }
 
   playAdVideo(vid: AdVideo) {
+    // Universal 60-second cap — applies to all ad types
+    clearTimeout(this.adEndFallbackTimer);
+    this.adEndFallbackTimer = setTimeout(() => {
+      this.ngZone.run(() => this.stopAdVideo());
+    }, 60_000);
+
     if (vid.video) {
       this.adVideoFileUrl = `${this.baseUrl}/${vid.video.replace(/\\/g, '/')}`;
       this.adIsFile = true;
     } else if (vid.driveVideo) {
-      const fileId = this.extractDriveFileId(vid.driveVideo);
-      if (fileId) {
-        // Use direct streaming URL so we get the native `ended` event
-        this.adVideoFileUrl = `https://drive.google.com/uc?id=${fileId}&export=download&confirm=t`;
-        this.adIsFile = true;
+      const url = vid.driveVideo;
+      const ytId = this.extractYoutubeId(url);
+
+      if (ytId) {
+        // YouTube: official JS API → postMessage state 0 = ended
+        const embed = `https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=1&mute=1&rel=0`;
+        this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embed);
       } else {
-        // Non-standard URL fallback: embed as iframe
-        let embedUrl = vid.driveVideo
-          .replace('/view', '/preview')
-          .replace('/edit', '/preview');
+        // Google Drive (and any other link): preview iframe with enablejsapi=1
+        let embedUrl = url.replace('/view', '/preview').replace('/edit', '/preview');
         const sep = embedUrl.includes('?') ? '&' : '?';
-        embedUrl += `${sep}autoplay=1&rm=minimal`;
+        embedUrl += `${sep}autoplay=1&rm=minimal&enablejsapi=1`;
         this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
-        this.adIsFile = false;
       }
+      this.adIsFile = false;
+      this.listenForYoutubeEnd();
     } else {
+      clearTimeout(this.adEndFallbackTimer);
       return;
     }
     this.showAdVideo = true;
     this.cdr.detectChanges();
   }
 
-  private extractDriveFileId(url: string): string | null {
-    return url.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] ?? null;
-  }
-
   onAdVideoEnded() {
     this.stopAdVideo();
   }
 
+  onAdVideoError() {
+    this.stopAdVideo();
+  }
+
+  // Sends the YouTube iframe API init message so the player starts posting events.
+  // Also sets a 3-minute fallback for Drive embeds whose player events don't reach our window.
+  onAdIframeLoad(event: Event) {
+    const iframe = event.target as HTMLIFrameElement;
+    iframe.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 1 }), '*');
+
+    // Drive's preview player wraps YouTube inside a nested iframe — postMessage events
+    // from the inner player go to Drive's window, not ours, so state/infoDelivery events
+    // never arrive. Use a time-based fallback that fires from the moment the iframe loads.
+    clearTimeout(this.iframeAdTimeout);
+    this.iframeAdTimeout = setTimeout(() => {
+      this.ngZone.run(() => this.stopAdVideo());
+    }, 60_000);
+  }
+
+  private listenForYoutubeEnd() {
+    this.removeYoutubeHandler();
+    clearTimeout(this.adEndFallbackTimer);
+    let fallbackSet = false;
+    let lastKnownDuration = 0;
+    let lastKnownCurrentTime = 0;
+
+    // 60-second cap already set in playAdVideo; don't override it here
+
+    this.adYoutubeHandler = (e: MessageEvent) => {
+      try {
+        const msg = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+
+        if (msg?.event === 'onStateChange') {
+          // state 0 = ended
+          if (msg?.info === 0) {
+            clearTimeout(this.adEndFallbackTimer);
+            this.ngZone.run(() => this.stopAdVideo());
+            return;
+          }
+          // state 2 = paused — Drive pauses at the end instead of firing ended
+          if (msg?.info === 2 && lastKnownDuration > 0 && lastKnownCurrentTime >= lastKnownDuration - 3) {
+            clearTimeout(this.adEndFallbackTimer);
+            this.ngZone.run(() => this.stopAdVideo());
+            return;
+          }
+        }
+
+        if (msg?.event === 'infoDelivery') {
+          const info = msg.info as { duration?: number; currentTime?: number } | null;
+          if (info?.duration && info.duration > 0 && info.currentTime != null) {
+            lastKnownDuration = info.duration;
+            lastKnownCurrentTime = info.currentTime;
+
+            // Detect near-end directly from currentTime
+            if (info.currentTime >= info.duration - 1) {
+              clearTimeout(this.adEndFallbackTimer);
+              this.ngZone.run(() => this.stopAdVideo());
+              return;
+            }
+
+            // Replace the hard safety timer with a precise duration-based one (set once)
+            if (!fallbackSet) {
+              clearTimeout(this.adEndFallbackTimer);
+              const remaining = Math.max(info.duration - info.currentTime + 2, 2);
+              this.adEndFallbackTimer = setTimeout(() => {
+                this.ngZone.run(() => this.stopAdVideo());
+              }, remaining * 1_000);
+              fallbackSet = true;
+            }
+          }
+        }
+      } catch { /* not JSON */ }
+    };
+    window.addEventListener('message', this.adYoutubeHandler);
+  }
+
+  private removeYoutubeHandler() {
+    if (this.adYoutubeHandler) {
+      window.removeEventListener('message', this.adYoutubeHandler);
+      this.adYoutubeHandler = undefined;
+    }
+  }
+
+  private extractYoutubeId(url: string): string | null {
+    const patterns = [
+      /youtube\.com\/watch\?v=([^&]+)/,
+      /youtu\.be\/([^?]+)/,
+      /youtube\.com\/embed\/([^?/]+)/,
+    ];
+    for (const p of patterns) {
+      const m = url.match(p);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
   stopAdVideo() {
+    this.removeYoutubeHandler();
+    clearTimeout(this.adEndFallbackTimer);
     this.showAdVideo = false;
     this.adVideoFileUrl = '';
     clearTimeout(this.iframeAdTimeout);
