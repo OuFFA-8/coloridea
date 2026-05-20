@@ -16,6 +16,7 @@ import { CamerasService } from '../../../core/services/cameras-service/cameras-s
 import { AdVideoService } from '../../../core/services/ad-video-service/ad-video-service';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { environment } from '../../../../environments/environment';
+import { AutoplayVideoDirective } from './autoplay-video.directive';
 
 interface Camera {
   _id: string;
@@ -46,7 +47,7 @@ export interface LayoutOption {
 @Component({
   selector: 'app-client-cameras',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, AutoplayVideoDirective],
   templateUrl: './client-cameras.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -239,7 +240,6 @@ export class ClientCameras implements OnInit, OnDestroy {
       embedUrl += `${sep}autoplay=1&rm=minimal`;
       this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
       this.adIsFile = false;
-      this.iframeAdTimeout = setTimeout(() => this.stopAdVideo(), 30_000);
     } else {
       return;
     }
