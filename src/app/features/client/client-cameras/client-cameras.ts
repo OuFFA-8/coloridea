@@ -92,7 +92,6 @@ export class ClientCameras implements OnInit, OnDestroy {
   private iframeAdTimeout?: ReturnType<typeof setTimeout>;
   private iframeCellTimeout?: ReturnType<typeof setTimeout>;
   private nextPlayTimers = new Map<string, ReturnType<typeof setTimeout>>();
-  private adMessageHandler?: (e: MessageEvent) => void;
 
   readonly layouts: LayoutOption[] = [
     { id: '1',    label: '1',   maxCams: 1,  cols: 1, rows: 1 },
@@ -141,7 +140,6 @@ export class ClientCameras implements OnInit, OnDestroy {
     clearTimeout(this.iframeAdTimeout);
     this.iframeCellTimeouts.forEach((t) => clearTimeout(t));
     this.nextPlayTimers.forEach((t) => clearTimeout(t));
-    this.removeAdMessageHandler();
   }
 
   async loadCameras() {
@@ -235,14 +233,21 @@ export class ClientCameras implements OnInit, OnDestroy {
       this.adVideoFileUrl = `${this.baseUrl}/${vid.video.replace(/\\/g, '/')}`;
       this.adIsFile = true;
     } else if (vid.driveVideo) {
-      let embedUrl = vid.driveVideo
-        .replace('/view', '/preview')
-        .replace('/edit', '/preview');
-      const sep = embedUrl.includes('?') ? '&' : '?';
-      embedUrl += `${sep}autoplay=1&rm=minimal`;
-      this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
-      this.adIsFile = false;
-      this.listenForAdIframeEnd();
+      const fileId = this.extractDriveFileId(vid.driveVideo);
+      if (fileId) {
+        // Use direct streaming URL so we get the native `ended` event
+        this.adVideoFileUrl = `https://drive.google.com/uc?id=${fileId}&export=download&confirm=t`;
+        this.adIsFile = true;
+      } else {
+        // Non-standard URL fallback: embed as iframe
+        let embedUrl = vid.driveVideo
+          .replace('/view', '/preview')
+          .replace('/edit', '/preview');
+        const sep = embedUrl.includes('?') ? '&' : '?';
+        embedUrl += `${sep}autoplay=1&rm=minimal`;
+        this.safeAdVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+        this.adIsFile = false;
+      }
     } else {
       return;
     }
@@ -250,31 +255,8 @@ export class ClientCameras implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  private listenForAdIframeEnd() {
-    this.removeAdMessageHandler();
-    this.adMessageHandler = (e: MessageEvent) => {
-      try {
-        const msg = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-        const type = String(msg?.event ?? msg?.type ?? msg?.action ?? msg?.info ?? '').toLowerCase();
-        if (['ended', 'end', 'finish', 'finished', 'complete', 'completed', 'videoended'].includes(type)) {
-          this.stopAdVideo();
-          this.cdr.detectChanges();
-        }
-      } catch {
-        if (String(e.data).toLowerCase() === 'ended') {
-          this.stopAdVideo();
-          this.cdr.detectChanges();
-        }
-      }
-    };
-    window.addEventListener('message', this.adMessageHandler);
-  }
-
-  private removeAdMessageHandler() {
-    if (this.adMessageHandler) {
-      window.removeEventListener('message', this.adMessageHandler);
-      this.adMessageHandler = undefined;
-    }
+  private extractDriveFileId(url: string): string | null {
+    return url.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] ?? null;
   }
 
   onAdVideoEnded() {
@@ -282,7 +264,6 @@ export class ClientCameras implements OnInit, OnDestroy {
   }
 
   stopAdVideo() {
-    this.removeAdMessageHandler();
     this.showAdVideo = false;
     this.adVideoFileUrl = '';
     clearTimeout(this.iframeAdTimeout);
