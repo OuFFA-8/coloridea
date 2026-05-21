@@ -204,7 +204,7 @@ export class ClientCameras implements OnInit, OnDestroy {
     this.playingCamIds.add(cam._id);
     this.cdr.detectChanges();
 
-    if (!isFile) {
+    if (useIframe) {
       clearTimeout(this.iframeCellTimeouts.get(cam._id));
       this.iframeCellTimeouts.set(cam._id, setTimeout(() => this.stopCellVideo(cam._id), 30_000));
     }
