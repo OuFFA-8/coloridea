@@ -187,7 +187,17 @@ export class ClientCameras implements OnInit, OnDestroy {
     if (isFile) {
       this.cellVideoUrls.set(cam._id, url.startsWith('http') ? url : `${this.baseUrl}/${url.replace(/\\/g, '/')}`);
     } else {
-      this.cellIframeUrls.set(cam._id, this.sanitizer.bypassSecurityTrustResourceUrl(url));
+      // Add autoplay parameters so the iframe video starts playing immediately
+      const ytId = this.extractYoutubeId(url);
+      let embedUrl: string;
+      if (ytId) {
+        embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1`;
+      } else {
+        embedUrl = url.replace('/view', '/preview').replace('/edit', '/preview');
+        const sep = embedUrl.includes('?') ? '&' : '?';
+        embedUrl += `${sep}autoplay=1&mute=1`;
+      }
+      this.cellIframeUrls.set(cam._id, this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl));
     }
     this.playingCamIds.add(cam._id);
     this.cdr.detectChanges();
