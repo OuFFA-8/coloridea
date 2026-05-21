@@ -207,27 +207,23 @@ export class ClientCameras implements OnInit, OnDestroy {
     this.playingCamIds.add(cam._id);
     this.cdr.detectChanges();
 
-    if (!isLocalFile) {
-      clearTimeout(this.iframeCellTimeouts.get(cam._id));
-      this.iframeCellTimeouts.set(cam._id, setTimeout(() => this.stopCellVideo(cam._id), 30_000));
-    }
+    // All video types: force-stop after 30 seconds and return to camera snapshot
+    clearTimeout(this.iframeCellTimeouts.get(cam._id));
+    this.iframeCellTimeouts.set(cam._id, setTimeout(() => this.stopCellVideo(cam._id), 30_000));
   }
 
   stopCellVideo(camId: string) {
     this.playingCamIds.delete(camId);
     this.cellVideoUrls.delete(camId);
     this.cellIframeUrls.delete(camId);
+    this.cellIsFile.delete(camId);
     clearTimeout(this.iframeCellTimeouts.get(camId));
     this.iframeCellTimeouts.delete(camId);
     this.cdr.detectChanges();
 
     const cam = this.cameras.find((c) => c._id === camId);
     if (cam?.cameraVideo) {
-      // Iframe videos (external streams) loop immediately after the forced stop.
-      // File videos wait the full displayDuration before showing again.
-      const wasFile = this.cellIsFile.get(camId) ?? true;
-      this.cellIsFile.delete(camId);
-      const delay = wasFile ? (cam.displayDuration || 30) * 1_000 : 1_000;
+      const delay = (cam.displayDuration || 30) * 1_000;
       const t = setTimeout(() => this.playCellVideo(cam), delay);
       this.nextPlayTimers.set(camId, t);
     }
