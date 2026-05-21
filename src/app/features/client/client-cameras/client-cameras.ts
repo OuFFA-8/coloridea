@@ -182,29 +182,32 @@ export class ClientCameras implements OnInit, OnDestroy {
     clearTimeout(this.nextPlayTimers.get(cam._id));
     this.nextPlayTimers.delete(cam._id);
     const url = cam.cameraVideo;
-    // Use <iframe> only for YouTube/Drive embeds — everything else (local files,
-    // external direct video streams like tikee.io) goes to a <video> element.
-    const ytId = this.extractYoutubeId(url);
-    const isDrive = url.includes('drive.google.com');
-    const useIframe = !!ytId || isDrive;
-    this.cellIsFile.set(cam._id, !useIframe);
-    if (!useIframe) {
+    // Local files (relative paths or our server URL) → <video> element.
+    // External URLs (YouTube, Drive, tikee.io, etc.) → <iframe>.
+    const isLocalFile = url.startsWith(this.baseUrl) || !url.includes('://');
+    this.cellIsFile.set(cam._id, isLocalFile);
+    if (isLocalFile) {
       this.cellVideoUrls.set(cam._id, url.startsWith('http') ? url : `${this.baseUrl}/${url.replace(/\\/g, '/')}`);
     } else {
+      const ytId = this.extractYoutubeId(url);
+      const isDrive = url.includes('drive.google.com');
       let embedUrl: string;
       if (ytId) {
         embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1`;
-      } else {
+      } else if (isDrive) {
         embedUrl = url.replace('/view', '/preview').replace('/edit', '/preview');
         const sep = embedUrl.includes('?') ? '&' : '?';
         embedUrl += `${sep}autoplay=1&mute=1`;
+      } else {
+        // Other external services (tikee.io, etc.) — use URL as-is in iframe
+        embedUrl = url;
       }
       this.cellIframeUrls.set(cam._id, this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl));
     }
     this.playingCamIds.add(cam._id);
     this.cdr.detectChanges();
 
-    if (useIframe) {
+    if (!isLocalFile) {
       clearTimeout(this.iframeCellTimeouts.get(cam._id));
       this.iframeCellTimeouts.set(cam._id, setTimeout(() => this.stopCellVideo(cam._id), 30_000));
     }
