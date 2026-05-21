@@ -223,7 +223,11 @@ export class ClientCameras implements OnInit, OnDestroy {
 
     const cam = this.cameras.find((c) => c._id === camId);
     if (cam?.cameraVideo) {
-      const delay = (cam.displayDuration || 30) * 1_000;
+      // Iframe videos (external streams) loop immediately after the forced stop.
+      // File videos wait the full displayDuration before showing again.
+      const wasFile = this.cellIsFile.get(camId) ?? true;
+      this.cellIsFile.delete(camId);
+      const delay = wasFile ? (cam.displayDuration || 30) * 1_000 : 1_000;
       const t = setTimeout(() => this.playCellVideo(cam), delay);
       this.nextPlayTimers.set(camId, t);
     }
