@@ -182,13 +182,15 @@ export class ClientCameras implements OnInit, OnDestroy {
     clearTimeout(this.nextPlayTimers.get(cam._id));
     this.nextPlayTimers.delete(cam._id);
     const url = cam.cameraVideo;
-    const isFile = url.startsWith(this.baseUrl) || !url.includes('://');
-    this.cellIsFile.set(cam._id, isFile);
-    if (isFile) {
+    // Use <iframe> only for YouTube/Drive embeds — everything else (local files,
+    // external direct video streams like tikee.io) goes to a <video> element.
+    const ytId = this.extractYoutubeId(url);
+    const isDrive = url.includes('drive.google.com');
+    const useIframe = !!ytId || isDrive;
+    this.cellIsFile.set(cam._id, !useIframe);
+    if (!useIframe) {
       this.cellVideoUrls.set(cam._id, url.startsWith('http') ? url : `${this.baseUrl}/${url.replace(/\\/g, '/')}`);
     } else {
-      // Add autoplay parameters so the iframe video starts playing immediately
-      const ytId = this.extractYoutubeId(url);
       let embedUrl: string;
       if (ytId) {
         embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1`;
