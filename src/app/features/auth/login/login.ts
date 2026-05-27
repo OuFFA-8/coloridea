@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
@@ -13,12 +13,13 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [ReactiveFormsModule, CommonModule, RouterLink, TranslateModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {
   private loadingService = inject(LoadingService);
 
   loginForm: FormGroup;
-  isLoading = false;
+  isLoading = signal(false);
   showPassword = false;
 
   constructor(
@@ -38,11 +39,11 @@ export class Login {
       this.loginForm.markAllAsTouched();
       return;
     }
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.loadingService.show('Signing in...');
     this.authService.login(this.loginForm.value).subscribe({
       next: (res) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.loadingService.hide();
         this.authService.saveSession(res.token, res.data);
         if (this.authService.isAdmin()) {
@@ -52,7 +53,7 @@ export class Login {
         }
       },
       error: (err) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.loadingService.hide();
         this.alert.error(err.error?.message || 'Connection error, please try again');
       },

@@ -28,7 +28,8 @@ export class NotificationsService implements OnDestroy {
     this.disconnect();
 
     this.socket = io(environment.socketUrl, {
-      transports: ['websocket'],
+      transports: ['polling', 'websocket'],
+      upgrade: false,
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 3000,
@@ -36,16 +37,17 @@ export class NotificationsService implements OnDestroy {
 
     // Step 1: once connected, authenticate with the server
     this.socket.on('connect', () => {
-      this.socket!.emit('authenticate', { token });
+      this.socket!.emit('authenticate', token);
     });
 
     // Step 2: server confirms authentication
-    this.socket.on('authenticated', () => {
-      console.log('[Socket] Authenticated successfully');
+    this.socket.on('authenticate', () => {
+      console.log('[Socket] Authenticate successfully');
     });
 
     // Step 3: listen for real-time notification events
-    this.socket.on('notification', (data: Notification) => {
+    this.socket.on('send-notification', (data: Notification) => {
+      console.log('[Socket] New notification received:', data);
       const current = this.notifications$.value;
       this.notifications$.next([data, ...current]);
       this.unreadCount$.next(this.unreadCount$.value + 1);
