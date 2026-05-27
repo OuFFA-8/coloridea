@@ -28,17 +28,36 @@ export class NotificationsService implements OnDestroy {
     this.disconnect();
 
     this.socket = io(environment.socketUrl, {
-      auth: { token },
       transports: ['websocket'],
       reconnection: true,
-      reconnectionAttempts: 3,
-      reconnectionDelay: 5000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 3000,
     });
 
+    // Step 1: once connected, authenticate with the server
+    this.socket.on('connect', () => {
+      this.socket!.emit('authenticate', { token });
+    });
+
+    // Step 2: server confirms authentication
+    this.socket.on('authenticated', () => {
+      console.log('[Socket] Authenticated successfully');
+    });
+
+    // Step 3: listen for real-time notification events
     this.socket.on('notification', (data: Notification) => {
       const current = this.notifications$.value;
       this.notifications$.next([data, ...current]);
       this.unreadCount$.next(this.unreadCount$.value + 1);
+    });
+
+    // Re-authenticate after reconnect (socket ID changes on reconnect)
+    this.socket.on('reconnect', () => {
+      this.socket!.emit('authenticate', { token });
+    });
+
+    this.socket.on('connect_error', (err) => {
+      console.warn('[Socket] Connection error:', err.message);
     });
   }
 
