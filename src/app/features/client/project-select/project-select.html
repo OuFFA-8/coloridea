@@ -49,7 +49,7 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <!-- Language + Theme -->
+        <!-- Language + Theme + Bell -->
         <div class="flex items-center gap-2">
           <button
             (click)="toggleLanguage()"
@@ -62,35 +62,92 @@
             (click)="themeService.toggleTheme()"
             class="w-9 h-9 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-300 bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/40 text-[#444547] dark:text-gray-400 hover:border-[#fa8728] hover:text-[#fa8728]"
           >
-            <svg
-              *ngIf="themeService.isDarkMode()"
-              class="w-4 h-4 text-[#fa8728]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-            <svg
-              *ngIf="!themeService.isDarkMode()"
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-              />
-            </svg>
+            @if (themeService.isDarkMode()) {
+              <svg class="w-4 h-4 text-[#fa8728]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+            } @else {
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+            }
           </button>
+
+          <!-- Bell -->
+          <div class="relative">
+            <button
+              (click)="toggleNotifications()"
+              class="relative w-9 h-9 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-300 bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/40 text-[#5c5f63] dark:text-gray-400 hover:border-[#fa8728] hover:text-[#fa8728]"
+              [class.border-[#fa8728]]="notifOpen"
+              [class.text-[#fa8728]]="notifOpen"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+              </svg>
+              @if (unreadCount > 0) {
+                <span class="absolute -top-1 -end-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black text-white bg-[#fa8728] shadow-sm shadow-[#fa8728]/40">
+                  {{ unreadCount > 9 ? '9+' : unreadCount }}
+                </span>
+              }
+            </button>
+
+            @if (notifOpen) {
+              <div
+                class="absolute end-0 mt-3 w-80 origin-top-end rounded-2xl shadow-2xl shadow-[#444547]/15 z-50 border border-[#e6d5c3] dark:border-[#444547]/30 bg-white dark:bg-[#1c1c1c] overflow-hidden ci-dropdown-enter"
+              >
+                <div class="px-5 py-3.5 border-b border-[#e6d5c3] dark:border-[#444547]/20 flex items-center justify-between">
+                  <p class="text-xs font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+                    {{ 'NOTIFICATIONS.TITLE' | translate }}
+                  </p>
+                  @if (unreadCount > 0) {
+                    <span class="px-2 py-0.5 rounded-full text-[8px] font-black bg-[#fa8728]/10 text-[#fa8728]">
+                      {{ unreadCount }} {{ 'NOTIFICATIONS.NEW' | translate }}
+                    </span>
+                  }
+                </div>
+                <div class="max-h-80 overflow-y-auto divide-y divide-[#e6d5c3]/50 dark:divide-[#444547]/20">
+                  @if (notifications.length === 0) {
+                    <div class="py-12 text-center">
+                      <div class="text-3xl opacity-20 mb-2">🔔</div>
+                      <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/30 dark:text-gray-700">
+                        {{ 'NOTIFICATIONS.EMPTY' | translate }}
+                      </p>
+                    </div>
+                  }
+                  @for (n of notifications; track n._id) {
+                    <div
+                      (click)="onNotifClick(n)"
+                      class="px-5 py-3.5 transition-colors duration-200 cursor-pointer hover:bg-[#fff1e6] dark:hover:bg-[#fa8728]/5"
+                      [class.bg-[#fa8728]/5]="!n.isRead"
+                    >
+                      <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 rounded-full mt-1.5 shrink-0"
+                          [class.bg-[#fa8728]]="!n.isRead"
+                          [class.bg-[#e6d5c3]]="n.isRead"
+                          [class.dark:bg-[#444547]/50]="n.isRead"
+                        ></div>
+                        <div class="min-w-0 flex-1">
+                          <p class="text-[11px] font-black text-[#444547] dark:text-white leading-snug" style="font-family:'Alexandria',sans-serif">
+                            {{ getNotifText(n, 'title') }}
+                          </p>
+                          <p class="text-[10px] text-[#5c5f63]/60 dark:text-gray-500 mt-0.5 leading-snug">
+                            {{ getNotifText(n, 'message') }}
+                          </p>
+                          <p class="text-[9px] text-[#5c5f63]/30 dark:text-gray-700 mt-1 uppercase tracking-widest">
+                            {{ n.createdAt | date: 'dd MMM · HH:mm' }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="fixed inset-0 z-[-1]" (click)="notifOpen = false"></div>
+            }
+          </div>
         </div>
       </div>
     </div>

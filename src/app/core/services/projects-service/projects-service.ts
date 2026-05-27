@@ -55,6 +55,10 @@ export class ProjectsService {
     return this.http.patch(`${this.apiUrl}/${projectId}/financial`, { totalAmount });
   }
 
+  updateTotalInstallments(projectId: string, totalInstallments: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${projectId}/financial`, { totalInstallments });
+  }
+
   uploadInstallmentInvoice(installmentId: string, formData: FormData): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${installmentId}/installments`, formData);
   }

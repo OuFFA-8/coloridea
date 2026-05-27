@@ -37,6 +37,7 @@ export class AdminProjectDetails implements OnInit {
   showAddInstallmentModal = false;
   showEditInstallmentModal = false;
   showEditTotalModal = false;
+  showEditInstallmentsCountModal = false;
   showUploadInvoiceModal = false;
   showUploadReceiptModal = false;
 
@@ -52,6 +53,7 @@ export class AdminProjectDetails implements OnInit {
   editItemForm: FormGroup;
   installmentForm: FormGroup;
   totalAmountForm: FormGroup;
+  installmentsCountForm: FormGroup;
 
   projectPhotoFile: File | null = null;
   projectPhotoPreview: string | null = null;
@@ -100,6 +102,9 @@ export class AdminProjectDetails implements OnInit {
     });
     this.totalAmountForm = this.fb.group({
       totalAmount: [null, [Validators.required, Validators.min(1)]],
+    });
+    this.installmentsCountForm = this.fb.group({
+      totalInstallments: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
@@ -422,6 +427,36 @@ export class AdminProjectDetails implements OnInit {
           this.isSaving = false;
           this.loadingService.hide();
           this.alert.error(err.error?.message || 'Failed to update total');
+        },
+      });
+  }
+
+  openEditInstallmentsCountModal() {
+    this.installmentsCountForm.patchValue({
+      totalInstallments: this.project.financialDetails?.totalInstallments || 0,
+    });
+    this.showEditInstallmentsCountModal = true;
+  }
+
+  saveEditInstallmentsCount() {
+    if (this.installmentsCountForm.invalid) return;
+    this.isSaving = true;
+    this.loadingService.show('Updating installments count...');
+    this.projectsService
+      .updateTotalInstallments(this.project._id, this.installmentsCountForm.value.totalInstallments)
+      .subscribe({
+        next: (res: any) => {
+          this.project.financialDetails = res.data;
+          this.showEditInstallmentsCountModal = false;
+          this.isSaving = false;
+          this.loadingService.hide();
+          this.cdr.detectChanges();
+          this.alert.success('Installments count updated');
+        },
+        error: (err: any) => {
+          this.isSaving = false;
+          this.loadingService.hide();
+          this.alert.error(err.error?.message || 'Failed to update installments count');
         },
       });
   }
