@@ -611,4 +611,42 @@ export class AdminProjectDetails implements OnInit {
       },
     });
   }
+
+  clearInvoice(inst: any) {
+    this.alert.confirm('حذف الفاتورة؟').then((result: any) => {
+      if (result.isConfirmed) {
+        this.loadingService.show('Deleting invoice...');
+        this.projectsService.clearInstallmentInvoice(inst._id).subscribe({
+          next: () => {
+            this.loadingService.hide();
+            this.loadProject();
+            this.alert.success('تم حذف الفاتورة');
+          },
+          error: (err) => {
+            this.loadingService.hide();
+            this.alert.error(err.error?.message || 'فشل حذف الفاتورة');
+          },
+        });
+      }
+    });
+  }
+
+  clearReceipt(inst: any) {
+    this.alert.confirm('حذف الإيصال؟').then((result: any) => {
+      if (result.isConfirmed) {
+        this.loadingService.show('Deleting receipt...');
+        this.projectsService.clearInstallmentReceipt(inst._id).subscribe({
+          next: () => {
+            this.loadingService.hide();
+            this.loadProject();
+            this.alert.success('تم حذف الإيصال');
+          },
+          error: (err) => {
+            this.loadingService.hide();
+            this.alert.error(err.error?.message || 'فشل حذف الإيصال');
+          },
+        });
+      }
+    });
+  }
 }

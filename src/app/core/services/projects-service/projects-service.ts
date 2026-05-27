@@ -66,4 +66,16 @@ export class ProjectsService {
   uploadUserReceipt(installmentId: string, formData: FormData): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${installmentId}/receipt`, formData);
   }
+
+  clearInstallmentInvoice(installmentId: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${installmentId}/installments`, { invoice: '' });
+  }
+
+  clearInstallmentReceipt(installmentId: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${installmentId}/installments`, { receipt: '' });
+  }
+
+  clearUserReceipt(installmentId: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${installmentId}/receipt`, { receipt: '' });
+  }
 }

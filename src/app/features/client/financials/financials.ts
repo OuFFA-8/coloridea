@@ -141,7 +141,6 @@ export class Financials implements OnInit {
           this.showUploadReceiptModal = false;
           this.isUploadingReceipt = false;
           this.alert.success('تم رفع الإيصال بنجاح');
-          // Reload project data to reflect the new receipt
           const projectId = this.route.parent?.snapshot.paramMap.get('id');
           const user = this.authServices.getUser();
           if (user?._id) {
@@ -159,5 +158,28 @@ export class Financials implements OnInit {
           this.alert.error(err.error?.message || 'فشل رفع الإيصال');
         },
       });
+  }
+
+  clearReceipt(inst: any) {
+    this.alert.confirm('حذف الإيصال؟').then((result: any) => {
+      if (!result.isConfirmed) return;
+      this.projectsService.clearUserReceipt(inst._id).subscribe({
+        next: () => {
+          this.alert.success('تم حذف الإيصال');
+          const projectId = this.route.parent?.snapshot.paramMap.get('id');
+          const user = this.authServices.getUser();
+          if (user?._id) {
+            this.projectsService.getUserProjects(user._id).subscribe({
+              next: (res) => {
+                this.project = (res.data || []).find((p: any) => p._id === projectId) || null;
+                this.computeFinancials();
+                this.cdr.detectChanges();
+              },
+            });
+          }
+        },
+        error: (err) => this.alert.error(err.error?.message || 'فشل حذف الإيصال'),
+      });
+    });
   }
 }
