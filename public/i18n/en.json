@@ -216,7 +216,17 @@
       "INSTALLMENTS_PAID": "installments paid",
       "REMAINING_SHORT": "remaining",
       "OF": "of",
-      "PAID": "Paid"
+      "PAID": "Paid",
+      "CONTRACT": "Project Contract",
+      "INVOICE": "Invoice",
+      "RECEIPT": "Payment Receipt",
+      "VIEW_CONTRACT": "View Contract",
+      "VIEW_INVOICE": "Invoice",
+      "VIEW_RECEIPT": "Receipt",
+      "UPLOAD_RECEIPT": "+ Receipt",
+      "UPLOAD_RECEIPT_TITLE": "Upload Payment Receipt",
+      "CHOOSE_PDF": "Choose a PDF file",
+      "UPLOAD": "Upload"
     },
     "SETTINGS": {
       "TITLE": "Screens Settings",
@@ -322,6 +332,7 @@
     "ADD": "Add",
     "ALL": "All",
     "OPEN": "Open",
+    "UPLOAD": "Upload",
     "LOADING": "Loading...",
     "ERROR": "Something went wrong",
     "SUCCESS": "Done successfully",
@@ -333,5 +344,11 @@
     "SEARCH": "Search...",
     "NO_DATA": "No data available",
     "REALTIME": "Real-time data"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "NEW": "new",
+    "EMPTY": "No notifications",
+    "MARK_ALL_READ": "Mark all as read"
   }
 }

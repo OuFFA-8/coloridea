@@ -216,7 +216,17 @@
       "INSTALLMENTS_PAID": "أقساط مدفوعة",
       "REMAINING_SHORT": "متبقي",
       "OF": "من",
-      "PAID": "مدفوع"
+      "PAID": "مدفوع",
+      "CONTRACT": "عقد المشروع",
+      "INVOICE": "فاتورة",
+      "RECEIPT": "إيصال دفع",
+      "VIEW_CONTRACT": "عرض العقد",
+      "VIEW_INVOICE": "فاتورة",
+      "VIEW_RECEIPT": "إيصال",
+      "UPLOAD_RECEIPT": "+ إيصال",
+      "UPLOAD_RECEIPT_TITLE": "رفع إيصال دفع",
+      "CHOOSE_PDF": "اختر ملف PDF",
+      "UPLOAD": "رفع"
     },
     "SETTINGS": {
       "TITLE": "إعدادات الشاشات",
@@ -322,6 +332,7 @@
     "ADD": "إضافة",
     "ALL": "الكل",
     "OPEN": "فتح",
+    "UPLOAD": "رفع",
     "LOADING": "جارٍ التحميل...",
     "ERROR": "حدث خطأ ما",
     "SUCCESS": "تمت العملية بنجاح",
@@ -333,5 +344,11 @@
     "SEARCH": "بحث...",
     "NO_DATA": "لا توجد بيانات",
     "REALTIME": "بيانات حية"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "الإشعارات",
+    "NEW": "جديد",
+    "EMPTY": "لا توجد إشعارات",
+    "MARK_ALL_READ": "تحديد الكل كمقروء"
   }
 }

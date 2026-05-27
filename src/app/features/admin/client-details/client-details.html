@@ -821,6 +821,26 @@
                     class="absolute inset-0 opacity-0 cursor-pointer"
                   />
                 </div>
+                <!-- Contract PDF -->
+                <div
+                  class="relative h-14 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e]"
+                >
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/30">
+                      @if (projectContractFile) {
+                        📄 {{ projectContractFile.name }}
+                      } @else {
+                        📄 العقد PDF (اختياري)
+                      }
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    (change)="onProjectContractSelected($event)"
+                    accept=".pdf"
+                    class="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </div>
               </div>
 
               <div class="h-px bg-[#e6d5c3] dark:bg-[#444547]/20"></div>

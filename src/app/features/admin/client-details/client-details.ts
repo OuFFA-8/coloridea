@@ -48,6 +48,7 @@ export class ClientDetails implements OnInit {
   projectForm: FormGroup;
   projectPhotoFile: File | null = null;
   projectPhotoPreview: string | null = null;
+  projectContractFile: File | null = null;
 
   // Edit modal
   editData = { name: '', email: '', password: '' };
@@ -191,6 +192,11 @@ export class ClientDetails implements OnInit {
     (this.projectForm.get('agreedItems') as FormArray).removeAt(index);
   }
 
+  onProjectContractSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) this.projectContractFile = file;
+  }
+
   onProjectPhotoSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -213,6 +219,7 @@ export class ClientDetails implements OnInit {
       this.addAgreedItem();
       this.projectPhotoFile = null;
       this.projectPhotoPreview = null;
+      this.projectContractFile = null;
     }
   }
 
@@ -231,6 +238,7 @@ export class ClientDetails implements OnInit {
     formData.append('totalAmount', val.totalAmount);
     formData.append('totalInstallments', val.totalInstallments);
     if (this.projectPhotoFile) formData.append('photo', this.projectPhotoFile);
+    if (this.projectContractFile) formData.append('contract', this.projectContractFile);
     val.installments.forEach((inst: any, i: number) => {
       formData.append(`installments[${i}][amount]`, inst.amount);
       formData.append(`installments[${i}][createdAt]`, inst.createdAt);

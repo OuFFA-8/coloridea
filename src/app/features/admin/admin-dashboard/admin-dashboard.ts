@@ -3,6 +3,7 @@ import { ChartCard } from '../../../shared/components/chart-card/chart-card';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { ScreenshotBtn } from '../../../shared/components/screenshot-btn/screenshot-btn';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { UsersService } from '../../../core/services/users-service/users-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
@@ -10,7 +11,7 @@ import { LoadingService } from '../../../core/services/loading-service/loading-s
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ChartCard, TranslateModule],
+  imports: [CommonModule, RouterLink, ChartCard, TranslateModule, ScreenshotBtn],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })

@@ -6,6 +6,7 @@ import { ThemeServices } from '../../../core/services/theme-services/theme-servi
 import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
+import { NotificationsService, Notification } from '../../../core/services/notifications-service/notifications-service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,12 +19,19 @@ import { Subscription } from 'rxjs';
 export class Header implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private userSub?: Subscription;
+  private notifSub?: Subscription;
+  private unreadSub?: Subscription;
+
+  notificationsService = inject(NotificationsService);
 
   @Output() toggleSidebar = new EventEmitter<void>();
 
   user: any = null;
   baseUrl = environment.baseUrl;
   dropdownOpen = false;
+  notifOpen = false;
+  notifications: Notification[] = [];
+  unreadCount = 0;
 
   constructor(
     public themeService: ThemeServices,
@@ -36,12 +44,26 @@ export class Header implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.userSub = this.authServices.user$.subscribe((u) => {
         this.user = u;
+        if (u && !this.authServices.isAdmin()) {
+          const token = localStorage.getItem('token') || '';
+          this.notificationsService.connect(token);
+          this.notificationsService.loadNotifications();
+        }
+      });
+
+      this.notifSub = this.notificationsService.notifications$.subscribe((n) => {
+        this.notifications = n;
+      });
+      this.unreadSub = this.notificationsService.unreadCount$.subscribe((c) => {
+        this.unreadCount = c;
       });
     }
   }
 
   ngOnDestroy() {
     this.userSub?.unsubscribe();
+    this.notifSub?.unsubscribe();
+    this.unreadSub?.unsubscribe();
   }
 
   getPhotoUrl(path: string | null): string {
@@ -55,11 +77,26 @@ export class Header implements OnInit, OnDestroy {
 
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
+    if (this.dropdownOpen) this.notifOpen = false;
+  }
+
+  toggleNotifications() {
+    this.notifOpen = !this.notifOpen;
+    if (this.notifOpen) this.dropdownOpen = false;
+  }
+
+  onNotifClick(n: Notification) {
+    if (!n.isRead) this.notificationsService.markRead(n._id);
   }
 
   logout() {
     this.authServices.logout();
     this.dropdownOpen = false;
+    this.notificationsService.disconnect();
     this.router.navigate(['/login']);
+  }
+
+  getNotifText(n: Notification, field: 'title' | 'message'): string {
+    return this.myTrans.currentLang === 'ar' ? n[field].ar : n[field].en;
   }
 }

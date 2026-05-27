@@ -6,11 +6,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
+import { ScreenshotBtn } from '../../../shared/components/screenshot-btn/screenshot-btn';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, ChartCard, TranslateModule, RouterLink],
+  imports: [CommonModule, ChartCard, TranslateModule, RouterLink, ScreenshotBtn],
   templateUrl: './project-details.html',
   styleUrl: './project-details.css',
 })

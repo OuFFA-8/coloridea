@@ -8,6 +8,7 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { OutputsService } from '../../../core/services/outputs-service/outputs-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 import { TranslateModule } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-project-details',
@@ -36,10 +37,13 @@ export class AdminProjectDetails implements OnInit {
   showAddInstallmentModal = false;
   showEditInstallmentModal = false;
   showEditTotalModal = false;
+  showUploadInvoiceModal = false;
+  showUploadReceiptModal = false;
 
   selectedOutput: any = null;
   selectedItem: any = null;
   selectedInstallment: any = null;
+  selectedInstallmentForDoc: any = null;
 
   editProjectForm: FormGroup;
   outputForm: FormGroup;
@@ -53,6 +57,11 @@ export class AdminProjectDetails implements OnInit {
   projectPhotoPreview: string | null = null;
   itemPhotoFile: File | null = null;
   itemPhotoPreview: string | null = null;
+  contractFile: File | null = null;
+  invoiceFile: File | null = null;
+  receiptFile: File | null = null;
+
+  private http = inject(HttpClient);
 
   constructor(
     private route: ActivatedRoute,
@@ -155,6 +164,7 @@ export class AdminProjectDetails implements OnInit {
     });
     this.projectPhotoFile = null;
     this.projectPhotoPreview = null;
+    this.contractFile = null;
     this.showEditProjectModal = true;
   }
 
@@ -180,6 +190,7 @@ export class AdminProjectDetails implements OnInit {
     formData.append('description', val.description);
     formData.append('status', val.status);
     if (this.projectPhotoFile) formData.append('photo', this.projectPhotoFile);
+    if (this.contractFile) formData.append('contract', this.contractFile);
     this.projectsService.updateProject(this.project._id, formData).subscribe({
       next: (res) => {
         this.project = { ...this.project, ...res.data };
@@ -492,6 +503,112 @@ export class AdminProjectDetails implements OnInit {
           },
         });
       }
+    });
+  }
+
+  onContractFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) this.contractFile = file;
+  }
+
+  private filename(path: string): string {
+    return path.split('/').pop() ?? path;
+  }
+
+  getContractUrl(): string {
+    return this.project?.contract
+      ? `${this.baseUrl}/api/v1/files/contracts/${this.filename(this.project.contract)}`
+      : '';
+  }
+
+  getInvoiceUrl(inst: any): string {
+    return inst?.invoice
+      ? `${this.baseUrl}/api/v1/files/invoices/${this.filename(inst.invoice)}`
+      : '';
+  }
+
+  getReceiptUrl(inst: any): string {
+    return inst?.receipt
+      ? `${this.baseUrl}/api/v1/files/receipts/${this.filename(inst.receipt)}`
+      : '';
+  }
+
+  openFile(url: string) {
+    if (!url) return;
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        const win = window.open(blobUrl, '_blank');
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10_000);
+        if (!win) this.alert.error('يرجى السماح بالنوافذ المنبثقة');
+      },
+      error: () => this.alert.error('فشل فتح الملف'),
+    });
+  }
+
+  openUploadInvoiceModal(inst: any) {
+    this.selectedInstallmentForDoc = inst;
+    this.invoiceFile = null;
+    this.showUploadInvoiceModal = true;
+  }
+
+  openUploadReceiptModal(inst: any) {
+    this.selectedInstallmentForDoc = inst;
+    this.receiptFile = null;
+    this.showUploadReceiptModal = true;
+  }
+
+  onInvoiceFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) this.invoiceFile = file;
+  }
+
+  onReceiptFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) this.receiptFile = file;
+  }
+
+  uploadInvoice() {
+    if (!this.invoiceFile) return;
+    this.isSaving = true;
+    this.loadingService.show('Uploading invoice...');
+    const fd = new FormData();
+    fd.append('invoice', this.invoiceFile);
+    this.projectsService.uploadInstallmentInvoice(this.selectedInstallmentForDoc._id, fd).subscribe({
+      next: () => {
+        this.showUploadInvoiceModal = false;
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.loadProject();
+        this.alert.success('Invoice uploaded');
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.alert.error(err.error?.message || 'Failed to upload invoice');
+      },
+    });
+  }
+
+  uploadReceipt() {
+    if (!this.receiptFile) return;
+    this.isSaving = true;
+    this.loadingService.show('Uploading receipt...');
+    const fd = new FormData();
+    fd.append('receipt', this.receiptFile);
+    this.projectsService.uploadInstallmentReceipt(this.selectedInstallmentForDoc._id, fd).subscribe({
+      next: () => {
+        this.showUploadReceiptModal = false;
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.loadProject();
+        this.alert.success('Receipt uploaded');
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.alert.error(err.error?.message || 'Failed to upload receipt');
+      },
     });
   }
 }

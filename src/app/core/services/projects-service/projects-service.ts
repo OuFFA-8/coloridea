@@ -54,4 +54,16 @@ export class ProjectsService {
   updateFinancialTotal(projectId: string, totalAmount: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${projectId}/financial`, { totalAmount });
   }
+
+  uploadInstallmentInvoice(installmentId: string, formData: FormData): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${installmentId}/installments`, formData);
+  }
+
+  uploadInstallmentReceipt(installmentId: string, formData: FormData): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${installmentId}/installments`, formData);
+  }
+
+  uploadUserReceipt(installmentId: string, formData: FormData): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${installmentId}/receipt`, formData);
+  }
 }
