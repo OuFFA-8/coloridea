@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, PLATFORM_ID, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, PLATFORM_ID, Output, EventEmitter } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MyTranslate } from '../../../core/services/my-translate/my-translate';
@@ -15,9 +15,11 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule, TranslateModule, RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
   private userSub?: Subscription;
   private notifSub?: Subscription;
   private unreadSub?: Subscription;
@@ -53,9 +55,11 @@ export class Header implements OnInit, OnDestroy {
 
       this.notifSub = this.notificationsService.notifications$.subscribe((n) => {
         this.notifications = n;
+        this.cdr.markForCheck();
       });
       this.unreadSub = this.notificationsService.unreadCount$.subscribe((c) => {
         this.unreadCount = c;
+        this.cdr.markForCheck();
       });
     }
   }

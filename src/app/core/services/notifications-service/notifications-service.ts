@@ -27,6 +27,8 @@ export class NotificationsService implements OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
     this.disconnect();
 
+    console.log('[Socket] Connecting to:', environment.socketUrl);
+
     this.socket = io(environment.socketUrl, {
       transports: ['polling', 'websocket'],
       upgrade: false,
@@ -35,31 +37,37 @@ export class NotificationsService implements OnDestroy {
       reconnectionDelay: 3000,
     });
 
-    // Step 1: once connected, authenticate with the server
     this.socket.on('connect', () => {
+      console.log('[Socket] Connected! ID:', this.socket!.id);
       this.socket!.emit('authenticate', token);
     });
 
-    // Step 2: server confirms authentication
-    this.socket.on('authenticate', () => {
-      console.log('[Socket] Authenticate successfully');
+    this.socket.on('authenticate', (res: any) => {
+      console.log('[Socket] Authenticate response:', res);
     });
 
-    // Step 3: listen for real-time notification events
-    this.socket.on('send-notification', (data: Notification) => {
+    this.socket.on('create-output-item', (data: unknown) => {
       console.log('[Socket] New notification received:', data);
-      const current = this.notifications$.value;
-      this.notifications$.next([data, ...current]);
-      this.unreadCount$.next(this.unreadCount$.value + 1);
+      this.playNotificationSound();
+      this.loadNotifications();
+    });
+    this.socket.on('send-notification', (data: unknown) => {
+      console.log('[Socket] New notification received:', data);
+      this.playNotificationSound();
+      this.loadNotifications();
     });
 
-    // Re-authenticate after reconnect (socket ID changes on reconnect)
+    this.socket.on('disconnect', (reason) => {
+      console.warn('[Socket] Disconnected:', reason);
+    });
+
     this.socket.on('reconnect', () => {
-      this.socket!.emit('authenticate', { token });
+      console.log('[Socket] Reconnected, re-authenticating...');
+      this.socket!.emit('authenticate', token);
     });
 
     this.socket.on('connect_error', (err) => {
-      console.warn('[Socket] Connection error:', err.message);
+      console.error('[Socket] Connection error:', err.message, err);
     });
   }
 
@@ -89,6 +97,7 @@ export class NotificationsService implements OnDestroy {
   }
 
   markRead(id: string) {
+    if (!id) return;
     this.http.patch(`${this.apiUrl}/${id}/read`, {}).subscribe({
       next: () => {
         const updated = this.notifications$.value.map((n) =>
@@ -98,6 +107,29 @@ export class NotificationsService implements OnDestroy {
         this.unreadCount$.next(updated.filter((n) => !n.isRead).length);
       },
     });
+  }
+
+  private playNotificationSound() {
+    try {
+      const ctx = new AudioContext();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+
+      oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.2);
+
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.3);
+      oscillator.onended = () => ctx.close();
+    } catch {
+      // Web Audio API not supported
+    }
   }
 
   ngOnDestroy() {
