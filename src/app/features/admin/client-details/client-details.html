@@ -70,10 +70,10 @@
                   [class.text-white/50]="!client.isActive"
                   [class.border-white/15]="!client.isActive"
                 >
-                  {{ client.isActive ? 'Active' : 'Inactive' }}
+                  {{ (client.isActive ? 'CLIENT.PROFILE.STATUS_ACTIVE' : 'CLIENT.PROFILE.STATUS_INACTIVE') | translate }}
                 </span>
                 <span class="text-white/50 text-[10px] font-bold"
-                  >{{ client.projectsCount }} projects</span
+                  >{{ client.projectsCount }} {{ 'ADMIN.CLIENT_DETAILS.PROJECTS_COUNT_LABEL' | translate }}</span
                 >
               </div>
               <h1
@@ -101,7 +101,7 @@
               (click)="toggleProjectModal()"
               class="px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-2xl shadow-[#fa8728]/40 active:scale-95 cursor-pointer border-none bg-[#fa8728] hover:bg-[#f97316] text-white"
             >
-              + New Project
+              {{ 'ADMIN.CLIENT_DETAILS.NEW_PROJECT' | translate }}
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@
         <div class="flex items-center gap-3">
           <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
           <h2 class="text-xs font-black uppercase text-[#5c5f63]/50 dark:text-gray-500">
-            Projects ({{ client.projects?.length || 0 }})
+            {{ 'ADMIN.CLIENT_DETAILS.PROJECTS_SECTION' | translate }} ({{ client.projects?.length || 0 }})
           </h2>
         </div>
       </div>
@@ -151,7 +151,7 @@
                   [class.bg-black/40]="project.status === 'pending'"
                   [class.text-white/80]="project.status === 'pending'"
                 >
-                  {{ project.status || 'pending' }}
+                  {{ 'STATUS.' + (project.status?.toUpperCase() || 'PENDING') | translate }}
                 </span>
               </div>
 
@@ -195,7 +195,7 @@
                 <span
                   class="text-[10px] font-black text-[#fa8728] group-hover:text-[#f97316] transition-colors duration-300"
                 >
-                  View →
+                  {{ 'ADMIN.CLIENT_DETAILS.VIEW' | translate }}
                 </span>
               </div>
             </div>
@@ -208,13 +208,13 @@
             <p
               class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest"
             >
-              No Projects Yet
+              {{ 'ADMIN.PROJECTS.NO_PROJECTS' | translate }}
             </p>
             <button
               (click)="toggleProjectModal()"
               class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316]"
             >
-              + Create First Project
+              {{ 'ADMIN.CLIENT_DETAILS.CREATE_FIRST_PROJECT' | translate }}
             </button>
           </div>
         }
@@ -830,7 +830,7 @@
                       @if (projectContractFile) {
                         📄 {{ projectContractFile.name }}
                       } @else {
-                        📄 العقد PDF (اختياري)
+                        {{ 'ADMIN.PROJECT_DETAILS.CONTRACT_PDF' | translate }}
                       }
                     </p>
                   </div>
@@ -968,7 +968,7 @@
                         <input
                           formControlName="amount"
                           type="number"
-                          placeholder="Amount"
+                          placeholder="{{ 'ADMIN.PROJECT_DETAILS.AMOUNT' | translate }}"
                           class="ci-input !w-auto grow !bg-white dark:!bg-[#1c1c1c]"
                         />
                         <input
@@ -1030,7 +1030,7 @@
             class="px-8 py-6 border-b border-[#e6d5c3] dark:border-[#444547]/20 flex items-center justify-between flex-shrink-0"
           >
             <div>
-              <h2 class="text-xl font-black text-[#444547] dark:text-white">تعديل بيانات العميل</h2>
+              <h2 class="text-xl font-black text-[#444547] dark:text-white">{{ 'ADMIN.CLIENT_DETAILS.EDIT_TITLE' | translate }}</h2>
               <div class="w-8 h-0.5 bg-[#fa8728] rounded-full mt-1"></div>
             </div>
             <button
@@ -1048,7 +1048,7 @@
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
-                الاسم
+                {{ 'ADMIN.CLIENTS.NAME' | translate }}
               </label>
               <input [(ngModel)]="editData.name" type="text" class="ci-input" />
             </div>
@@ -1058,7 +1058,7 @@
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
-                الإيميل
+                {{ 'ADMIN.CLIENTS.EMAIL' | translate }}
               </label>
               <input [(ngModel)]="editData.email" type="email" class="ci-input" />
             </div>
@@ -1068,13 +1068,13 @@
               <label
                 class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
               >
-                كلمة المرور الجديدة
+                {{ 'AUTH.RESET.NEW_PASSWORD' | translate }}
               </label>
               <div class="relative">
                 <input
                   [(ngModel)]="editData.password"
                   [type]="showEditPassword ? 'text' : 'password'"
-                  placeholder="اتركه فارغاً إذا لم تريد التغيير"
+                  placeholder="{{ 'ADMIN.CLIENT_DETAILS.PASSWORD_PLACEHOLDER' | translate }}"
                   class="ci-input !pr-12"
                 />
                 <button
@@ -1156,7 +1156,7 @@
               <div class="space-y-1.5">
                 <label
                   class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
-                  >لوجو</label
+                  >{{ 'ADMIN.CLIENTS.LOGO' | translate }}</label
                 >
                 <div
                   class="relative h-24 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
@@ -1182,7 +1182,7 @@
               <div class="space-y-1.5">
                 <label
                   class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
-                  >خلفية</label
+                  >{{ 'ADMIN.CLIENTS.PHOTO' | translate }}</label
                 >
                 <div
                   class="relative h-24 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
@@ -1208,7 +1208,7 @@
               <div class="space-y-1.5">
                 <label
                   class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
-                  >باترن</label
+                  >{{ 'ADMIN.CLIENTS.PATTERN' | translate }}</label
                 >
                 <div
                   class="relative h-24 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-colors border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e] flex items-center justify-center"
@@ -1236,9 +1236,9 @@
           <div
             class="px-8 py-5 border-t border-[#e6d5c3] dark:border-[#444547]/20 flex gap-3 flex-shrink-0"
           >
-            <button (click)="toggleEditModal()" class="ci-btn-secondary flex-1">إلغاء</button>
+            <button (click)="toggleEditModal()" class="ci-btn-secondary flex-1">{{ 'COMMON.CANCEL' | translate }}</button>
             <button (click)="saveEdit()" [disabled]="isEditing" class="ci-btn-primary flex-1">
-              {{ isEditing ? 'جاري الحفظ...' : 'حفظ التغييرات' }}
+              {{ isEditing ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
             </button>
           </div>
         </div>
@@ -1253,13 +1253,13 @@
   >
     <div class="text-5xl opacity-20">🔍</div>
     <h2 class="text-sm font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600">
-      Client Not Found
+      {{ 'ADMIN.CLIENT_DETAILS.NOT_FOUND' | translate }}
     </h2>
     <button
       routerLink="/admin/clients"
       class="px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316]"
     >
-      ← Back
+      ← {{ 'COMMON.BACK' | translate }}
     </button>
   </div>
 }

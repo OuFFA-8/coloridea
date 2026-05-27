@@ -260,7 +260,7 @@
                     <button
                       (click)="clearReceipt(inst)"
                       class="w-4 h-4 rounded-full flex items-center justify-center text-[9px] cursor-pointer border-none bg-rose-100 dark:bg-rose-500/20 text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-500/30 hover:text-rose-500 transition-colors"
-                      title="حذف الإيصال"
+                      [title]="'ADMIN.PROJECT_DETAILS.DELETE_RECEIPT' | translate"
                     >✕</button>
                   </div>
                 } @else {
