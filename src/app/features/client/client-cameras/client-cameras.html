@@ -101,68 +101,111 @@
         [style.gridTemplateColumns]="getGridTemplateColumns()"
         [style.gridTemplateRows]="getGridTemplateRows()"
       >
-        @for (camera of getDisplayedCameras(); track camera._id; let i = $index) {
+        @for (i of range(getSlotsCount()); track i) {
+          @let camera = getCameraForSlot(i);
           <div
-            class="relative overflow-hidden bg-[#0a0a0a] cursor-pointer group"
+            class="relative overflow-hidden bg-[#0a0a0a] group"
+            [class.cursor-pointer]="camera !== null"
             [style.gridRow]="getCellGridRow(i)"
-            (click)="toggleExpand(camera._id)"
+            (contextmenu)="onCellRightClick($event, i)"
+            (click)="camera && toggleExpand(camera._id)"
           >
-            <!-- Last pic image -->
-            @if (getLastPicUrl(camera)) {
-              <img
-                [src]="getLastPicUrl(camera)"
-                class="w-full h-full object-cover"
-                alt=""
-              />
-            } @else {
-              <div class="w-full h-full flex items-center justify-center">
-                <span class="text-5xl opacity-5">📷</span>
-              </div>
-            }
-
-            <!-- In-cell timelapse video -->
-            @if (playingCamIds.has(camera._id)) {
-              <div class="absolute inset-0 z-10 bg-black">
-                @if (cellIsFile.get(camera._id)) {
-                  <video
-                    [src]="cellVideoUrls.get(camera._id)"
-                    class="w-full h-full object-cover"
-                    autoplay
-                    muted
-                    playsinline
-                    (ended)="stopCellVideo(camera._id)"
-                  ></video>
-                } @else {
-                  <iframe
-                    [src]="cellIframeUrls.get(camera._id)"
-                    class="w-full h-full border-none"
-                    allow="autoplay; fullscreen"
-                    allowfullscreen
-                  ></iframe>
-                }
-              </div>
-            }
-
-            <!-- Bottom bar: date left — name right -->
-            <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-3 py-2 pointer-events-none z-20 flex items-end justify-between gap-2">
-              @if (camera.lastPicDate) {
-                <span class="text-white/60 text-[9px] font-bold drop-shadow leading-tight">
-                  {{ camera.lastPicDate | date: 'dd MMM — HH:mm' }}
-                </span>
+            @if (camera) {
+              <!-- Last pic image -->
+              @if (getLastPicUrl(camera)) {
+                <img
+                  [src]="getLastPicUrl(camera)"
+                  class="w-full h-full object-cover"
+                  alt=""
+                />
               } @else {
-                <span></span>
+                <div class="w-full h-full flex items-center justify-center">
+                  <span class="text-5xl opacity-5">📷</span>
+                </div>
               }
-              <span class="text-white text-[10px] font-black drop-shadow leading-tight text-right">{{ camera.name }}</span>
+
+              <!-- In-cell timelapse video -->
+              @if (playingCamIds.has(camera._id)) {
+                <div class="absolute inset-0 z-10 bg-black">
+                  @if (cellIsFile.get(camera._id)) {
+                    <video
+                      [src]="cellVideoUrls.get(camera._id)"
+                      class="w-full h-full object-cover"
+                      autoplay
+                      muted
+                      playsinline
+                      (ended)="stopCellVideo(camera._id)"
+                    ></video>
+                  } @else {
+                    <iframe
+                      [src]="cellIframeUrls.get(camera._id)"
+                      class="w-full h-full border-none"
+                      allow="autoplay; fullscreen"
+                      allowfullscreen
+                    ></iframe>
+                  }
+                </div>
+              }
+
+              <!-- Bottom bar: date left — name right -->
+              <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent px-3 py-2 pointer-events-none z-20 flex items-end justify-between gap-2">
+                @if (camera.lastPicDate) {
+                  <span class="text-white/60 text-[9px] font-bold drop-shadow leading-tight">
+                    {{ camera.lastPicDate | date: 'dd MMM — HH:mm' }}
+                  </span>
+                } @else {
+                  <span></span>
+                }
+                <span class="text-white text-[10px] font-black drop-shadow leading-tight text-right">{{ camera.name }}</span>
+              </div>
+            } @else {
+              <!-- Empty slot -->
+              <div class="w-full h-full flex items-center justify-center cursor-default">
+                <span class="text-3xl opacity-5">📷</span>
+              </div>
+            }
+
+            <!-- Right-click hint on hover -->
+            <div class="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30">
+              <span class="px-2 py-1 rounded text-[8px] font-black uppercase tracking-wider bg-black/60 text-white/40">
+                {{ 'CAMERAS.RIGHT_CLICK' | translate }}
+              </span>
             </div>
           </div>
         }
+      </div>
+    }
 
-        <!-- Filler cells -->
-        @for (i of range(getFillerCount()); track i) {
-          <div class="bg-[#080808] flex items-center justify-center">
-            <span class="text-3xl opacity-5">📷</span>
-          </div>
-        }
+    <!-- ===== RIGHT-CLICK CONTEXT MENU ===== -->
+    @if (contextMenu.visible) {
+      <div class="fixed inset-0 z-199" (click)="closeContextMenu()" (contextmenu)="$event.preventDefault(); closeContextMenu()"></div>
+      <div
+        class="fixed z-200 min-w-52 rounded-2xl border border-white/10 bg-[#111] shadow-2xl overflow-hidden"
+        [style.left.px]="contextMenu.x"
+        [style.top.px]="contextMenu.y"
+      >
+        <div class="px-4 py-3 border-b border-white/5">
+          <p class="text-[8px] font-black uppercase tracking-widest text-white/30">{{ 'CAMERAS.SELECT_CAMERA' | translate }}</p>
+        </div>
+        <div class="max-h-72 overflow-y-auto">
+          @for (cam of cameras; track cam._id) {
+            <button
+              class="w-full flex items-center gap-3 px-4 py-3 text-left border-none bg-transparent cursor-pointer transition-colors hover:bg-white/8"
+              [class.bg-white/5]="getCameraForSlot(contextMenu.slotIndex)?._id === cam._id"
+              (click)="assignCameraToSlot(cam._id)"
+            >
+              <span
+                class="w-2 h-2 rounded-full shrink-0 transition-colors"
+                [class.bg-[#68ab1f]]="getCameraForSlot(contextMenu.slotIndex)?._id === cam._id"
+                [class.bg-white/20]="getCameraForSlot(contextMenu.slotIndex)?._id !== cam._id"
+              ></span>
+              <span class="text-[11px] font-bold text-white/70 hover:text-white leading-tight">{{ cam.name }}</span>
+              @if (getCameraForSlot(contextMenu.slotIndex)?._id === cam._id) {
+                <span class="ms-auto text-[8px] font-black text-[#68ab1f] uppercase tracking-wider">✓</span>
+              }
+            </button>
+          }
+        </div>
       </div>
     }
 

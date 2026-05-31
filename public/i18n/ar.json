@@ -366,7 +366,9 @@
     "NO_CAMERAS": "لا توجد كاميرات مُعدَّة",
     "CLOSE": "✕ إغلاق",
     "SKIP": "تخطي ✕",
-    "LIVE": "مباشر"
+    "LIVE": "مباشر",
+    "RIGHT_CLICK": "كليك يمين للتغيير",
+    "SELECT_CAMERA": "اختر كاميرا"
   },
   "FOOTER": {
     "OPERATIONAL": "يعمل",

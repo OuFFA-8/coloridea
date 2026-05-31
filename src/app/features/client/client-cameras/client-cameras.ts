@@ -81,6 +81,12 @@ export class ClientCameras implements OnInit, OnDestroy {
   // Expanded camera overlay
   expandedCamId: string | null = null;
 
+  // Slot assignments: slot index → camera _id
+  slotAssignments = new Map<number, string>();
+
+  // Right-click context menu
+  contextMenu = { visible: false, x: 0, y: 0, slotIndex: -1 };
+
   // Ad video fullscreen
   showAdVideo = false;
   adVideoFileUrl = '';
@@ -114,6 +120,12 @@ export class ClientCameras implements OnInit, OnDestroy {
 
     const saved = localStorage.getItem('ci-camera-layout');
     if (saved) this.layoutId = saved;
+
+    const savedSlots = localStorage.getItem('ci-camera-slots');
+    if (savedSlots) {
+      const obj = JSON.parse(savedSlots) as Record<string, string>;
+      Object.entries(obj).forEach(([k, v]) => this.slotAssignments.set(Number(k), v));
+    }
 
     const storedUser = this.authServices.getUser();
     this.userDisplayDuration = storedUser?.displayDuration ?? 60;
@@ -458,6 +470,35 @@ export class ClientCameras implements OnInit, OnDestroy {
 
   range(n: number): number[] {
     return Array.from({ length: Math.max(0, n) }, (_, i) => i);
+  }
+
+  getSlotsCount(): number {
+    return this.getCurrentLayout()?.maxCams ?? 0;
+  }
+
+  getCameraForSlot(slotIndex: number): Camera | null {
+    const camId = this.slotAssignments.get(slotIndex);
+    if (camId) return this.cameras.find((c) => c._id === camId) || null;
+    return this.cameras[slotIndex] || null;
+  }
+
+  onCellRightClick(event: MouseEvent, slotIndex: number) {
+    event.preventDefault();
+    this.contextMenu = { visible: true, x: event.clientX, y: event.clientY, slotIndex };
+    this.cdr.detectChanges();
+  }
+
+  assignCameraToSlot(cameraId: string) {
+    this.slotAssignments.set(this.contextMenu.slotIndex, cameraId);
+    const obj: Record<string, string> = {};
+    this.slotAssignments.forEach((v, k) => { obj[k] = v; });
+    localStorage.setItem('ci-camera-slots', JSON.stringify(obj));
+    this.closeContextMenu();
+  }
+
+  closeContextMenu() {
+    this.contextMenu = { ...this.contextMenu, visible: false };
+    this.cdr.detectChanges();
   }
 
   goBack() {

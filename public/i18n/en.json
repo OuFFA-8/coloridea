@@ -366,7 +366,9 @@
     "NO_CAMERAS": "No cameras configured",
     "CLOSE": "✕ Close",
     "SKIP": "Skip ✕",
-    "LIVE": "Live"
+    "LIVE": "Live",
+    "RIGHT_CLICK": "Right-click to change",
+    "SELECT_CAMERA": "Select Camera"
   },
   "FOOTER": {
     "OPERATIONAL": "Operational",
