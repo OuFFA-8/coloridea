@@ -93,6 +93,40 @@ export class Header implements OnInit, OnDestroy {
     if (!n.isRead) this.notificationsService.markRead(n._id);
   }
 
+  getNotifRoute(n: Notification): string | null {
+    const text = `${n.title.ar} ${n.title.en} ${n.message.ar} ${n.message.en}`.toLowerCase();
+
+    let projectId: string | null = null;
+    if (isPlatformBrowser(this.platformId)) {
+      const stored = localStorage.getItem('selectedProject');
+      projectId = stored ? JSON.parse(stored)?._id : null;
+    }
+
+    if (text.includes('مخرج') || text.includes('output') || text.includes('deliverable')) {
+      return projectId ? `/client/projects/${projectId}/deliverables` : null;
+    }
+    if (
+      text.includes('فاتور') || text.includes('إيصال') || text.includes('عقد') ||
+      text.includes('invoice') || text.includes('receipt') || text.includes('contract') ||
+      text.includes('مالي') || text.includes('financial') || text.includes('دفع') || text.includes('payment')
+    ) {
+      return projectId ? `/client/projects/${projectId}/financials` : null;
+    }
+    if (text.includes('مشروع') || text.includes('project')) {
+      return '/select-project';
+    }
+    return null;
+  }
+
+  navigateFromNotif(event: Event, n: Notification) {
+    event.stopPropagation();
+    const route = this.getNotifRoute(n);
+    if (!route) return;
+    if (!n.isRead) this.notificationsService.markRead(n._id);
+    this.notifOpen = false;
+    this.router.navigate([route]);
+  }
+
   logout() {
     this.authServices.logout();
     this.dropdownOpen = false;
