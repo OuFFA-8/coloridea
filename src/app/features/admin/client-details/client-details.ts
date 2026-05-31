@@ -7,6 +7,7 @@ import {
   inject,
   makeStateKey,
 } from '@angular/core';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   FormBuilder,
@@ -34,6 +35,13 @@ const CLIENTS_KEY = makeStateKey<any[]>('clients');
   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink, TranslateModule],
   templateUrl: './client-details.html',
   styleUrl: './client-details.css',
+  animations: [
+    trigger('collapseExpand', [
+      state('open', style({ height: '*', opacity: 1, overflow: 'hidden' })),
+      state('closed', style({ height: '0px', opacity: 0, overflow: 'hidden' })),
+      transition('open <=> closed', animate('300ms ease-in-out')),
+    ]),
+  ],
 })
 export class ClientDetails implements OnInit {
   client: any = null;
@@ -64,6 +72,7 @@ export class ClientDetails implements OnInit {
 
   // Cameras
   cameras: any[] = [];
+  camerasExpanded = true;
   isLoadingCameras = false;
   showCameraModal = false;
   editingCamera: any = null;

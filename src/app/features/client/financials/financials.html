@@ -295,9 +295,17 @@
                   </svg>
                 </p>
                 <div class="flex items-center gap-1.5 justify-end mt-0.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f]"></span>
-                  <span class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f]">
-                    {{ 'CLIENT.FINANCIALS.PAID' | translate }}
+                  <span
+                    class="w-1.5 h-1.5 rounded-full"
+                    [class.bg-[#68ab1f]]="inst.status === 'paid'"
+                    [class.bg-rose-400]="inst.status !== 'paid'"
+                  ></span>
+                  <span
+                    class="text-[9px] font-black uppercase tracking-widest"
+                    [class.text-[#68ab1f]]="inst.status === 'paid'"
+                    [class.text-rose-400]="inst.status !== 'paid'"
+                  >
+                    {{ inst.status === 'paid' ? ('CLIENT.FINANCIALS.PAID' | translate) : ('CLIENT.FINANCIALS.UNPAID' | translate) }}
                   </span>
                 </div>
               </div>

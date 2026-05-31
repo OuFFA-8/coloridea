@@ -42,7 +42,7 @@ export class ProjectsService {
 
   updateInstallment(
     installmentId: string,
-    data: { amount: number; createdAt: string },
+    data: { amount?: number; createdAt?: string; status?: string },
   ): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${installmentId}/installments`, data);
   }

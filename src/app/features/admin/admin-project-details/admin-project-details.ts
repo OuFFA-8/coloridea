@@ -99,6 +99,7 @@ export class AdminProjectDetails implements OnInit {
     this.installmentForm = this.fb.group({
       amount: [null, [Validators.required, Validators.min(1)]],
       createdAt: ['', Validators.required],
+      status: ['unpaid'],
     });
     this.totalAmountForm = this.fb.group({
       totalAmount: [null, [Validators.required, Validators.min(1)]],
@@ -496,8 +497,28 @@ export class AdminProjectDetails implements OnInit {
     this.installmentForm.patchValue({
       amount: installment.amount,
       createdAt: installment.createdAt?.split('T')[0] || '',
+      status: installment.status || 'unpaid',
     });
     this.showEditInstallmentModal = true;
+  }
+
+  toggleInstallmentStatus(inst: any) {
+    const newStatus = inst.status === 'paid' ? 'unpaid' : 'paid';
+    this.loadingService.show('Updating status...');
+    this.projectsService.updateInstallment(inst._id, { status: newStatus }).subscribe({
+      next: () => {
+        this.project.financialDetails.installments =
+          this.project.financialDetails.installments.map((i: any) =>
+            i._id === inst._id ? { ...i, status: newStatus } : i,
+          );
+        this.loadingService.hide();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.alert.error(err.error?.message || 'Failed to update status');
+      },
+    });
   }
 
   saveEditInstallment() {
