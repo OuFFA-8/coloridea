@@ -221,12 +221,14 @@ export class Managers implements OnInit {
     this.cdr.detectChanges();
 
     const user = this.authServices.getUser();
+
     try {
-      const [projectsRes, managerProjectsRes] = await Promise.all([
-        firstValueFrom(this.projectsService.getUserProjects(user._id)),
-        firstValueFrom(this.managersService.getManagerProjects(manager._id)),
-      ]);
+      const projectsRes = await firstValueFrom(this.projectsService.getUserProjects(user._id));
       this.userProjects = projectsRes.data || [];
+    } catch {}
+
+    try {
+      const managerProjectsRes = await firstValueFrom(this.managersService.getManagerProjects(manager._id));
       this.managerProjects = managerProjectsRes.data || [];
     } catch {}
 
@@ -241,7 +243,12 @@ export class Managers implements OnInit {
   }
 
   getManagerProject(projectId: string): ManagerProject | null {
-    return this.managerProjects.find((mp) => mp.project._id === projectId) || null;
+    return (
+      this.managerProjects.find((mp) => {
+        const pid = typeof mp.project === 'string' ? mp.project : mp.project?._id;
+        return pid === projectId;
+      }) || null
+    );
   }
 
   isProjectAssigned(projectId: string): boolean {
@@ -255,7 +262,7 @@ export class Managers implements OnInit {
     this.cdr.detectChanges();
 
     if (mp) {
-      this.managersService.removeProjectFromManager(this.selectedManager._id, mp._id).subscribe({
+      this.managersService.removeProjectFromManager(this.selectedManager._id, project._id).subscribe({
         next: () => {
           this.managerProjects = this.managerProjects.filter((x) => x._id !== mp._id);
           this.isSavingProject[project._id] = false;
@@ -270,7 +277,11 @@ export class Managers implements OnInit {
     } else {
       this.managersService.addProjectToManager(this.selectedManager._id, project._id).subscribe({
         next: (res) => {
-          this.managerProjects = [...this.managerProjects, res.data];
+          const entry = { ...res.data };
+          if (typeof entry.project !== 'object' || !entry.project?._id) {
+            entry.project = project;
+          }
+          this.managerProjects = [...this.managerProjects, entry];
           this.isSavingProject[project._id] = false;
           this.cdr.detectChanges();
         },
@@ -297,7 +308,7 @@ export class Managers implements OnInit {
       : [...mp.permissions, perm];
 
     this.managersService
-      .updateManagerProjectPermissions(this.selectedManager._id, mp._id, permissions)
+      .updateManagerProjectPermissions(this.selectedManager._id, projectId, permissions)
       .subscribe({
         next: () => {
           this.managerProjects = this.managerProjects.map((x) =>

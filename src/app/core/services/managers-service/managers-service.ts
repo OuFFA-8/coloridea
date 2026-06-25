@@ -37,16 +37,16 @@ export class ManagersService {
     return this.http.post(`${this.apiUrl}/${managerId}/projects`, { project: projectId });
   }
 
-  removeProjectFromManager(managerId: string, managerProjectId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${managerId}/projects/${managerProjectId}`);
+  removeProjectFromManager(managerId: string, projectId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${managerId}/projects/${projectId}`);
   }
 
   updateManagerProjectPermissions(
     managerId: string,
-    managerProjectId: string,
+    projectId: string,
     permissions: string[],
   ): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${managerId}/projects/${managerProjectId}`, {
+    return this.http.patch(`${this.apiUrl}/${managerId}/projects/${projectId}`, {
       permissions,
     });
   }
