@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+import { ManagersService } from '../../../core/services/managers-service/managers-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 import { ThemeServices } from '../../../core/services/theme-services/theme-services';
 import { MyTranslate } from '../../../core/services/my-translate/my-translate';
@@ -26,6 +27,7 @@ export class ProjectSelect implements OnInit, OnDestroy {
 
   private notifSub?: Subscription;
   private unreadSub?: Subscription;
+  private managerProjectsMap: Record<string, string[]> = {};
 
   user: any = null;
   projects: any[] = [];
@@ -39,6 +41,7 @@ export class ProjectSelect implements OnInit, OnDestroy {
   constructor(
     private authServices: AuthServices,
     private projectsService: ProjectsService,
+    private managersService: ManagersService,
     private router: Router,
     public themeService: ThemeServices,
     public myTrans: MyTranslate,
@@ -66,23 +69,50 @@ export class ProjectSelect implements OnInit, OnDestroy {
       });
 
       this.loadingService.show('Loading...');
-      this.projectsService.getUserProjects(this.user._id).subscribe({
-        next: (res) => {
-          this.projects = res.data || [];
-          this.loadingService.hide();
-          if (this.projects.length === 1) {
-            this.selectProject(this.projects[0]);
-            return;
-          }
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.loadingService.hide();
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-      });
+      const role = this.authServices.getRole();
+
+      if (role === 'manager') {
+        this.managersService.getMyProjects().subscribe({
+          next: (res) => {
+            const managerProjects = res.data || [];
+            this.managerProjectsMap = {};
+            this.projects = managerProjects.map((mp: any) => {
+              this.managerProjectsMap[mp.project._id] = mp.permissions || [];
+              return mp.project;
+            });
+            this.loadingService.hide();
+            if (this.projects.length === 1) {
+              this.selectProject(this.projects[0]);
+              return;
+            }
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.loadingService.hide();
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+        });
+      } else {
+        this.projectsService.getUserProjects(this.user._id).subscribe({
+          next: (res) => {
+            this.projects = res.data || [];
+            this.loadingService.hide();
+            if (this.projects.length === 1) {
+              this.selectProject(this.projects[0]);
+              return;
+            }
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.loadingService.hide();
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+        });
+      }
     }
   }
 
@@ -106,6 +136,12 @@ export class ProjectSelect implements OnInit, OnDestroy {
   selectProject(project: any) {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('selectedProject', JSON.stringify(project));
+      const permissions = this.managerProjectsMap[project._id];
+      if (permissions !== undefined) {
+        localStorage.setItem('managerPermissions', JSON.stringify(permissions));
+      } else {
+        localStorage.removeItem('managerPermissions');
+      }
     }
     this.router.navigate(['/client/projects', project._id]);
   }

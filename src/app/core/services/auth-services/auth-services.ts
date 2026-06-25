@@ -56,6 +56,7 @@ export class AuthServices {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('managerPermissions');
       this.userSubject.next(null);
     }
   }
@@ -91,5 +92,9 @@ export class AuthServices {
 
   isUser(): boolean {
     return this.getRole() === 'user';
+  }
+
+  isManager(): boolean {
+    return this.getRole() === 'manager';
   }
 }

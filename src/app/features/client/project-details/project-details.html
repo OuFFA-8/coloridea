@@ -91,129 +91,131 @@
         </p>
       </div>
 
-      <!-- Payment Progress -->
-      <div
-        class="col-span-2 lg:col-span-2 p-7 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
-      >
-        <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-1">
-          {{ 'CLIENT.FINANCIALS.PAYMENT_PROGRESS' | translate }}
-        </p>
-        <div class="flex items-end justify-between mb-4">
-          <span
-            class="text-5xl font-black text-[#444547] dark:text-white"
+      <!-- Payment Progress (hidden for managers without view-financials) -->
+      @if (!isManager || canViewFinancials) {
+        <div
+          class="col-span-2 lg:col-span-2 p-7 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
+        >
+          <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-1">
+            {{ 'CLIENT.FINANCIALS.PAYMENT_PROGRESS' | translate }}
+          </p>
+          <div class="flex items-end justify-between mb-4">
+            <span
+              class="text-5xl font-black text-[#444547] dark:text-white"
+              style="font-family: 'Alexandria', sans-serif"
+              >{{ paymentProgress }}</span
+            >
+            <span class="text-2xl font-black text-[#68ab1f] mb-1">%</span>
+          </div>
+          <div class="h-3 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-gradient-to-r from-[#68ab1f] to-[#8bc34a] rounded-full transition-all duration-1000"
+              [style.width.%]="paymentProgress"
+            ></div>
+          </div>
+          <p class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500 mt-2">
+            {{ project.financialDetails?.paidInstallments || 0 }}
+            {{ 'CLIENT.FINANCIALS.OF' | translate }}
+            {{ project.financialDetails?.totalInstallments || 0 }}
+            {{ 'CLIENT.FINANCIALS.INSTALLMENTS_PAID' | translate }}
+          </p>
+        </div>
+
+        <!-- Total -->
+        <div
+          class="p-6 rounded-2xl shadow-sm text-center bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
+        >
+          <p
+            class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-2"
+          >
+            {{ 'CLIENT.FINANCIALS.TOTAL_CONTRACT' | translate }}
+          </p>
+          <p
+            class="text-2xl font-black text-[#444547] dark:text-white"
             style="font-family: 'Alexandria', sans-serif"
-            >{{ paymentProgress }}</span
           >
-          <span class="text-2xl font-black text-[#68ab1f] mb-1">%</span>
+            {{ project.financialDetails?.totalAmount || 0 }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="inline-block align-middle -mt-0.5"
+            >
+              <path d="m20 19.5-5.5 1.2" />
+              <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+              <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+              <path d="M20 10 4 13.5" />
+            </svg>
+          </p>
         </div>
-        <div class="h-3 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden">
-          <div
-            class="h-full bg-gradient-to-r from-[#68ab1f] to-[#8bc34a] rounded-full transition-all duration-1000"
-            [style.width.%]="paymentProgress"
-          ></div>
+
+        <!-- Paid -->
+        <div
+          class="p-6 rounded-2xl shadow-sm text-center bg-[#68ab1f]/8 border border-[#68ab1f]/20 dark:bg-[#68ab1f]/10 dark:border-[#68ab1f]/20"
+        >
+          <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-2">
+            {{ 'CLIENT.FINANCIALS.TOTAL_PAID' | translate }}
+          </p>
+          <p class="text-2xl font-black text-[#68ab1f]" style="font-family: 'Alexandria', sans-serif">
+            {{ paidAmount }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="inline-block align-middle -mt-0.5"
+            >
+              <path d="m20 19.5-5.5 1.2" />
+              <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+              <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+              <path d="M20 10 4 13.5" />
+            </svg>
+          </p>
         </div>
-        <p class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500 mt-2">
-          {{ project.financialDetails?.paidInstallments || 0 }}
-          {{ 'CLIENT.FINANCIALS.OF' | translate }}
-          {{ project.financialDetails?.totalInstallments || 0 }}
-          {{ 'CLIENT.FINANCIALS.INSTALLMENTS_PAID' | translate }}
-        </p>
-      </div>
 
-      <!-- Total -->
-      <div
-        class="p-6 rounded-2xl shadow-sm text-center bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
-      >
-        <p
-          class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-2"
+        <!-- Remaining -->
+        <div
+          class="p-6 rounded-2xl shadow-sm text-center bg-rose-50 border border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/15"
         >
-          {{ 'CLIENT.FINANCIALS.TOTAL_CONTRACT' | translate }}
-        </p>
-        <p
-          class="text-2xl font-black text-[#444547] dark:text-white"
-          style="font-family: 'Alexandria', sans-serif"
-        >
-          {{ project.financialDetails?.totalAmount || 0 }}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="inline-block align-middle -mt-0.5"
+          <p class="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-2">
+            {{ 'CLIENT.FINANCIALS.REMAINING' | translate }}
+          </p>
+          <p
+            class="text-2xl font-black text-rose-500 dark:text-rose-400"
+            style="font-family: 'Alexandria', sans-serif"
           >
-            <path d="m20 19.5-5.5 1.2" />
-            <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
-            <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-            <path d="M20 10 4 13.5" />
-          </svg>
-        </p>
-      </div>
-
-      <!-- Paid -->
-      <div
-        class="p-6 rounded-2xl shadow-sm text-center bg-[#68ab1f]/8 border border-[#68ab1f]/20 dark:bg-[#68ab1f]/10 dark:border-[#68ab1f]/20"
-      >
-        <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-2">
-          {{ 'CLIENT.FINANCIALS.TOTAL_PAID' | translate }}
-        </p>
-        <p class="text-2xl font-black text-[#68ab1f]" style="font-family: 'Alexandria', sans-serif">
-          {{ paidAmount }}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="inline-block align-middle -mt-0.5"
-          >
-            <path d="m20 19.5-5.5 1.2" />
-            <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
-            <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-            <path d="M20 10 4 13.5" />
-          </svg>
-        </p>
-      </div>
-
-      <!-- Remaining -->
-      <div
-        class="p-6 rounded-2xl shadow-sm text-center bg-rose-50 border border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/15"
-      >
-        <p class="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-2">
-          {{ 'CLIENT.FINANCIALS.REMAINING' | translate }}
-        </p>
-        <p
-          class="text-2xl font-black text-rose-500 dark:text-rose-400"
-          style="font-family: 'Alexandria', sans-serif"
-        >
-          {{ remainingAmount }}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="inline-block align-middle -mt-0.5"
-          >
-            <path d="m20 19.5-5.5 1.2" />
-            <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
-            <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-            <path d="M20 10 4 13.5" />
-          </svg>
-        </p>
-      </div>
+            {{ remainingAmount }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="inline-block align-middle -mt-0.5"
+            >
+              <path d="m20 19.5-5.5 1.2" />
+              <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
+              <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
+              <path d="M20 10 4 13.5" />
+            </svg>
+          </p>
+        </div>
+      }
 
       <!-- Outputs Count -->
       <div

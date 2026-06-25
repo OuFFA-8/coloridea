@@ -1,0 +1,343 @@
+<div class="min-h-screen bg-[#fff1e6] dark:bg-[#0e0e0e] py-10">
+  <div class="max-w-5xl mx-auto px-6">
+
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <h1 class="text-2xl font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+          المشرفين
+        </h1>
+        <p class="text-xs text-[#5c5f63]/50 dark:text-gray-500 mt-1 font-bold uppercase tracking-widest">
+          إدارة مشرفي المشاريع
+        </p>
+      </div>
+      <button
+        (click)="openManagerModal()"
+        class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all bg-[#fa8728] text-white hover:bg-[#e5771f]"
+      >
+        + إضافة مشرف
+      </button>
+    </div>
+
+    <!-- Managers List -->
+    @if (isLoadingManagers) {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="h-40 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
+        }
+      </div>
+    } @else if (managers.length === 0) {
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-[#fa8728]/10 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-[#fa8728]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <p class="text-sm font-black text-[#444547]/40 dark:text-gray-600">لا يوجد مشرفون بعد</p>
+        <p class="text-xs text-[#5c5f63]/30 dark:text-gray-700 mt-1">اضغط "إضافة مشرف" للبدء</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        @for (manager of managers; track manager._id) {
+          <div class="bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm p-5">
+            <!-- Header row -->
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5 text-[#fa8728]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+                    {{ manager.name }}
+                  </p>
+                  <p class="text-xs text-[#5c5f63]/50 dark:text-gray-500 mt-0.5">{{ manager.email }}</p>
+                </div>
+              </div>
+              <span
+                class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest"
+                [class.bg-[#68ab1f]/10]="manager.isActive"
+                [class.text-[#68ab1f]]="manager.isActive"
+                [class.bg-[#444547]/10]="!manager.isActive"
+                [class.text-[#5c5f63]/50]="!manager.isActive"
+              >
+                {{ manager.isActive ? 'نشط' : 'معطل' }}
+              </span>
+            </div>
+
+            <!-- Cameras row -->
+            @if (cameras.length > 0) {
+              <div class="mb-4">
+                <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600 mb-2">
+                  الكاميرات المتاحة
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (camera of cameras; track camera._id) {
+                    <button
+                      (click)="toggleCamera(manager, camera._id)"
+                      class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer border"
+                      [class.bg-[#fa8728]/10]="isCameraAssigned(manager, camera._id)"
+                      [class.text-[#fa8728]]="isCameraAssigned(manager, camera._id)"
+                      [class.border-[#fa8728]/30]="isCameraAssigned(manager, camera._id)"
+                      [class.bg-transparent]="!isCameraAssigned(manager, camera._id)"
+                      [class.text-[#5c5f63]/50]="!isCameraAssigned(manager, camera._id)"
+                      [class.border-[#e6d5c3]]="!isCameraAssigned(manager, camera._id)"
+                      [class.dark:border-[#444547]/30]="!isCameraAssigned(manager, camera._id)"
+                    >
+                      📷 {{ camera.name }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2 pt-4 border-t border-[#e6d5c3]/60 dark:border-[#444547]/20">
+              <button
+                (click)="openProjectsModal(manager)"
+                class="flex-1 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all bg-[#444547]/8 dark:bg-white/6 text-[#444547] dark:text-white hover:bg-[#fa8728]/10 hover:text-[#fa8728]"
+              >
+                المشاريع
+              </button>
+              <button
+                (click)="openManagerModal(manager)"
+                class="px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all bg-[#444547]/8 dark:bg-white/6 text-[#444547] dark:text-white hover:bg-[#fa8728]/10 hover:text-[#fa8728]"
+              >
+                تعديل
+              </button>
+              <button
+                (click)="deleteManager(manager)"
+                class="px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all bg-transparent text-rose-400 hover:bg-rose-500/10"
+              >
+                حذف
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ===== CREATE / EDIT MANAGER MODAL ===== -->
+@if (showManagerModal) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div class="fixed inset-0 bg-[#0e0e0e]/75 backdrop-blur-md" (click)="closeManagerModal()"></div>
+    <div class="relative w-full max-w-md rounded-3xl p-8 shadow-2xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30">
+      <h2 class="text-xl font-black text-[#444547] dark:text-white mb-1" style="font-family:'Alexandria',sans-serif">
+        {{ editingManager ? 'تعديل المشرف' : 'إضافة مشرف جديد' }}
+      </h2>
+      <div class="w-8 h-0.5 bg-[#fa8728] rounded-full mb-6"></div>
+
+      <form [formGroup]="managerForm" (ngSubmit)="saveManager()" class="space-y-4">
+        <!-- Name -->
+        <div>
+          <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+            الاسم
+          </label>
+          <input
+            formControlName="name"
+            type="text"
+            placeholder="اسم المشرف"
+            class="w-full px-4 py-3 rounded-2xl text-sm font-bold border text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#0e0e0e] border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors placeholder:text-[#5c5f63]/30"
+          />
+          @if (managerForm.get('name')?.invalid && managerForm.get('name')?.touched) {
+            <p class="text-rose-400 text-[10px] mt-1">الاسم مطلوب</p>
+          }
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+            البريد الإلكتروني
+          </label>
+          <input
+            formControlName="email"
+            type="email"
+            placeholder="email@example.com"
+            class="w-full px-4 py-3 rounded-2xl text-sm font-bold border text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#0e0e0e] border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors placeholder:text-[#5c5f63]/30"
+          />
+          @if (managerForm.get('email')?.invalid && managerForm.get('email')?.touched) {
+            <p class="text-rose-400 text-[10px] mt-1">بريد إلكتروني صحيح مطلوب</p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5">
+            كلمة المرور {{ editingManager ? '(اتركها فارغة إن لم تريد تغييرها)' : '' }}
+          </label>
+          <input
+            formControlName="password"
+            type="password"
+            [placeholder]="editingManager ? 'كلمة مرور جديدة (اختياري)' : 'كلمة المرور'"
+            class="w-full px-4 py-3 rounded-2xl text-sm font-bold border text-[#444547] dark:text-white bg-[#fff1e6] dark:bg-[#0e0e0e] border-[#e6d5c3] dark:border-[#444547]/30 outline-none focus:border-[#fa8728] transition-colors placeholder:text-[#5c5f63]/30"
+          />
+          @if (managerForm.get('password')?.invalid && managerForm.get('password')?.touched) {
+            <p class="text-rose-400 text-[10px] mt-1">كلمة المرور 6 أحرف على الأقل</p>
+          }
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button
+            type="button"
+            (click)="closeManagerModal()"
+            class="flex-1 px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest cursor-pointer border border-[#e6d5c3] dark:border-[#444547]/30 bg-transparent text-[#5c5f63]/60 hover:bg-[#e6d5c3]/30 transition-colors"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSavingManager"
+            class="flex-1 px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest cursor-pointer border-none bg-[#fa8728] text-white hover:bg-[#e5771f] disabled:opacity-50 transition-colors"
+          >
+            {{ isSavingManager ? 'جارٍ الحفظ...' : (editingManager ? 'حفظ التغييرات' : 'إنشاء المشرف') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ===== MANAGE PROJECTS MODAL ===== -->
+@if (showProjectsModal && selectedManager) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div class="fixed inset-0 bg-[#0e0e0e]/75 backdrop-blur-md" (click)="closeProjectsModal()"></div>
+    <div class="relative w-full max-w-lg rounded-3xl shadow-2xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 overflow-hidden flex flex-col max-h-[85vh]">
+      <!-- Modal Header -->
+      <div class="px-7 py-5 border-b border-[#e6d5c3]/60 dark:border-[#444547]/20 shrink-0">
+        <h2 class="text-lg font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+          مشاريع {{ selectedManager.name }}
+        </h2>
+        <p class="text-[10px] font-bold text-[#5c5f63]/40 dark:text-gray-600 mt-0.5 uppercase tracking-widest">
+          اختر المشاريع والصلاحيات
+        </p>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto p-5 space-y-3">
+        @if (isLoadingProjectsModal) {
+          @for (_ of [1,2,3]; track $index) {
+            <div class="h-20 rounded-2xl bg-[#e6d5c3]/30 dark:bg-[#444547]/15 animate-pulse"></div>
+          }
+        } @else if (userProjects.length === 0) {
+          <div class="py-12 text-center">
+            <p class="text-sm font-black text-[#444547]/30 dark:text-gray-700">لا توجد مشاريع</p>
+          </div>
+        } @else {
+          @for (project of userProjects; track project._id) {
+            <div
+              class="rounded-2xl border p-4 transition-all duration-200"
+              [class.border-[#fa8728]/30]="isProjectAssigned(project._id)"
+              [class.bg-[#fa8728]/4]="isProjectAssigned(project._id)"
+              [class.border-[#e6d5c3]]="!isProjectAssigned(project._id)"
+              [class.dark:border-[#444547]/30]="!isProjectAssigned(project._id)"
+              [class.bg-transparent]="!isProjectAssigned(project._id)"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <!-- Project info -->
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-[#e6d5c3]/40 dark:bg-[#444547]/20">
+                    @if (project.photo) {
+                      <img
+                        [src]="getProjectPhotoUrl(project.photo)"
+                        [alt]="project.name"
+                        class="w-full h-full object-cover"
+                        (error)="$any($event.target).style.display='none'"
+                      />
+                    }
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-black text-[#444547] dark:text-white truncate" style="font-family:'Alexandria',sans-serif">
+                      {{ project.name }}
+                    </p>
+                    @if (project.status) {
+                      <span class="text-[9px] font-bold text-[#5c5f63]/40 dark:text-gray-600 uppercase">
+                        {{ project.status }}
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Assign toggle -->
+                <button
+                  (click)="toggleProject(project)"
+                  [disabled]="isSavingProject[project._id]"
+                  class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all disabled:opacity-50"
+                  [class.bg-[#fa8728]]="isProjectAssigned(project._id)"
+                  [class.text-white]="isProjectAssigned(project._id)"
+                  [class.hover:bg-[#e5771f]]="isProjectAssigned(project._id)"
+                  [class.bg-[#444547]/10]="!isProjectAssigned(project._id)"
+                  [class.dark:bg-white/8]="!isProjectAssigned(project._id)"
+                  [class.text-[#444547]]="!isProjectAssigned(project._id)"
+                  [class.dark:text-white]="!isProjectAssigned(project._id)"
+                  [class.hover:bg-[#fa8728]/15]="!isProjectAssigned(project._id)"
+                >
+                  @if (isSavingProject[project._id]) {
+                    ...
+                  } @else if (isProjectAssigned(project._id)) {
+                    ✓ مضاف
+                  } @else {
+                    + إضافة
+                  }
+                </button>
+              </div>
+
+              <!-- Permissions (only when assigned) -->
+              @if (isProjectAssigned(project._id)) {
+                <div class="mt-3 pt-3 border-t border-[#fa8728]/15 flex items-center gap-2 flex-wrap">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600 me-1">
+                    صلاحيات:
+                  </p>
+
+                  <!-- view-financials -->
+                  <button
+                    (click)="togglePermission(project._id, 'view-financials')"
+                    class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer border"
+                    [class.bg-[#68ab1f]/10]="hasPermission(project._id, 'view-financials')"
+                    [class.text-[#68ab1f]]="hasPermission(project._id, 'view-financials')"
+                    [class.border-[#68ab1f]/30]="hasPermission(project._id, 'view-financials')"
+                    [class.bg-transparent]="!hasPermission(project._id, 'view-financials')"
+                    [class.text-[#5c5f63]/50]="!hasPermission(project._id, 'view-financials')"
+                    [class.border-[#e6d5c3]]="!hasPermission(project._id, 'view-financials')"
+                    [class.dark:border-[#444547]/30]="!hasPermission(project._id, 'view-financials')"
+                  >
+                    {{ hasPermission(project._id, 'view-financials') ? '✓' : '+' }} عرض المالية
+                  </button>
+
+                  <!-- add-receipt -->
+                  <button
+                    (click)="togglePermission(project._id, 'add-receipt')"
+                    class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer border"
+                    [class.bg-[#68ab1f]/10]="hasPermission(project._id, 'add-receipt')"
+                    [class.text-[#68ab1f]]="hasPermission(project._id, 'add-receipt')"
+                    [class.border-[#68ab1f]/30]="hasPermission(project._id, 'add-receipt')"
+                    [class.bg-transparent]="!hasPermission(project._id, 'add-receipt')"
+                    [class.text-[#5c5f63]/50]="!hasPermission(project._id, 'add-receipt')"
+                    [class.border-[#e6d5c3]]="!hasPermission(project._id, 'add-receipt')"
+                    [class.dark:border-[#444547]/30]="!hasPermission(project._id, 'add-receipt')"
+                  >
+                    {{ hasPermission(project._id, 'add-receipt') ? '✓' : '+' }} رفع الإيصالات
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-7 py-4 border-t border-[#e6d5c3]/60 dark:border-[#444547]/20 shrink-0">
+        <button
+          (click)="closeProjectsModal()"
+          class="w-full px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest cursor-pointer border border-[#e6d5c3] dark:border-[#444547]/30 bg-transparent text-[#5c5f63]/60 hover:bg-[#e6d5c3]/30 transition-colors"
+        >
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -4,6 +4,7 @@ import { ChartCard } from './../../../shared/components/chart-card/chart-card';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+import { ManagersService } from '../../../core/services/managers-service/managers-service';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 import { ScreenshotBtn } from '../../../shared/components/screenshot-btn/screenshot-btn';
@@ -24,6 +25,10 @@ export class ProjectDetails implements OnInit {
   isLoading = true;
   pieData: number[] = [];
   lineData: number[] = [];
+  isManager = false;
+  canViewFinancials = false;
+
+  private managersService = inject(ManagersService);
 
   constructor(
     private route: ActivatedRoute,
@@ -39,21 +44,48 @@ export class ProjectDetails implements OnInit {
         this.isLoading = false;
         return;
       }
+
+      const role = this.authServices.getRole();
+      this.isManager = role === 'manager';
+      if (this.isManager) {
+        const permsRaw = localStorage.getItem('managerPermissions');
+        const perms: string[] = permsRaw ? JSON.parse(permsRaw) : [];
+        this.canViewFinancials = perms.includes('view-financials');
+      }
+
       this.loadingService.show('Loading project...');
-      this.projectsService.getUserProjects(user._id).subscribe({
-        next: (res) => {
-          this.project = (res.data || []).find((p: any) => p._id === projectId) || null;
-          if (this.project) this.buildChartData();
-          this.isLoading = false;
-          this.loadingService.hide();
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.isLoading = false;
-          this.loadingService.hide();
-          this.cdr.detectChanges();
-        },
-      });
+
+      if (this.isManager) {
+        this.managersService.getMyProjectById(projectId).subscribe({
+          next: (res) => {
+            this.project = res.data?.project ?? res.data;
+            if (this.project) this.buildChartData();
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+        });
+      } else {
+        this.projectsService.getUserProjects(user._id).subscribe({
+          next: (res) => {
+            this.project = (res.data || []).find((p: any) => p._id === projectId) || null;
+            if (this.project) this.buildChartData();
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+        });
+      }
     }
   }
 

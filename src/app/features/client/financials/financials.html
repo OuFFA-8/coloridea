@@ -257,13 +257,15 @@
                       (click)="openFile(getReceiptUrl(inst))"
                       class="text-[10px] font-black text-[#68ab1f] cursor-pointer border-none bg-transparent hover:underline"
                     >📄 {{ 'CLIENT.FINANCIALS.VIEW_RECEIPT' | translate }}</button>
-                    <button
-                      (click)="clearReceipt(inst)"
-                      class="w-4 h-4 rounded-full flex items-center justify-center text-[9px] cursor-pointer border-none bg-rose-100 dark:bg-rose-500/20 text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-500/30 hover:text-rose-500 transition-colors"
-                      [title]="'ADMIN.PROJECT_DETAILS.DELETE_RECEIPT' | translate"
-                    >✕</button>
+                    @if (!isManager) {
+                      <button
+                        (click)="clearReceipt(inst)"
+                        class="w-4 h-4 rounded-full flex items-center justify-center text-[9px] cursor-pointer border-none bg-rose-100 dark:bg-rose-500/20 text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-500/30 hover:text-rose-500 transition-colors"
+                        [title]="'ADMIN.PROJECT_DETAILS.DELETE_RECEIPT' | translate"
+                      >✕</button>
+                    }
                   </div>
-                } @else {
+                } @else if (!isManager || canAddReceipt) {
                   <button
                     (click)="openUploadReceiptModal(inst)"
                     class="px-3 py-1.5 rounded-xl text-[10px] font-black border-none cursor-pointer bg-[#e6d5c3]/50 dark:bg-[#444547]/20 text-[#5c5f63]/50 hover:bg-[#68ab1f]/10 hover:text-[#68ab1f] transition-colors"

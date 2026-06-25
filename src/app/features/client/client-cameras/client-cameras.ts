@@ -15,6 +15,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
 import { AdVideoService } from '../../../core/services/ad-video-service/ad-video-service';
+import { ManagersService } from '../../../core/services/managers-service/managers-service';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { environment } from '../../../../environments/environment';
 import { AutoplayVideoDirective } from './autoplay-video.directive';
@@ -56,6 +57,7 @@ export class ClientCameras implements OnInit, OnDestroy {
   private router = inject(Router);
   private camerasService = inject(CamerasService);
   private adVideoService = inject(AdVideoService);
+  private managersService = inject(ManagersService);
   private authServices = inject(AuthServices);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
@@ -130,11 +132,14 @@ export class ClientCameras implements OnInit, OnDestroy {
     const storedUser = this.authServices.getUser();
     this.userDisplayDuration = storedUser?.displayDuration ?? 60;
 
-    try {
-      const adRes = await firstValueFrom(this.adVideoService.getMyAdVideos());
-      this.adVideos = adRes.data || [];
-    } catch {
-      // ad videos unavailable
+    const role = this.authServices.getRole();
+    if (role !== 'manager') {
+      try {
+        const adRes = await firstValueFrom(this.adVideoService.getMyAdVideos());
+        this.adVideos = adRes.data || [];
+      } catch {
+        // ad videos unavailable
+      }
     }
 
     await this.loadCameras();
@@ -162,7 +167,11 @@ export class ClientCameras implements OnInit, OnDestroy {
 
   async loadCameras() {
     try {
-      const res = await firstValueFrom(this.camerasService.getMyCameras());
+      const role = this.authServices.getRole();
+      const request = role === 'manager'
+        ? this.managersService.getMyManagerCameras()
+        : this.camerasService.getMyCameras();
+      const res = await firstValueFrom(request);
       this.cameras = (res.data || []).filter((c: Camera) => c.isActive !== false);
       this.isLoading = false;
       this.scheduleCameraTimelapse();

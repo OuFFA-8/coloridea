@@ -36,28 +36,43 @@ export class ClientSidebar implements OnInit, OnDestroy {
   projectName = '';
   pattern = '';
   clientLogo = '';
+  role = '';
+  managerPermissions: string[] = [];
 
   get projectLinks() {
-    return [
+    const links: { path: string[]; icon: string; label: string; exact: { exact: boolean } }[] = [
       {
         path: ['/client/projects', this.projectId],
         icon: 'overview',
         label: 'SIDEBAR.OVERVIEW',
-        exact: { exact: true } as const,
+        exact: { exact: true },
       },
       {
         path: ['/client/projects', this.projectId, 'deliverables'],
         icon: 'deliverables',
         label: 'SIDEBAR.DELIVERABLES',
-        exact: { exact: false } as const,
+        exact: { exact: false },
       },
-      {
+    ];
+
+    if (this.role !== 'manager' || this.managerPermissions.includes('view-financials')) {
+      links.push({
         path: ['/client/projects', this.projectId, 'financials'],
         icon: 'financials',
         label: 'SIDEBAR.FINANCIALS',
-        exact: { exact: false } as const,
-      },
-    ];
+        exact: { exact: false },
+      });
+    }
+
+    return links;
+  }
+
+  get isUser(): boolean {
+    return this.role === 'user';
+  }
+
+  get isManager(): boolean {
+    return this.role === 'manager';
   }
 
   constructor(
@@ -101,6 +116,17 @@ export class ClientSidebar implements OnInit, OnDestroy {
         }
       } catch {}
     }
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.role = payload.role || '';
+      } catch {}
+    }
+
+    const permsRaw = localStorage.getItem('managerPermissions');
+    this.managerPermissions = permsRaw ? JSON.parse(permsRaw) : [];
   }
 
   detectTheme() {
@@ -123,7 +149,9 @@ export class ClientSidebar implements OnInit, OnDestroy {
   }
 
   logout() {
-    if (isPlatformBrowser(this.platformId)) localStorage.removeItem('selectedProject');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('selectedProject');
+    }
     this.authServices.logout();
     this.router.navigate(['/login']);
   }

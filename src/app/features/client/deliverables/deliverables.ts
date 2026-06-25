@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
+import { ManagersService } from '../../../core/services/managers-service/managers-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 
 @Component({
@@ -32,6 +33,8 @@ export class Deliverables implements OnInit {
   baseUrl = environment.baseUrl;
   private apiKey = environment.googleApiKey;
 
+  private managersService = inject(ManagersService);
+
   constructor(
     private route: ActivatedRoute,
     private projectsService: ProjectsService,
@@ -50,22 +53,43 @@ export class Deliverables implements OnInit {
       }
 
       this.loadingService.show('Loading deliverables...');
-      this.projectsService.getUserProjects(user._id).subscribe({
-        next: (res) => {
-          const project = (res.data || []).find((p: any) => p._id === projectId);
-          this.outputs = (project?.outputs || []).sort(
-            (a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0),
-          );
-          this.isLoading = false;
-          this.loadingService.hide();
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.isLoading = false;
-          this.loadingService.hide();
-          this.cdr.detectChanges();
-        },
-      });
+      const role = this.authServices.getRole();
+
+      if (role === 'manager') {
+        this.managersService.getMyProjectById(projectId!).subscribe({
+          next: (res) => {
+            const project = res.data?.project ?? res.data;
+            this.outputs = (project?.outputs || []).sort(
+              (a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0),
+            );
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+        });
+      } else {
+        this.projectsService.getUserProjects(user._id).subscribe({
+          next: (res) => {
+            const project = (res.data || []).find((p: any) => p._id === projectId);
+            this.outputs = (project?.outputs || []).sort(
+              (a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0),
+            );
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.isLoading = false;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+          },
+        });
+      }
     }
   }
 

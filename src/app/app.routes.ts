@@ -42,6 +42,7 @@ export const routes: Routes = [
     children: [
       { path: 'profile', loadComponent: () => import('./features/client/profile/profile').then(m => m.Profile) },
       { path: 'settings', loadComponent: () => import('./features/client/client-settings/client-settings').then(m => m.ClientSettings) },
+      { path: 'managers', loadComponent: () => import('./features/client/managers/managers').then(m => m.Managers) },
       { path: 'verify-email/:token', loadComponent: () => import('./features/client/verify-email/verify-email').then(m => m.VerifyEmail) },
       { path: 'files', loadComponent: () => import('./features/client/files/files').then(m => m.Files) },
       {
