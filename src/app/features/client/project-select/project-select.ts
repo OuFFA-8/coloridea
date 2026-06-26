@@ -126,7 +126,28 @@ export class ProjectSelect implements OnInit, OnDestroy {
   }
 
   onNotifClick(n: Notification) {
+    console.log('[Notif click]', JSON.stringify(n, null, 2));
     if (!n.isRead) this.notificationsService.markRead(n._id);
+    const targetProject = this.getNotifTargetProject(n);
+    if (!targetProject) {
+      this.cdr.detectChanges();
+      return;
+    }
+    this.notifOpen = false;
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('selectedProject', JSON.stringify(targetProject));
+      const permissions = this.managerProjectsMap[targetProject._id];
+      if (permissions !== undefined) {
+        localStorage.setItem('managerPermissions', JSON.stringify(permissions));
+      } else {
+        localStorage.removeItem('managerPermissions');
+      }
+    }
+    const subPath = this.getNotifSubPath(n);
+    const route = subPath
+      ? `/client/projects/${targetProject._id}/${subPath}`
+      : `/client/projects/${targetProject._id}`;
+    this.router.navigate([route]);
   }
 
   getNotifText(n: Notification, field: 'title' | 'message'): string {
@@ -134,7 +155,7 @@ export class ProjectSelect implements OnInit, OnDestroy {
   }
 
   getNotifTargetProject(n: Notification): any | null {
-    if (n.projectId) return this.projects.find((p) => p._id === n.projectId) ?? null;
+    if (n.project) return this.projects.find((p) => p._id === n.project) ?? null;
     if (this.projects.length === 1) return this.projects[0];
     return null;
   }

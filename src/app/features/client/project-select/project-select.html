@@ -141,15 +141,11 @@
                           </p>
                         </div>
                         @if (getNotifTargetProject(n)) {
-                          <button
-                            (click)="navigateFromNotif($event, n)"
-                            class="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg border-none cursor-pointer transition-all duration-200 bg-[#fa8728]/10 text-[#fa8728] hover:bg-[#fa8728] hover:text-white"
-                            title="الانتقال إلى الصفحة"
-                          >
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <span class="shrink-0 w-6 h-6 flex items-center justify-center rounded-lg bg-[#fa8728]/10 text-[#fa8728]">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
                             </svg>
-                          </button>
+                          </span>
                         }
                       </div>
                     </div>

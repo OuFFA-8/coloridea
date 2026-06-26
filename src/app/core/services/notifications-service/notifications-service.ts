@@ -11,7 +11,7 @@ export interface Notification {
   message: { ar: string; en: string };
   isRead: boolean;
   createdAt: string;
-  projectId?: string;
+  project?: string;
   type?: string;
 }
 

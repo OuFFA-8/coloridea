@@ -96,8 +96,8 @@ export class Header implements OnInit, OnDestroy {
   getNotifRoute(n: Notification): string | null {
     const text = `${n.title.ar} ${n.title.en} ${n.message.ar} ${n.message.en}`.toLowerCase();
 
-    let projectId: string | null = null;
-    if (isPlatformBrowser(this.platformId)) {
+    let projectId: string | null = n.project ?? null;
+    if (!projectId && isPlatformBrowser(this.platformId)) {
       const stored = localStorage.getItem('selectedProject');
       projectId = stored ? JSON.parse(stored)?._id : null;
     }
