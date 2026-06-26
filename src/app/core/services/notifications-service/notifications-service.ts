@@ -11,6 +11,8 @@ export interface Notification {
   message: { ar: string; en: string };
   isRead: boolean;
   createdAt: string;
+  projectId?: string;
+  type?: string;
 }
 
 @Injectable({ providedIn: 'root' })

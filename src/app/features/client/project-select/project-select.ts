@@ -133,6 +133,51 @@ export class ProjectSelect implements OnInit, OnDestroy {
     return this.myTrans.currentLang === 'ar' ? n[field].ar : n[field].en;
   }
 
+  getNotifTargetProject(n: Notification): any | null {
+    if (n.projectId) return this.projects.find((p) => p._id === n.projectId) ?? null;
+    if (this.projects.length === 1) return this.projects[0];
+    return null;
+  }
+
+  private getNotifSubPath(n: Notification): string {
+    const text = `${n.title.ar} ${n.title.en} ${n.message.ar} ${n.message.en}`.toLowerCase();
+    if (text.includes('مخرج') || text.includes('output') || text.includes('deliverable')) return 'deliverables';
+    if (
+      text.includes('فاتور') || text.includes('إيصال') || text.includes('مالي') ||
+      text.includes('invoice') || text.includes('receipt') || text.includes('financial') ||
+      text.includes('payment') || text.includes('دفع')
+    ) return 'financials';
+    return '';
+  }
+
+  navigateFromNotif(event: Event, n: Notification) {
+    event.stopPropagation();
+    if (!n.isRead) this.notificationsService.markRead(n._id);
+    this.notifOpen = false;
+
+    const targetProject = this.getNotifTargetProject(n);
+    if (!targetProject) {
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('selectedProject', JSON.stringify(targetProject));
+      const permissions = this.managerProjectsMap[targetProject._id];
+      if (permissions !== undefined) {
+        localStorage.setItem('managerPermissions', JSON.stringify(permissions));
+      } else {
+        localStorage.removeItem('managerPermissions');
+      }
+    }
+
+    const subPath = this.getNotifSubPath(n);
+    const route = subPath
+      ? `/client/projects/${targetProject._id}/${subPath}`
+      : `/client/projects/${targetProject._id}`;
+    this.router.navigate([route]);
+  }
+
   selectProject(project: any) {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('selectedProject', JSON.stringify(project));

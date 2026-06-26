@@ -366,26 +366,30 @@
           </div>
         </div>
 
-        <div class="pt-6 mt-6 border-t border-[#e6d5c3] dark:border-[#444547]/20">
-          <p
-            class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600 mb-3"
-          >
-            {{ 'ADMIN.DASHBOARD.COMPLETION_RATE' | translate }}
-          </p>
-          <div class="flex items-end gap-1.5 mb-3">
-            <span
-              class="text-6xl font-black text-[#444547] dark:text-white leading-none"
-              style="font-family: 'Alexandria', sans-serif"
-              >{{ completionRate }}</span
-            >
-            <span class="text-2xl font-black text-[#fa8728] mb-1">%</span>
+        <div class="pt-5 mt-5 border-t border-[#e6d5c3] dark:border-[#444547]/20 flex items-center gap-4">
+          <!-- Ring -->
+          <div class="relative w-17 h-17 shrink-0">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 68 68">
+              <circle cx="34" cy="34" r="27" fill="none" stroke-width="5" class="stroke-[#e6d5c3]/60 dark:stroke-[#444547]/30"/>
+              <circle cx="34" cy="34" r="27" fill="none" stroke-width="5"
+                stroke="#fa8728" stroke-linecap="round"
+                [style.stroke-dasharray]="'169.65'"
+                [style.stroke-dashoffset]="169.65 - (169.65 * completionRate / 100)"
+              />
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-[11px] font-black text-[#444547] dark:text-white">{{ completionRate }}%</span>
+            </div>
           </div>
-          <div class="h-2 rounded-full overflow-hidden bg-[#e6d5c3] dark:bg-[#444547]/20">
-            <div
-              class="h-full rounded-full transition-all duration-1000"
-              style="background: linear-gradient(90deg, #fa8728, #f97316)"
-              [style.width.%]="completionRate"
-            ></div>
+          <div>
+            <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/40 dark:text-gray-600 mb-1">
+              {{ 'ADMIN.DASHBOARD.COMPLETION_RATE' | translate }}
+            </p>
+            <div class="flex items-baseline gap-1">
+              <span class="text-3xl font-black text-[#444547] dark:text-white leading-none" style="font-family:'Alexandria',sans-serif">{{ completionRate }}</span>
+              <span class="text-base font-black text-[#fa8728]">%</span>
+            </div>
+            <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 mt-0.5">{{ completedProjects }} / {{ totalProjects }}</p>
           </div>
         </div>
       </div>

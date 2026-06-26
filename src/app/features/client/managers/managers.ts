@@ -59,6 +59,9 @@ export class Managers implements OnInit {
   isLoadingProjectsModal = false;
   isSavingProject: Record<string, boolean> = {};
 
+  // Cache manager assignments across modal open/close within the same session
+  private assignmentsCache = new Map<string, ManagerProject[]>();
+
   constructor() {
     this.managerForm = this.fb.group({
       name: ['', Validators.required],
@@ -229,8 +232,13 @@ export class Managers implements OnInit {
 
     try {
       const managerProjectsRes = await firstValueFrom(this.managersService.getManagerProjects(manager._id));
-      this.managerProjects = managerProjectsRes.data || [];
-    } catch {}
+      const raw = managerProjectsRes.data ?? managerProjectsRes;
+      this.managerProjects = Array.isArray(raw) ? raw : [];
+      this.assignmentsCache.set(manager._id, this.managerProjects);
+    } catch {
+      // API not available — restore from cache if we have prior session data
+      this.managerProjects = this.assignmentsCache.get(manager._id) ?? [];
+    }
 
     this.isLoadingProjectsModal = false;
     this.cdr.detectChanges();
@@ -265,6 +273,7 @@ export class Managers implements OnInit {
       this.managersService.removeProjectFromManager(this.selectedManager._id, project._id).subscribe({
         next: () => {
           this.managerProjects = this.managerProjects.filter((x) => x._id !== mp._id);
+          this.assignmentsCache.set(this.selectedManager!._id, this.managerProjects);
           this.isSavingProject[project._id] = false;
           this.cdr.detectChanges();
         },
@@ -282,6 +291,7 @@ export class Managers implements OnInit {
             entry.project = project;
           }
           this.managerProjects = [...this.managerProjects, entry];
+          this.assignmentsCache.set(this.selectedManager!._id, this.managerProjects);
           this.isSavingProject[project._id] = false;
           this.cdr.detectChanges();
         },
@@ -295,7 +305,7 @@ export class Managers implements OnInit {
   }
 
   hasPermission(projectId: string, perm: ManagerPermission): boolean {
-    return this.getManagerProject(projectId)?.permissions.includes(perm) ?? false;
+    return (this.getManagerProject(projectId)?.permissions ?? []).includes(perm);
   }
 
   togglePermission(projectId: string, perm: ManagerPermission) {
@@ -303,9 +313,10 @@ export class Managers implements OnInit {
     const mp = this.getManagerProject(projectId);
     if (!mp) return;
 
+    const currentPerms: ManagerPermission[] = mp.permissions ?? [];
     const permissions: ManagerPermission[] = this.hasPermission(projectId, perm)
-      ? mp.permissions.filter((p) => p !== perm)
-      : [...mp.permissions, perm];
+      ? currentPerms.filter((p) => p !== perm)
+      : [...currentPerms, perm];
 
     this.managersService
       .updateManagerProjectPermissions(this.selectedManager._id, projectId, permissions)
@@ -314,6 +325,9 @@ export class Managers implements OnInit {
           this.managerProjects = this.managerProjects.map((x) =>
             x._id === mp._id ? { ...x, permissions } : x,
           );
+          if (this.selectedManager) {
+            this.assignmentsCache.set(this.selectedManager._id, this.managerProjects);
+          }
           this.cdr.detectChanges();
         },
         error: (err: any) => this.alert.error(err.error?.message || 'فشل تحديث الصلاحيات'),

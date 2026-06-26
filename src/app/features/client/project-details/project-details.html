@@ -62,222 +62,178 @@
 
     <!-- ===== STATS GRID ===== -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 ci-section" style="--delay: 0.06s">
+
       <!-- Outputs Progress -->
-      <div
-        class="col-span-2 lg:col-span-2 p-7 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
-      >
-        <p
-          class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1"
-        >
+      <div class="col-span-2 p-6 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30 relative overflow-hidden">
+        <div class="absolute -top-8 -end-8 w-36 h-36 rounded-full bg-[#fa8728]/5 pointer-events-none"></div>
+        <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-4 relative z-10">
           {{ 'CLIENT.PROJECT_DETAILS.OUTPUTS_PROGRESS' | translate }}
         </p>
-        <div class="flex items-end justify-between mb-4">
-          <span
-            class="text-5xl font-black text-[#444547] dark:text-white"
-            style="font-family: 'Alexandria', sans-serif"
-            >{{ outputsProgress }}</span
-          >
-          <span class="text-2xl font-black text-[#fa8728] mb-1">%</span>
+        <div class="flex items-center gap-6 relative z-10">
+          <!-- Ring -->
+          <div class="relative w-[84px] h-[84px] shrink-0">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 84 84">
+              <circle cx="42" cy="42" r="34" fill="none" stroke-width="6" class="stroke-[#e6d5c3]/60 dark:stroke-[#444547]/30"/>
+              <circle cx="42" cy="42" r="34" fill="none" stroke-width="6"
+                stroke="#fa8728" stroke-linecap="round"
+                [style.stroke-dasharray]="'213.63'"
+                [style.stroke-dashoffset]="213.63 - (213.63 * outputsProgress / 100)"
+              />
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-[13px] font-black text-[#444547] dark:text-white">{{ outputsProgress }}%</span>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-baseline gap-1.5 mb-1">
+              <span class="text-5xl font-black text-[#444547] dark:text-white leading-none" style="font-family:'Alexandria',sans-serif">{{ deliveredItems }}</span>
+              <span class="text-xl font-black text-[#5c5f63]/20 dark:text-gray-700 leading-none">/{{ totalItems }}</span>
+            </div>
+            <p class="text-xs text-[#5c5f63]/50 dark:text-gray-500">
+              {{ 'CLIENT.PROJECT_DETAILS.ITEMS_DELIVERED' | translate }}
+            </p>
+          </div>
         </div>
-        <div class="h-3 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden">
-          <div
-            class="h-full bg-gradient-to-r from-[#fa8728] to-[#f97316] rounded-full transition-all duration-1000"
-            [style.width.%]="outputsProgress"
-          ></div>
-        </div>
-        <p class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500 mt-2">
-          {{ deliveredItems }} {{ 'CLIENT.PROJECT_DETAILS.OF' | translate }} {{ totalItems }}
-          {{ 'CLIENT.PROJECT_DETAILS.ITEMS_DELIVERED' | translate }}
-        </p>
       </div>
 
       <!-- Payment Progress (hidden for managers without view-financials) -->
       @if (!isManager || canViewFinancials) {
-        <div
-          class="col-span-2 lg:col-span-2 p-7 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
-        >
-          <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-1">
+        <div class="col-span-2 p-6 rounded-3xl shadow-sm bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30 relative overflow-hidden">
+          <div class="absolute -top-8 -end-8 w-36 h-36 rounded-full bg-[#68ab1f]/5 pointer-events-none"></div>
+          <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-4 relative z-10">
             {{ 'CLIENT.FINANCIALS.PAYMENT_PROGRESS' | translate }}
           </p>
-          <div class="flex items-end justify-between mb-4">
-            <span
-              class="text-5xl font-black text-[#444547] dark:text-white"
-              style="font-family: 'Alexandria', sans-serif"
-              >{{ paymentProgress }}</span
-            >
-            <span class="text-2xl font-black text-[#68ab1f] mb-1">%</span>
+          <div class="flex items-center gap-6 relative z-10">
+            <div class="relative w-[84px] h-[84px] shrink-0">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 84 84">
+                <circle cx="42" cy="42" r="34" fill="none" stroke-width="6" class="stroke-[#e6d5c3]/60 dark:stroke-[#444547]/30"/>
+                <circle cx="42" cy="42" r="34" fill="none" stroke-width="6"
+                  stroke="#68ab1f" stroke-linecap="round"
+                  [style.stroke-dasharray]="'213.63'"
+                  [style.stroke-dashoffset]="213.63 - (213.63 * paymentProgress / 100)"
+                />
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-[13px] font-black text-[#444547] dark:text-white">{{ paymentProgress }}%</span>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5 mb-1">
+                <span class="text-5xl font-black text-[#444547] dark:text-white leading-none" style="font-family:'Alexandria',sans-serif">
+                  {{ project.financialDetails?.paidInstallments || 0 }}
+                </span>
+                <span class="text-xl font-black text-[#5c5f63]/20 dark:text-gray-700 leading-none">
+                  /{{ project.financialDetails?.totalInstallments || 0 }}
+                </span>
+              </div>
+              <p class="text-xs text-[#5c5f63]/50 dark:text-gray-500">
+                {{ 'CLIENT.FINANCIALS.INSTALLMENTS_PAID' | translate }}
+              </p>
+            </div>
           </div>
-          <div class="h-3 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden">
-            <div
-              class="h-full bg-gradient-to-r from-[#68ab1f] to-[#8bc34a] rounded-full transition-all duration-1000"
-              [style.width.%]="paymentProgress"
-            ></div>
-          </div>
-          <p class="text-[10px] font-bold text-[#5c5f63]/50 dark:text-gray-500 mt-2">
-            {{ project.financialDetails?.paidInstallments || 0 }}
-            {{ 'CLIENT.FINANCIALS.OF' | translate }}
-            {{ project.financialDetails?.totalInstallments || 0 }}
-            {{ 'CLIENT.FINANCIALS.INSTALLMENTS_PAID' | translate }}
-          </p>
         </div>
 
         <!-- Total -->
-        <div
-          class="p-6 rounded-2xl shadow-sm text-center bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30"
-        >
-          <p
-            class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-2"
-          >
+        <div class="p-5 rounded-2xl shadow-sm text-center bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30">
+          <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-2">
             {{ 'CLIENT.FINANCIALS.TOTAL_CONTRACT' | translate }}
           </p>
-          <p
-            class="text-2xl font-black text-[#444547] dark:text-white"
-            style="font-family: 'Alexandria', sans-serif"
-          >
+          <p class="text-2xl font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
             {{ project.financialDetails?.totalAmount || 0 }}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="inline-block align-middle -mt-0.5"
-            >
-              <path d="m20 19.5-5.5 1.2" />
-              <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
-              <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-              <path d="M20 10 4 13.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block align-middle -mt-0.5">
+              <path d="m20 19.5-5.5 1.2"/><path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2"/><path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2"/><path d="M20 10 4 13.5"/>
             </svg>
           </p>
         </div>
 
         <!-- Paid -->
-        <div
-          class="p-6 rounded-2xl shadow-sm text-center bg-[#68ab1f]/8 border border-[#68ab1f]/20 dark:bg-[#68ab1f]/10 dark:border-[#68ab1f]/20"
-        >
+        <div class="p-5 rounded-2xl shadow-sm text-center bg-[#68ab1f]/8 border border-[#68ab1f]/20 dark:bg-[#68ab1f]/10 dark:border-[#68ab1f]/20">
           <p class="text-[9px] font-black uppercase tracking-widest text-[#68ab1f] mb-2">
             {{ 'CLIENT.FINANCIALS.TOTAL_PAID' | translate }}
           </p>
-          <p class="text-2xl font-black text-[#68ab1f]" style="font-family: 'Alexandria', sans-serif">
+          <p class="text-2xl font-black text-[#68ab1f]" style="font-family:'Alexandria',sans-serif">
             {{ paidAmount }}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="inline-block align-middle -mt-0.5"
-            >
-              <path d="m20 19.5-5.5 1.2" />
-              <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
-              <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-              <path d="M20 10 4 13.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block align-middle -mt-0.5">
+              <path d="m20 19.5-5.5 1.2"/><path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2"/><path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2"/><path d="M20 10 4 13.5"/>
             </svg>
           </p>
         </div>
 
         <!-- Remaining -->
-        <div
-          class="p-6 rounded-2xl shadow-sm text-center bg-rose-50 border border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/15"
-        >
+        <div class="p-5 rounded-2xl shadow-sm text-center bg-rose-50 border border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/15">
           <p class="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-2">
             {{ 'CLIENT.FINANCIALS.REMAINING' | translate }}
           </p>
-          <p
-            class="text-2xl font-black text-rose-500 dark:text-rose-400"
-            style="font-family: 'Alexandria', sans-serif"
-          >
+          <p class="text-2xl font-black text-rose-500 dark:text-rose-400" style="font-family:'Alexandria',sans-serif">
             {{ remainingAmount }}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="inline-block align-middle -mt-0.5"
-            >
-              <path d="m20 19.5-5.5 1.2" />
-              <path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2" />
-              <path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2" />
-              <path d="M20 10 4 13.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block align-middle -mt-0.5">
+              <path d="m20 19.5-5.5 1.2"/><path d="M14.5 4v11.22a1 1 0 0 0 1.242.97L20 15.2"/><path d="m2.978 19.351 5.549-1.363A2 2 0 0 0 10 16V2"/><path d="M20 10 4 13.5"/>
             </svg>
           </p>
         </div>
       }
 
       <!-- Outputs Count -->
-      <div
-        class="p-6 rounded-2xl shadow-sm text-center bg-[#fa8728]/8 border border-[#fa8728]/20 dark:bg-[#fa8728]/10 dark:border-[#fa8728]/20"
-      >
-        <p class="text-[9px] font-black uppercase tracking-widest text-[#fa8728] mb-2">
-          {{ 'ADMIN.PROJECTS.OUTPUTS' | translate }}
-        </p>
-        <p class="text-2xl font-black text-[#fa8728]" style="font-family: 'Alexandria', sans-serif">
-          {{ project.outputs?.length || 0 }}
-        </p>
+      <div class="p-5 rounded-2xl shadow-sm flex items-center gap-4 bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30">
+        <div class="w-10 h-10 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 text-[#fa8728]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-black text-[#444547] dark:text-white" style="font-family:'Alexandria',sans-serif">
+            {{ project.outputs?.length || 0 }}
+          </p>
+          <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500">
+            {{ 'ADMIN.PROJECTS.OUTPUTS' | translate }}
+          </p>
+        </div>
       </div>
     </div>
 
     <!-- ===== OUTPUTS SUMMARY ===== -->
     @if (project.outputs?.length > 0) {
-      <div
-        class="bg-white dark:bg-[#1c1c1c] rounded-3xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm overflow-hidden ci-section"
-        style="--delay: 0.1s"
-      >
-        <div class="px-7 py-5 border-b border-[#e6d5c3]/60 dark:border-[#444547]/20">
-          <h2 class="text-xs font-black uppercase text-[#5c5f63]/50 dark:text-gray-500">
-            {{ 'CLIENT.PROJECT_DETAILS.OUTPUTS_SUMMARY' | translate }}
-          </h2>
-        </div>
-        <div class="divide-y divide-[#e6d5c3]/40 dark:divide-[#444547]/20">
+      <div class="ci-section" style="--delay: 0.1s">
+        <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-4">
+          {{ 'CLIENT.PROJECT_DETAILS.OUTPUTS_SUMMARY' | translate }}
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           @for (output of project.outputs; track output._id) {
-            <div
-              class="flex items-center justify-between px-7 py-4 transition-colors duration-200 hover:bg-[#fa8728]/4 dark:hover:bg-[#fa8728]/4"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-2 h-2 rounded-full flex-shrink-0"
-                  [class.bg-[#68ab1f]]="output.items?.length >= output.numberOfItems"
-                  [class.bg-[#fa8728]]="
-                    output.items?.length > 0 && output.items?.length < output.numberOfItems
-                  "
-                  [class.bg-[#e6d5c3]]="!output.items?.length"
-                ></div>
-                <span class="text-sm font-bold text-[#444547] dark:text-gray-300">{{
-                  output.name
-                }}</span>
-              </div>
-              <div class="flex items-center gap-4">
-                <div
-                  class="w-24 h-1.5 bg-[#e6d5c3]/60 dark:bg-[#444547]/20 rounded-full overflow-hidden"
-                >
-                  <div
-                    class="h-full bg-[#fa8728] rounded-full transition-all duration-700"
-                    [style.width.%]="
-                      output.numberOfItems
-                        ? ((output.items?.length || 0) / output.numberOfItems) * 100
-                        : 0
-                    "
-                  ></div>
+            @let delivered = output.items?.length || 0;
+            @let total = output.numberOfItems || 0;
+            @let pct = total ? (delivered / total * 100) : 0;
+            @let done = delivered >= total && total > 0;
+            @let inprog = delivered > 0 && delivered < total;
+            <div class="p-4 rounded-2xl bg-white border border-[#e6d5c3] dark:bg-[#1c1c1c] dark:border-[#444547]/30 shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-2 h-2 rounded-full shrink-0"
+                    [class.bg-[#68ab1f]]="done"
+                    [class.bg-[#fa8728]]="inprog"
+                    [class.bg-[#d1d5db]]="!done && !inprog"
+                  ></span>
+                  <span class="text-sm font-bold text-[#444547] dark:text-white truncate" style="font-family:'Alexandria',sans-serif">
+                    {{ output.name }}
+                  </span>
                 </div>
-                <span
-                  class="text-[10px] font-black text-[#5c5f63]/50 dark:text-gray-500 w-12 text-right"
-                >
-                  {{ output.items?.length || 0 }}/{{ output.numberOfItems }}
-                </span>
+                <span class="text-xs font-black shrink-0 ms-2"
+                  [class.text-[#68ab1f]]="done"
+                  [class.text-[#fa8728]]="inprog"
+                  [class.text-[#5c5f63]/30]="!done && !inprog"
+                >{{ delivered }}/{{ total }}</span>
               </div>
+              <div class="h-1.5 bg-[#e6d5c3]/50 dark:bg-[#444547]/20 rounded-full overflow-hidden mb-1.5">
+                <div class="h-full rounded-full transition-all duration-700"
+                  [class.bg-[#68ab1f]]="done"
+                  [class.bg-[#fa8728]]="!done"
+                  [style.width.%]="pct"
+                ></div>
+              </div>
+              <p class="text-[9px] font-black"
+                [class.text-[#68ab1f]]="done"
+                [class.text-[#fa8728]]="inprog"
+                [class.text-[#5c5f63]/30]="!done && !inprog"
+              >{{ pct.toFixed(0) }}%</p>
             </div>
           }
         </div>
