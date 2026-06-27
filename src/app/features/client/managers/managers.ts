@@ -46,6 +46,7 @@ export class Managers implements OnInit {
   showManagerModal = false;
   editingManager: Manager | null = null;
   isSavingManager = false;
+  showPassword = false;
   managerForm: FormGroup;
 
   // ── User cameras (for assignment to managers) ─────────────────────────────
@@ -122,6 +123,7 @@ export class Managers implements OnInit {
     this.managerForm.get('password')?.updateValueAndValidity();
 
     this.showManagerModal = true;
+    this.showPassword = false;
     this.cdr.detectChanges();
   }
 
