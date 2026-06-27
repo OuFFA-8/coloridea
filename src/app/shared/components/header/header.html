@@ -19,20 +19,13 @@
     </button>
 
     <!-- Live badge -->
-    @if (authServices.isAdmin()) {
-      <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#68ab1f]/10 border border-[#68ab1f]/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f] animate-pulse"></span>
-        <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest">Live</span>
-      </div>
-    } @else {
-      <a
-        routerLink="/cameras"
-        class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full no-underline transition-colors bg-[#68ab1f]/10 border border-[#68ab1f]/20 hover:bg-[#68ab1f]/20"
-      >
-        <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f] animate-pulse"></span>
-        <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest">Live</span>
-      </a>
-    }
+    <a
+      routerLink="/cameras"
+      class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full no-underline transition-colors bg-[#68ab1f]/10 border border-[#68ab1f]/20 hover:bg-[#68ab1f]/20"
+    >
+      <span class="w-1.5 h-1.5 rounded-full bg-[#68ab1f] animate-pulse"></span>
+      <span class="text-[9px] font-black text-[#68ab1f] uppercase tracking-widest">Live</span>
+    </a>
   </div>
 
   <!-- Right: Controls + User -->

@@ -75,7 +75,13 @@ export class ClientSettings implements OnInit {
   async loadCameras() {
     this.isLoadingCameras = true;
     try {
-      const res = await firstValueFrom(this.camerasService.getMyCameras());
+      let res;
+      if (this.authServices.isAdmin()) {
+        const admin = this.authServices.getUser();
+        res = await firstValueFrom(this.camerasService.getUserCameras(admin._id));
+      } else {
+        res = await firstValueFrom(this.camerasService.getMyCameras());
+      }
       this.cameras = res.data || [];
     } catch {}
     this.isLoadingCameras = false;
@@ -133,7 +139,9 @@ export class ClientSettings implements OnInit {
     }
 
     const request = this.editingCamera
-      ? this.camerasService.updateMyCamera(this.editingCamera._id, formData)
+      ? this.authServices.isAdmin()
+        ? this.camerasService.updateCamera(this.editingCamera._id, formData)
+        : this.camerasService.updateMyCamera(this.editingCamera._id, formData)
       : this.camerasService.createCamera(formData);
 
     request.subscribe({

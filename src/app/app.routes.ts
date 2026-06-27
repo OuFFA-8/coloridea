@@ -70,6 +70,7 @@ export const routes: Routes = [
       { path: 'projects', loadComponent: () => import('./features/admin/projects/projects').then(m => m.Projects) },
       { path: 'projects/:id', loadComponent: () => import('./features/admin/admin-project-details/admin-project-details').then(m => m.AdminProjectDetails) },
       { path: 'settings', loadComponent: () => import('./features/admin/settings/settings').then(m => m.Settings) },
+      { path: 'camera-settings', loadComponent: () => import('./features/client/client-settings/client-settings').then(m => m.ClientSettings) },
       { path: 'verify-email/:token', loadComponent: () => import('./features/admin/admin-verify-email/admin-verify-email').then(m => m.AdminVerifyEmail) },
     ],
   },

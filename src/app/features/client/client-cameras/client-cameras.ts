@@ -168,9 +168,15 @@ export class ClientCameras implements OnInit, OnDestroy {
   async loadCameras() {
     try {
       const role = this.authServices.getRole();
-      const request = role === 'manager'
-        ? this.managersService.getMyManagerCameras()
-        : this.camerasService.getMyCameras();
+      let request;
+      if (role === 'manager') {
+        request = this.managersService.getMyManagerCameras();
+      } else if (this.authServices.isAdmin()) {
+        const admin = this.authServices.getUser();
+        request = this.camerasService.getUserCameras(admin._id);
+      } else {
+        request = this.camerasService.getMyCameras();
+      }
       const res = await firstValueFrom(request);
       this.cameras = (res.data || []).filter((c: Camera) => c.isActive !== false);
       this.isLoading = false;
@@ -512,7 +518,7 @@ export class ClientCameras implements OnInit, OnDestroy {
 
   goBack() {
     if (this.authServices.isAdmin()) {
-      this.router.navigate(['/admin/clients']);
+      this.router.navigate(['/admin/dashboard']);
     } else {
       const stored = localStorage.getItem('selectedProject');
       const projectId = stored ? JSON.parse(stored)?._id : null;
