@@ -233,10 +233,21 @@ export class Managers implements OnInit {
     try {
       const managerProjectsRes = await firstValueFrom(this.managersService.getManagerProjects(manager._id));
       const raw = managerProjectsRes.data ?? managerProjectsRes;
-      this.managerProjects = Array.isArray(raw) ? raw : [];
+      const fresh: ManagerProject[] = Array.isArray(raw) ? raw : [];
+      const cached = this.assignmentsCache.get(manager._id) ?? [];
+
+      // API is source of truth for assignments, cache is source of truth for permissions
+      // (since GET /managers/:id/projects doesn't return permissions field)
+      this.managerProjects = fresh.map((mp) => {
+        const pid = typeof mp.project === 'object' ? mp.project?._id : mp.project;
+        const cachedMp = cached.find((c) => {
+          const cpid = typeof c.project === 'object' ? c.project?._id : c.project;
+          return cpid === pid;
+        });
+        return cachedMp?.permissions?.length ? { ...mp, permissions: cachedMp.permissions } : mp;
+      });
       this.assignmentsCache.set(manager._id, this.managerProjects);
     } catch {
-      // API not available — restore from cache if we have prior session data
       this.managerProjects = this.assignmentsCache.get(manager._id) ?? [];
     }
 
