@@ -106,112 +106,114 @@
       }
     </section>
 
-    <!-- ===== AD VIDEOS ===== -->
-    <section>
-      <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
-          <h2 class="text-xs font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500">
-            {{ 'CLIENT.SETTINGS.AD_TITLE' | translate }} ({{ adVideos.length }}/10)
-          </h2>
-        </div>
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2 bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 rounded-xl px-3 py-1.5">
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 whitespace-nowrap">
-              {{ 'CLIENT.SETTINGS.AD_DURATION_LABEL' | translate }}
-            </span>
-            <input
-              type="number"
-              [(ngModel)]="editDisplayDuration"
-              min="1"
-              class="w-14 text-center text-xs font-black text-[#444547] dark:text-white bg-transparent border-none outline-none"
-            />
-            <span class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600">
-              {{ 'CLIENT.SETTINGS.AD_DURATION_UNIT' | translate }}
-            </span>
+    <!-- ===== AD VIDEOS (client only) ===== -->
+    @if (!isAdmin) {
+      <section>
+        <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
+            <h2 class="text-xs font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500">
+              {{ 'CLIENT.SETTINGS.AD_TITLE' | translate }} ({{ adVideos.length }}/10)
+            </h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 rounded-xl px-3 py-1.5">
+              <span class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 whitespace-nowrap">
+                {{ 'CLIENT.SETTINGS.AD_DURATION_LABEL' | translate }}
+              </span>
+              <input
+                type="number"
+                [(ngModel)]="editDisplayDuration"
+                min="1"
+                class="w-14 text-center text-xs font-black text-[#444547] dark:text-white bg-transparent border-none outline-none"
+              />
+              <span class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600">
+                {{ 'CLIENT.SETTINGS.AD_DURATION_UNIT' | translate }}
+              </span>
+              <button
+                (click)="updateDisplayDuration()"
+                [disabled]="isUpdatingDuration"
+                class="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border-none cursor-pointer transition-colors text-white bg-[#fa8728] hover:bg-[#f97316] disabled:opacity-50"
+              >
+                {{ isUpdatingDuration ? ('CLIENT.SETTINGS.AD_DURATION_SAVING' | translate) : ('CLIENT.SETTINGS.AD_DURATION_SAVE' | translate) }}
+              </button>
+            </div>
             <button
-              (click)="updateDisplayDuration()"
-              [disabled]="isUpdatingDuration"
-              class="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border-none cursor-pointer transition-colors text-white bg-[#fa8728] hover:bg-[#f97316] disabled:opacity-50"
+              (click)="toggleAdVideoModal()"
+              [disabled]="adVideos.length >= 10"
+              class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#fa8728]/15 hover:text-[#fa8728] disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {{ isUpdatingDuration ? ('CLIENT.SETTINGS.AD_DURATION_SAVING' | translate) : ('CLIENT.SETTINGS.AD_DURATION_SAVE' | translate) }}
+              @if (adVideos.length >= 10) {
+                10/10 {{ 'CLIENT.SETTINGS.AD_MAX' | translate }}
+              } @else {
+                + {{ 'CLIENT.SETTINGS.AD_ADD' | translate }} ({{ adVideos.length }}/10)
+              }
             </button>
           </div>
-          <button
-            (click)="toggleAdVideoModal()"
-            [disabled]="adVideos.length >= 10"
-            class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#fa8728]/15 hover:text-[#fa8728] disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            @if (adVideos.length >= 10) {
-              10/10 {{ 'CLIENT.SETTINGS.AD_MAX' | translate }}
-            } @else {
-              + {{ 'CLIENT.SETTINGS.AD_ADD' | translate }} ({{ adVideos.length }}/10)
-            }
-          </button>
         </div>
-      </div>
 
-      @if (isLoadingAdVideos) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          @for (_ of [1,2,3]; track $index) {
-            <div class="h-24 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
-          }
-        </div>
-      } @else {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          @for (vid of adVideos; track vid._id) {
-            <div class="group flex items-center gap-4 p-4 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm">
-              <div class="w-12 h-12 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0 text-xl">
-                🎬
+        @if (isLoadingAdVideos) {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (_ of [1,2,3]; track $index) {
+              <div class="h-24 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
+            }
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (vid of adVideos; track vid._id) {
+              <div class="group flex items-center gap-4 p-4 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm">
+                <div class="w-12 h-12 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0 text-xl">
+                  🎬
+                </div>
+                <div class="min-w-0 flex-1">
+                  @if (vid.video) {
+                    <p class="text-xs font-black text-[#444547] dark:text-white truncate">
+                      {{ 'CLIENT.SETTINGS.AD_UPLOADED' | translate }}
+                    </p>
+                    <a
+                      [href]="baseUrl + '/' + vid.video"
+                      target="_blank"
+                      rel="noopener"
+                      class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
+                    >
+                      {{ 'COMMON.OPEN' | translate }} →
+                    </a>
+                  } @else if (vid.driveVideo) {
+                    <p class="text-xs font-black text-[#444547] dark:text-white truncate">
+                      {{ 'CLIENT.SETTINGS.AD_DRIVE' | translate }}
+                    </p>
+                    <a
+                      [href]="vid.driveVideo"
+                      target="_blank"
+                      rel="noopener"
+                      class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
+                    >
+                      {{ 'COMMON.OPEN' | translate }} →
+                    </a>
+                  }
+                </div>
+                <button
+                  (click)="deleteAdVideo(vid._id)"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer shrink-0 opacity-0 group-hover:opacity-100 transition-all bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:text-rose-600 text-xs"
+                  [title]="'COMMON.DELETE' | translate"
+                >✕</button>
               </div>
-              <div class="min-w-0 flex-1">
-                @if (vid.video) {
-                  <p class="text-xs font-black text-[#444547] dark:text-white truncate">
-                    {{ 'CLIENT.SETTINGS.AD_UPLOADED' | translate }}
-                  </p>
-                  <a
-                    [href]="baseUrl + '/' + vid.video"
-                    target="_blank"
-                    rel="noopener"
-                    class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
-                  >
-                    {{ 'COMMON.OPEN' | translate }} →
-                  </a>
-                } @else if (vid.driveVideo) {
-                  <p class="text-xs font-black text-[#444547] dark:text-white truncate">
-                    {{ 'CLIENT.SETTINGS.AD_DRIVE' | translate }}
-                  </p>
-                  <a
-                    [href]="vid.driveVideo"
-                    target="_blank"
-                    rel="noopener"
-                    class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block"
-                  >
-                    {{ 'COMMON.OPEN' | translate }} →
-                  </a>
-                }
+            } @empty {
+              <div class="col-span-full py-16 text-center border-2 border-dashed border-[#fa8728]/20 rounded-2xl">
+                <div class="text-4xl mb-3 opacity-20">🎬</div>
+                <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest mb-4">
+                  {{ 'CLIENT.SETTINGS.AD_NO' | translate }}
+                </p>
+                <button
+                  (click)="toggleAdVideoModal()"
+                  class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316] transition-colors"
+                >+ {{ 'CLIENT.SETTINGS.AD_ADD' | translate }}</button>
               </div>
-              <button
-                (click)="deleteAdVideo(vid._id)"
-                class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer shrink-0 opacity-0 group-hover:opacity-100 transition-all bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:text-rose-600 text-xs"
-                [title]="'COMMON.DELETE' | translate"
-              >✕</button>
-            </div>
-          } @empty {
-            <div class="col-span-full py-16 text-center border-2 border-dashed border-[#fa8728]/20 rounded-2xl">
-              <div class="text-4xl mb-3 opacity-20">🎬</div>
-              <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest mb-4">
-                {{ 'CLIENT.SETTINGS.AD_NO' | translate }}
-              </p>
-              <button
-                (click)="toggleAdVideoModal()"
-                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer text-white bg-[#fa8728] hover:bg-[#f97316] transition-colors"
-              >+ {{ 'CLIENT.SETTINGS.AD_ADD' | translate }}</button>
-            </div>
-          }
-        </div>
-      }
-    </section>
+            }
+          </div>
+        }
+      </section>
+    }
   </div>
 </div>
 
@@ -294,8 +296,8 @@
   </div>
 }
 
-<!-- ===== AD VIDEO MODAL ===== -->
-@if (showAdVideoModal) {
+<!-- ===== AD VIDEO MODAL (client only) ===== -->
+@if (!isAdmin && showAdVideoModal) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" (click)="toggleAdVideoModal()">
     <div class="w-full max-w-md bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-2xl border border-[#e6d5c3] dark:border-[#444547]/30" (click)="$event.stopPropagation()">
       <div class="px-6 py-5 border-b border-[#e6d5c3] dark:border-[#444547]/20">

@@ -34,6 +34,7 @@ export class ClientSettings implements OnInit {
   private fb = inject(FormBuilder);
 
   readonly baseUrl = environment.baseUrl;
+  readonly isAdmin = this.authServices.isAdmin();
 
   // Cameras
   cameras: any[] = [];
@@ -69,14 +70,18 @@ export class ClientSettings implements OnInit {
     if (!isPlatformBrowser(this.platformId)) return;
     const user = this.authServices.getUser();
     this.editDisplayDuration = user?.displayDuration ?? 60;
-    await Promise.all([this.loadCameras(), this.loadAdVideos()]);
+    if (this.isAdmin) {
+      await this.loadCameras();
+    } else {
+      await Promise.all([this.loadCameras(), this.loadAdVideos()]);
+    }
   }
 
   async loadCameras() {
     this.isLoadingCameras = true;
     try {
       let res;
-      if (this.authServices.isAdmin()) {
+      if (this.isAdmin) {
         const admin = this.authServices.getUser();
         res = await firstValueFrom(this.camerasService.getUserCameras(admin._id));
       } else {
@@ -139,7 +144,7 @@ export class ClientSettings implements OnInit {
     }
 
     const request = this.editingCamera
-      ? this.authServices.isAdmin()
+      ? this.isAdmin
         ? this.camerasService.updateCamera(this.editingCamera._id, formData)
         : this.camerasService.updateMyCamera(this.editingCamera._id, formData)
       : this.camerasService.createCamera(formData);
