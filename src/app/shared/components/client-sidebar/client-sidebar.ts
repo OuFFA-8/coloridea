@@ -1,5 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
+  ChangeDetectorRef,
   Component,
   inject,
   Input,
@@ -24,8 +25,13 @@ import { environment } from '../../../../environments/environment';
 })
 export class ClientSidebar implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
   private routerSub!: Subscription;
   private themeObserver?: MutationObserver;
+  private projectChangedHandler = () => {
+    this.readProjectFromStorage();
+    this.cdr.detectChanges();
+  };
 
   @Input() isOpen = false;
   @Output() closeEvent = new EventEmitter<void>();
@@ -95,6 +101,8 @@ export class ClientSidebar implements OnInit, OnDestroy {
           this.extractProjectFromUrl();
         });
 
+      window.addEventListener('selectedProjectChanged', this.projectChangedHandler);
+
       this.themeObserver = new MutationObserver(() => this.detectTheme());
       this.themeObserver.observe(document.documentElement, {
         attributes: true,
@@ -159,5 +167,6 @@ export class ClientSidebar implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.routerSub?.unsubscribe();
     this.themeObserver?.disconnect();
+    window.removeEventListener('selectedProjectChanged', this.projectChangedHandler);
   }
 }

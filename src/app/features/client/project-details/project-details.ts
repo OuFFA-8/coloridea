@@ -59,7 +59,10 @@ export class ProjectDetails implements OnInit {
         this.managersService.getMyProjectById(projectId).subscribe({
           next: (res) => {
             this.project = res.data?.project ?? res.data;
-            if (this.project) this.buildChartData();
+            if (this.project) {
+              this.buildChartData();
+              this.syncSelectedProject();
+            }
             this.isLoading = false;
             this.loadingService.hide();
             this.cdr.detectChanges();
@@ -74,7 +77,10 @@ export class ProjectDetails implements OnInit {
         this.projectsService.getUserProjects(user._id).subscribe({
           next: (res) => {
             this.project = (res.data || []).find((p: any) => p._id === projectId) || null;
-            if (this.project) this.buildChartData();
+            if (this.project) {
+              this.buildChartData();
+              this.syncSelectedProject();
+            }
             this.isLoading = false;
             this.loadingService.hide();
             this.cdr.detectChanges();
@@ -87,6 +93,12 @@ export class ProjectDetails implements OnInit {
         });
       }
     }
+  }
+
+  syncSelectedProject() {
+    if (!isPlatformBrowser(this.platformId) || !this.project) return;
+    localStorage.setItem('selectedProject', JSON.stringify(this.project));
+    window.dispatchEvent(new CustomEvent('selectedProjectChanged'));
   }
 
   buildChartData() {
