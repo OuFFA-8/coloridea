@@ -33,6 +33,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/client/client-cameras/client-cameras').then(m => m.ClientCameras),
     canActivate: [authGuard],
   },
+  {
+  path: 'client/timelapse',
+  loadComponent: () => import('./features/client/timelapse-viewer/timelapse-viewer').then(m => m.TimelapseViewer),
+  canActivate: [authGuard],
+},
 
   // ===== CLIENT =====
   {
