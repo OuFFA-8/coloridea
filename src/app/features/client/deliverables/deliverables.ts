@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -9,7 +9,7 @@ import { AuthServices } from '../../../core/services/auth-services/auth-services
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { ManagersService } from '../../../core/services/managers-service/managers-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
-
+import { MyTranslate } from '../../../core/services/my-translate/my-translate'; 
 @Component({
   selector: 'app-deliverables',
   standalone: true,
@@ -37,10 +37,12 @@ export class Deliverables implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+      private router: Router,    
     private projectsService: ProjectsService,
     private authServices: AuthServices,
     private sanitizer: DomSanitizer,
     private http: HttpClient,
+      private myTranslate: MyTranslate, 
   ) {}
 
   ngOnInit() {
@@ -103,20 +105,66 @@ export class Deliverables implements OnInit {
     );
   }
 
+  isTikeeLink(url: string): boolean {
+  return !!url?.includes('tikee.io');
+}
+
+// بياخد أي واحد من اللينكين وبيرجعله دايمًا صيغة الـ embed الصح
+getTikeeEmbedUrl(url: string): string {
+  const lang = this.myTranslate.currentLang === 'ar' ? 'ar' : 'en';
+  const galleryParams =
+    `lang=${lang}&image_size=hd&default_tab=single&allowed_viewer_types=single` +
+    `&font_color=ffffff&primary_color=2f6093&secondary_color=3399ff&highlight_font_color=ffffff`;
+
+  // لو اللينك أصلاً بصيغة /iframe/.../gallery/ خليه زي ما هو (تأكد بس إن الباراميترات موجودة)
+  if (url.includes('/iframe/') && url.includes('/gallery/')) {
+    return url.includes('lang=') ? url : `${url}${url.includes('?') ? '&' : '?'}${galleryParams}`;
+  }
+
+  // لو اللينك بصيغة /iframe/.../wall/ حوله لصيغة /gallery/
+  const wallMatch = url.match(/tikee\.io\/iframe\/([^/]+)\/wall\/([^/?#]+)/);
+  if (wallMatch) {
+    const [, galleryId, itemId] = wallMatch;
+    return `https://my.tikee.io/iframe/${galleryId}/gallery/${itemId}?${galleryParams}`;
+  }
+
+  // لو اللينك بصيغة my.tikee.io/galleries/{id}/photo_gallery/{id2} (اللينك الأصلي من الموقع)
+  const match = url.match(/tikee\.io\/galleries\/([^/]+)\/photo_gallery\/([^/?#]+)/);
+  if (match) {
+    const [, galleryId, itemId] = match;
+    return `https://my.tikee.io/iframe/${galleryId}/gallery/${itemId}?${galleryParams}`;
+  }
+
+  return url;
+}
   extractFolderId(url: string): string | null {
     const match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
     return match ? match[1] : null;
   }
 
-  openItem(item: any) {
-    this.selectedItem = item;
-    this.driveFiles = [];
-    this.driveError = false;
-    this.selectedDriveFile = null;
-    if (item.link && this.isDriveFolder(item.link)) {
-      this.loadDriveFiles(item.link);
-    }
+ openItem(item: any) {
+  // بس لينكات Tikee (التايم لابس) بتاخد صفحة كاملة، الباقي زي ما هو
+  if (item.link && this.isTikeeLink(item.link)) {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    this.router.navigate(['/client/timelapse'], {
+      queryParams: {
+        url: this.getTikeeEmbedUrl(item.link),
+        name: item.name,
+        projectId,
+      },
+    });
+    return;
   }
+
+  // ↓ الكود القديم بتاعك زي ما هو من غير أي تغيير
+  this.selectedItem = item;
+  this.driveFiles = [];
+  this.driveError = false;
+  this.selectedDriveFile = null;
+  if (item.link && this.isDriveFolder(item.link)) {
+    this.loadDriveFiles(item.link);
+  }
+}
 
   loadDriveFiles(url: string) {
     const folderId = this.extractFolderId(url);
