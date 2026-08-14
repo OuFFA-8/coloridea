@@ -39,7 +39,7 @@ body {
 
 /* ===== Hide sidebar completely while a full-screen modal is open ===== */
 body.ci-modal-open aside {
-  visibility: hidden !important;
+  display: none !important;
 }
 
 /* ===== Remove old blue active-link ===== */
