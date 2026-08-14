@@ -370,6 +370,17 @@
     "RIGHT_CLICK": "Right-click to change",
     "SELECT_CAMERA": "Select Camera"
   },
+  "TIMELAPSE": {
+  "BACK": "Back",
+  "LABEL": "Timelapse",
+  "LOADING": "Loading footage...",
+  "OPEN_EXTERNAL": "Open in new tab",
+  "FULLSCREEN": "Fullscreen",
+  "EXIT_FULLSCREEN": "Exit fullscreen",
+  "ERROR_TITLE": "Footage unavailable",
+  "ERROR_BODY": "This camera feed couldn't be loaded right now.",
+  "RETRY": "Try again"
+},
   "FOOTER": {
     "OPERATIONAL": "Operational",
     "HELP": "Help",

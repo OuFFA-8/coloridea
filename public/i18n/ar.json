@@ -370,6 +370,17 @@
     "RIGHT_CLICK": "كليك يمين للتغيير",
     "SELECT_CAMERA": "اختر كاميرا"
   },
+  "TIMELAPSE": {
+  "BACK": "رجوع",
+  "LABEL": "تايم لابس",
+  "LOADING": "جارٍ تحميل اللقطات...",
+  "OPEN_EXTERNAL": "فتح في تاب جديد",
+  "FULLSCREEN": "ملء الشاشة",
+  "EXIT_FULLSCREEN": "الخروج من ملء الشاشة",
+  "ERROR_TITLE": "اللقطات غير متاحة",
+  "ERROR_BODY": "تعذّر تحميل بث هذه الكاميرا حاليًا.",
+  "RETRY": "إعادة المحاولة"
+},
   "FOOTER": {
     "OPERATIONAL": "يعمل",
     "HELP": "المساعدة",
