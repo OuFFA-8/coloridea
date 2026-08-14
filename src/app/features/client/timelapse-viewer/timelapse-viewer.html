@@ -1,73 +1,141 @@
-<div class="fixed inset-0 z-[200] flex flex-col bg-[#0e0e0e]">
-  <!-- Header -->
+<div class="w-screen h-screen bg-black flex flex-col overflow-hidden">
+  <!-- ===== TOP BAR ===== -->
   <div
-    class="flex items-center justify-between p-4 sm:p-5 sm:px-6 bg-white/5 border-b border-white/10 flex-shrink-0 backdrop-blur-md"
+    class="flex items-center justify-between px-4 py-2.5 bg-[#0a0a0a] border-b border-white/5 shrink-0 z-100"
   >
     <div class="flex items-center gap-3 min-w-0">
       <button
         (click)="goBack()"
-        class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 border-none cursor-pointer transition-colors bg-white/10 hover:bg-[#fa8728] text-white"
-        aria-label="Back"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border-none bg-transparent cursor-pointer transition-colors text-white/40 hover:text-white hover:bg-white/5 flex-shrink-0"
       >
-        <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
+        {{ 'TIMELAPSE.BACK' | translate }}
       </button>
-      <div class="min-w-0">
-        <h1
-          class="text-white font-black text-base sm:text-lg truncate"
-          style="font-family: 'Alexandria', sans-serif"
-        >
-          {{ title }}
-        </h1>
-        <p class="text-[9px] font-bold text-[#fa8728] uppercase tracking-widest mt-0.5">
-          Timelapse
-        </p>
+
+      <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
+
+      <div class="flex items-center gap-1.5 flex-shrink-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#fa8728] animate-pulse"></span>
+        <span class="text-[9px] font-black text-[#fa8728] uppercase tracking-widest">
+          {{ 'TIMELAPSE.LABEL' | translate }}
+        </span>
       </div>
+
+      <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
+
+      <span
+        class="text-xs font-black text-white/70 truncate"
+        style="font-family: 'Alexandria', sans-serif"
+      >
+        {{ title }}
+      </span>
     </div>
 
-    <button
-      (click)="openExternal()"
-      class="flex-shrink-0 px-3 sm:px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all bg-white/10 hover:bg-white/20 text-white"
-    >
-      فتح في تاب جديد ↗
-    </button>
+    <div class="flex items-center gap-1 flex-shrink-0">
+      <button
+        (click)="toggleFullscreen()"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border-none transition-colors bg-transparent text-white/40 hover:text-white hover:bg-white/5"
+      >
+        @if (!isFullscreen) {
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V5a1 1 0 011-1h3M4 16v3a1 1 0 001 1h3M20 8V5a1 1 0 00-1-1h-3M20 16v3a1 1 0 01-1 1h-3" />
+          </svg>
+        } @else {
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 4v3a1 1 0 01-1 1H5M15 4v3a1 1 0 001 1h3M9 20v-3a1 1 0 00-1-1H5M15 20v-3a1 1 0 011-1h3" />
+          </svg>
+        }
+        <span class="hidden sm:inline">
+          {{ (isFullscreen ? 'TIMELAPSE.EXIT_FULLSCREEN' : 'TIMELAPSE.FULLSCREEN') | translate }}
+        </span>
+      </button>
+
+      <div class="w-px h-4 bg-white/10 mx-1"></div>
+
+      <button
+        (click)="openExternal()"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest cursor-pointer border-none transition-colors bg-transparent text-white/40 hover:text-white hover:bg-white/5"
+      >
+        {{ 'TIMELAPSE.OPEN_EXTERNAL' | translate }}
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4-4m0 0h-5m5 0v5M10 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-3" />
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <!-- Body -->
-  <div class="flex-1 relative overflow-hidden">
-    @if (isLoading) {
-      <div class="absolute inset-0 flex items-center justify-center bg-[#0e0e0e] z-10">
-        <div class="flex flex-col items-center gap-3">
-          <div
-            class="w-10 h-10 border-4 border-[#fa8728]/30 border-t-[#fa8728] rounded-full animate-spin"
-          ></div>
-          <p class="text-white/40 text-xs font-bold uppercase tracking-widest">
-            {{ 'COMMON.LOADING' | translate }}
-          </p>
+  <!-- ===== STAGE ===== -->
+  <div class="flex-1 relative bg-black overflow-hidden">
+    <!-- Loading -->
+    @if (isLoading && !hasError) {
+      <div class="absolute inset-0 flex items-center justify-center bg-black z-20">
+        <!-- Ambient glow -->
+        <div
+          class="absolute w-72 h-72 rounded-full blur-[110px] bg-[#fa8728]/10 pointer-events-none"
+        ></div>
+
+        <div class="relative flex flex-col items-center gap-4">
+          <!-- Aperture / camera-iris loader -->
+          <svg class="w-14 h-14 ci-aperture" viewBox="0 0 100 100">
+            @for (i of [0,1,2,3,4,5]; track i) {
+              <polygon
+                points="50,50 50,6 68,14"
+                fill="#fa8728"
+                [attr.transform]="'rotate(' + (i * 60) + ' 50 50)'"
+                [style.animation-delay.ms]="i * 90"
+                class="ci-blade"
+              />
+            }
+            <circle cx="50" cy="50" r="10" fill="black" />
+          </svg>
+          <span class="text-[9px] font-black text-white/25 uppercase tracking-widest">
+            {{ 'TIMELAPSE.LOADING' | translate }}
+          </span>
         </div>
       </div>
     }
 
+    <!-- Error -->
     @if (hasError) {
-      <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
-        <span class="text-4xl opacity-30">⚠️</span>
-        <p class="text-white/50 text-sm font-bold">تعذّر عرض المحتوى</p>
-        <button
-          (click)="goBack()"
-          class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer bg-[#fa8728] hover:bg-[#f97316] text-white transition-all"
-        >
-          {{ 'COMMON.BACK' | translate }}
-        </button>
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center z-20">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center bg-white/5 border border-white/10">
+          <svg class="w-6 h-6 text-white/25" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h1.5l1-1.5h9l1 1.5H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4l18 16" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-white/70 text-xs font-black uppercase tracking-widest">
+            {{ 'TIMELAPSE.ERROR_TITLE' | translate }}
+          </p>
+          <p class="text-white/30 text-[11px] font-bold mt-1.5 max-w-xs">
+            {{ 'TIMELAPSE.ERROR_BODY' | translate }}
+          </p>
+        </div>
+        <div class="flex items-center gap-2 mt-1">
+          <button
+            (click)="retry()"
+            class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border-none cursor-pointer bg-[#fa8728] hover:bg-[#f97316] text-white transition-colors"
+          >
+            {{ 'TIMELAPSE.RETRY' | translate }}
+          </button>
+          <button
+            (click)="goBack()"
+            class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border-none cursor-pointer bg-white/5 hover:bg-white/10 text-white/50 transition-colors"
+          >
+            {{ 'TIMELAPSE.BACK' | translate }}
+          </button>
+        </div>
       </div>
     }
 
+    <!-- Iframe -->
     @if (safeUrl && !hasError) {
       <iframe
         [src]="safeUrl"
         (load)="onIframeLoad()"
         (error)="onIframeError()"
-        class="w-full h-full border-0"
+        class="w-full h-full border-0 relative z-10 ci-fade-in"
+        [class.opacity-0]="isLoading"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowfullscreen
         loading="eager"
