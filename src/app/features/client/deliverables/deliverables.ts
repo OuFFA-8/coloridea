@@ -114,11 +114,14 @@ getTikeeEmbedUrl(url: string): string {
   const lang = this.myTranslate.currentLang === 'ar' ? 'ar' : 'en';
   const galleryParams =
     `lang=${lang}&image_size=hd&default_tab=single&allowed_viewer_types=single` +
-    `&font_color=ffffff&primary_color=2f6093&secondary_color=3399ff&highlight_font_color=ffffff`;
+    `&font_color=ffffff&primary_color=2f6093&secondary_color=3399ff&highlight_font_color=ffffff&fluid=true`;
 
   // لو اللينك أصلاً بصيغة /iframe/.../gallery/ خليه زي ما هو (تأكد بس إن الباراميترات موجودة)
   if (url.includes('/iframe/') && url.includes('/gallery/')) {
-    return url.includes('lang=') ? url : `${url}${url.includes('?') ? '&' : '?'}${galleryParams}`;
+    if (url.includes('lang=')) {
+      return url.includes('fluid=') ? url : `${url}&fluid=true`;
+    }
+    return `${url}${url.includes('?') ? '&' : '?'}${galleryParams}`;
   }
 
   // لو اللينك بصيغة /iframe/.../wall/ حوله لصيغة /gallery/
@@ -143,24 +146,12 @@ getTikeeEmbedUrl(url: string): string {
   }
 
  openItem(item: any) {
-  // بس لينكات Tikee (التايم لابس) بتاخد صفحة كاملة، الباقي زي ما هو
-  if (item.link && this.isTikeeLink(item.link)) {
-    const projectId = this.route.parent?.snapshot.paramMap.get('id');
-    this.router.navigate(['/client/timelapse'], {
-      queryParams: {
-        url: this.getTikeeEmbedUrl(item.link),
-        name: item.name,
-        projectId,
-      },
-    });
-    return;
-  }
-
-  // ↓ الكود القديم بتاعك زي ما هو من غير أي تغيير
+  // كل العناصر (بما فيها التايم لابس Tikee) بتفتح في نفس المودال دلوقتي
   this.selectedItem = item;
   this.driveFiles = [];
   this.driveError = false;
   this.selectedDriveFile = null;
+  document.body.classList.add('ci-modal-open'); // يخفي الـ sidebar تمامًا وقت فتح المودال
   if (item.link && this.isDriveFolder(item.link)) {
     this.loadDriveFiles(item.link);
   }
@@ -234,6 +225,11 @@ getTikeeEmbedUrl(url: string): string {
     this.selectedItem = null;
     this.driveFiles = [];
     this.selectedDriveFile = null;
+    document.body.classList.remove('ci-modal-open');
+  }
+
+  sanitizeUrl(url: string): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
   getEmbedUrl(url: string): SafeResourceUrl {

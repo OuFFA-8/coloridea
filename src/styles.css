@@ -37,6 +37,11 @@ body {
   filter: brightness(0.85) contrast(1.05);
 }
 
+/* ===== Hide sidebar completely while a full-screen modal is open ===== */
+body.ci-modal-open aside {
+  visibility: hidden !important;
+}
+
 /* ===== Remove old blue active-link ===== */
 .active-link {
   @apply !bg-[#fa8728]/10 !text-[#fa8728];

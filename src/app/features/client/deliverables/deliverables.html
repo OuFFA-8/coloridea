@@ -206,14 +206,14 @@
 
 <!-- ===== ITEM MODAL ===== -->
 @if (selectedItem) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
-    <div class="absolute inset-0 bg-black/85 backdrop-blur-xl" (click)="closeModal()"></div>
+  <div class="fixed inset-x-0 top-16 bottom-0 z-[200] flex items-center justify-center p-3 sm:p-4">
+    <div class="absolute inset-0 bg-black backdrop-blur-xl" (click)="closeModal()"></div>
     <div
-      class="ci-modal relative w-full max-w-4xl bg-[#0e0e0e] rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
+      class="ci-modal relative w-full max-w-[95vw] bg-[#0e0e0e] rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col h-[85vh]"
     >
       <!-- Header -->
       <div
-        class="flex items-center justify-between p-5 px-6 bg-white/5 border-b border-white/10 flex-shrink-0"
+        class="flex items-center justify-between p-3 px-5 bg-white/5 border-b border-white/10 flex-shrink-0"
       >
         <div>
           <h3 class="text-white font-black text-lg" style="font-family: 'Alexandria', sans-serif">
@@ -257,7 +257,7 @@
 
       <!-- Body -->
       <div
-        class="flex-1 min-h-[400px] relative bg-black flex items-center justify-center overflow-hidden"
+        class="flex-1 relative bg-black flex items-center justify-center overflow-hidden"
       >
         <!-- Drive file preview -->
         @if (selectedDriveFile) {
@@ -355,10 +355,10 @@
           }
         }
 
-        <!-- Regular embed (YouTube, Drive file) -->
+        <!-- Regular embed (YouTube, Drive file, Tikee timelapse) -->
         @else if (selectedItem.link) {
           <iframe
-            [src]="getEmbedUrl(selectedItem.link)"
+            [src]="isTikeeLink(selectedItem.link) ? sanitizeUrl(getTikeeEmbedUrl(selectedItem.link)) : getEmbedUrl(selectedItem.link)"
             class="w-full h-full absolute inset-0"
             frameborder="0"
             allow="
