@@ -6,6 +6,8 @@
     class="flex-shrink-0 border-e border-[#e6d5c3] dark:border-[#444547]/30 shadow-2xl shadow-[#e6d5c3]/40 dark:shadow-none transition-all duration-500"
     [isOpen]="sidebarOpen()"
     (closeEvent)="closeSidebar()"
+    [collapsed]="sidebarCollapsed()"
+    (toggleCollapse)="toggleSidebarCollapse()"
   ></app-client-sidebar>
 
   <!-- Right column: header + main + footer -->

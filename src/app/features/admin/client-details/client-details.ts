@@ -26,7 +26,7 @@ import { ProjectsService } from '../../../core/services/projects-service/project
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 import { CamerasService } from '../../../core/services/cameras-service/cameras-service';
 import { AdVideoService } from '../../../core/services/ad-video-service/ad-video-service';
-
+import { TimelapseService } from '../../../core/services/timelapse-service/timelapse-service';
 const CLIENTS_KEY = makeStateKey<any[]>('clients');
 
 @Component({
@@ -93,6 +93,7 @@ export class ClientDetails implements OnInit {
   private loadingService = inject(LoadingService);
   private camerasService = inject(CamerasService);
   private adVideoService = inject(AdVideoService);
+  private timelapseService = inject(TimelapseService);
 
   constructor(
     private route: ActivatedRoute,
@@ -106,10 +107,17 @@ export class ClientDetails implements OnInit {
     this.projectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required],
+
       totalAmount: [null, [Validators.required, Validators.min(1)]],
       totalInstallments: [1, [Validators.required, Validators.min(1)]],
+
       installments: this.fb.array([]),
       agreedItems: this.fb.array([]),
+
+      timelapse: this.fb.group({
+        name: [''],
+        link: [''],
+      }),
     });
 
     this.cameraForm = this.fb.group({
@@ -189,6 +197,9 @@ export class ClientDetails implements OnInit {
   get agreedItemsControls() {
     return (this.projectForm.get('agreedItems') as FormArray).controls;
   }
+  get timelapseGroup(): FormGroup {
+    return this.projectForm.get('timelapse') as FormGroup;
+  }
   addAgreedItem() {
     (this.projectForm.get('agreedItems') as FormArray).push(
       this.fb.group({
@@ -220,12 +231,24 @@ export class ClientDetails implements OnInit {
 
   toggleProjectModal() {
     this.showProjectModal = !this.showProjectModal;
+
     if (this.showProjectModal) {
-      this.projectForm.reset({ totalInstallments: 1 });
+      this.projectForm.reset({
+        totalInstallments: 1,
+      });
+
       (this.projectForm.get('installments') as FormArray).clear();
       (this.projectForm.get('agreedItems') as FormArray).clear();
+
       this.addInstallment();
       this.addAgreedItem();
+
+      // Reset Timelapse
+      this.timelapseGroup.reset({
+        name: '',
+        link: '',
+      });
+
       this.projectPhotoFile = null;
       this.projectPhotoPreview = null;
       this.projectContractFile = null;
@@ -237,42 +260,124 @@ export class ClientDetails implements OnInit {
       this.projectForm.markAllAsTouched();
       return;
     }
+
     this.isSaving = true;
     this.loadingService.show('Creating project...');
+
     const formData = new FormData();
     const val = this.projectForm.value;
+
     formData.append('name', val.name);
     formData.append('description', val.description);
     formData.append('user', this.client._id);
     formData.append('totalAmount', val.totalAmount);
     formData.append('totalInstallments', val.totalInstallments);
-    if (this.projectPhotoFile) formData.append('photo', this.projectPhotoFile);
-    if (this.projectContractFile) formData.append('contract', this.projectContractFile);
+
+    if (this.projectPhotoFile) {
+      formData.append('photo', this.projectPhotoFile);
+    }
+
+    if (this.projectContractFile) {
+      formData.append('contract', this.projectContractFile);
+    }
+
     val.installments.forEach((inst: any, i: number) => {
       formData.append(`installments[${i}][amount]`, inst.amount);
+
       formData.append(`installments[${i}][createdAt]`, inst.createdAt);
     });
+
     val.agreedItems.forEach((item: any, i: number) => {
       formData.append(`agreedItems[${i}][name]`, item.name);
+
       formData.append(`agreedItems[${i}][numberOfItems]`, item.numberOfItems);
     });
 
     this.projectsService.createProject(formData).subscribe({
       next: (res) => {
-        this.isSaving = false;
-        this.loadingService.hide();
-        this.client.projects = [...(this.client.projects || []), res.data];
-        this.client.projectsCount = (this.client.projectsCount || 0) + 1;
-        this.toggleProjectModal();
-        this.cdr.detectChanges();
-        this.alert.success(`Project "${res.data.name}" created successfully!`);
+        const createdProject = res.data;
+        const projectId = createdProject?._id;
+
+        if (!projectId) {
+          this.isSaving = false;
+          this.loadingService.hide();
+
+          this.alert.error('Project was created but project ID was not returned.');
+
+          return;
+        }
+
+        const timelapseName = val.timelapse?.name?.trim() || '';
+
+        const timelapseLink = val.timelapse?.link?.trim() || '';
+
+        // No Timelapse entered
+        if (!timelapseName && !timelapseLink) {
+          this.finishProjectCreation(createdProject);
+          return;
+        }
+
+        // One field is missing — still keep the created project in view
+        if (!timelapseName || !timelapseLink) {
+          this.finishProjectCreation(createdProject, {
+            type: 'error',
+            text: 'Project created, but please enter both Timelapse name and link to save the Timelapse.',
+          });
+
+          return;
+        }
+
+        // Create Timelapse
+        this.timelapseService
+          .createTimelapse(projectId, {
+            name: timelapseName,
+            link: timelapseLink,
+          })
+          .subscribe({
+            next: () => {
+              this.finishProjectCreation(createdProject);
+            },
+
+            error: (err) => {
+              console.error('Timelapse creation failed:', err);
+
+              this.finishProjectCreation(createdProject, {
+                type: 'error',
+                text: err.error?.message || 'Project was created, but Timelapse creation failed.',
+              });
+            },
+          });
       },
+
       error: (err) => {
         this.isSaving = false;
         this.loadingService.hide();
+
         this.alert.error(err.error?.message || 'Failed to create project');
       },
     });
+  }
+
+  private finishProjectCreation(
+    createdProject: any,
+    message?: { type: 'success' | 'error'; text: string },
+  ): void {
+    this.isSaving = false;
+    this.loadingService.hide();
+
+    this.client.projects = [...(this.client.projects || []), createdProject];
+
+    this.client.projectsCount = (this.client.projectsCount || 0) + 1;
+
+    this.toggleProjectModal();
+
+    this.cdr.detectChanges();
+
+    if (message?.type === 'error') {
+      this.alert.error(message.text);
+    } else {
+      this.alert.success(message?.text ?? `Project "${createdProject.name}" created successfully!`);
+    }
   }
 
   onDeleteProject(id: string) {
@@ -314,9 +419,18 @@ export class ClientDetails implements OnInit {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
-      if (type === 'logo') { this.editLogoFile = file; this.editLogoPreview = result; }
-      if (type === 'photo') { this.editPhotoFile = file; this.editPhotoPreview = result; }
-      if (type === 'pattern') { this.editPatternFile = file; this.editPatternPreview = result; }
+      if (type === 'logo') {
+        this.editLogoFile = file;
+        this.editLogoPreview = result;
+      }
+      if (type === 'photo') {
+        this.editPhotoFile = file;
+        this.editPhotoPreview = result;
+      }
+      if (type === 'pattern') {
+        this.editPatternFile = file;
+        this.editPatternPreview = result;
+      }
       this.cdr.detectChanges();
     };
     reader.readAsDataURL(file);

@@ -9,6 +9,10 @@ import { OutputsService } from '../../../core/services/outputs-service/outputs-s
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
 import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
+import {
+  TimelapseService,
+  Timelapse,
+} from '../../../core/services/timelapse-service/timelapse-service';
 
 @Component({
   selector: 'app-admin-project-details',
@@ -40,6 +44,9 @@ export class AdminProjectDetails implements OnInit {
   showEditInstallmentsCountModal = false;
   showUploadInvoiceModal = false;
   showUploadReceiptModal = false;
+  showTimelapseModal = false;
+
+  timelapse: Timelapse | null = null;
 
   selectedOutput: any = null;
   selectedItem: any = null;
@@ -54,6 +61,7 @@ export class AdminProjectDetails implements OnInit {
   installmentForm: FormGroup;
   totalAmountForm: FormGroup;
   installmentsCountForm: FormGroup;
+  timelapseForm: FormGroup;
 
   projectPhotoFile: File | null = null;
   projectPhotoPreview: string | null = null;
@@ -64,6 +72,7 @@ export class AdminProjectDetails implements OnInit {
   receiptFile: File | null = null;
 
   private http = inject(HttpClient);
+  private timelapseService = inject(TimelapseService);
 
   constructor(
     private route: ActivatedRoute,
@@ -107,6 +116,10 @@ export class AdminProjectDetails implements OnInit {
     this.installmentsCountForm = this.fb.group({
       totalInstallments: [null, [Validators.required, Validators.min(1)]],
     });
+    this.timelapseForm = this.fb.group({
+      name: ['', Validators.required],
+      link: ['', Validators.required],
+    });
   }
 
   ngOnInit() {
@@ -126,6 +139,7 @@ export class AdminProjectDetails implements OnInit {
         this.isLoading = false;
         this.loadingService.hide();
         this.cdr.detectChanges();
+        this.loadTimelapse();
       },
       error: (err) => {
         this.isLoading = false;
@@ -133,6 +147,75 @@ export class AdminProjectDetails implements OnInit {
         this.cdr.detectChanges();
         this.alert.error(err.error?.message || 'Failed to load project');
       },
+    });
+  }
+
+  loadTimelapse() {
+    this.timelapseService.getProjectTimelapse(this.project._id).subscribe({
+      next: (res) => {
+        this.timelapse = res.data?.[0] ?? null;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.timelapse = null;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  openTimelapseModal() {
+    this.timelapseForm.reset({
+      name: this.timelapse?.name || '',
+      link: this.timelapse?.link || '',
+    });
+    this.showTimelapseModal = true;
+  }
+
+  saveTimelapse() {
+    if (this.timelapseForm.invalid) return;
+    this.isSaving = true;
+    this.loadingService.show(this.timelapse ? 'Updating timelapse...' : 'Adding timelapse...');
+    const payload = this.timelapseForm.value;
+    const request = this.timelapse
+      ? this.timelapseService.updateTimelapse(this.timelapse._id, payload)
+      : this.timelapseService.createTimelapse(this.project._id, payload);
+    request.subscribe({
+      next: (res) => {
+        this.timelapse = res.data;
+        this.showTimelapseModal = false;
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.cdr.detectChanges();
+        this.alert.success(
+          this.timelapse ? 'Timelapse updated successfully' : 'Timelapse added successfully',
+        );
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.loadingService.hide();
+        this.alert.error(err.error?.message || 'Failed to save timelapse');
+      },
+    });
+  }
+
+  deleteTimelapse() {
+    if (!this.timelapse) return;
+    this.alert.confirm(`Delete "${this.timelapse.name}"?`).then((result: any) => {
+      if (result.isConfirmed && this.timelapse) {
+        this.loadingService.show('Deleting timelapse...');
+        this.timelapseService.deleteTimelapse(this.timelapse._id).subscribe({
+          next: () => {
+            this.timelapse = null;
+            this.loadingService.hide();
+            this.cdr.detectChanges();
+            this.alert.success('Timelapse deleted');
+          },
+          error: (err) => {
+            this.loadingService.hide();
+            this.alert.error(err.error?.message || 'Failed to delete timelapse');
+          },
+        });
+      }
     });
   }
 

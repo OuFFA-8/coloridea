@@ -1,0 +1,47 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.timelapse-stage {
+  min-height: calc(100vh - 0px);
+}
+
+/* Aperture (camera iris) loader — same signature element as the timelapse viewer */
+.ci-aperture {
+  animation: ci-aperture-spin 2.4s linear infinite;
+}
+
+.ci-blade {
+  transform-origin: 50px 50px;
+  animation: ci-blade-breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes ci-aperture-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ci-blade-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ci-aperture {
+    animation: none;
+  }
+  .ci-blade {
+    animation: none;
+    opacity: 0.8;
+  }
+}

@@ -420,6 +420,81 @@
         </div>
       </div>
 
+      <!-- ===== TIMELAPSE ===== -->
+      <div class="ci-section" style="--delay: 0.16s">
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
+            <h2 class="text-[9px] font-black uppercase text-[#5c5f63]/50 dark:text-gray-500">
+              {{ 'ADMIN.PROJECTS.TIMELAPSE_SECTION' | translate }}
+            </h2>
+          </div>
+          @if (!timelapse) {
+            <button
+              (click)="openTimelapseModal()"
+              class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer transition-all duration-300 bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 text-[#5c5f63] dark:text-gray-400 hover:border-[#fa8728] hover:text-[#fa8728]"
+            >
+              + {{ 'COMMON.ADD' | translate }}
+            </button>
+          }
+        </div>
+
+        @if (!timelapse) {
+          <div
+            class="py-20 text-center rounded-2xl border-2 border-dashed border-[#e6d5c3] dark:border-[#444547]/30"
+          >
+            <p
+              class="text-[10px] font-black uppercase tracking-widest text-[#5c5f63]/30 dark:text-gray-700"
+            >
+              {{ 'COMMON.NO_DATA' | translate }}
+            </p>
+          </div>
+        } @else {
+          <div
+            class="ci-card group relative rounded-2xl p-6 shadow-sm bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 max-w-md"
+          >
+            <div
+              class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-[#fa8728] to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out"
+            ></div>
+
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1 min-w-0">
+                <h3
+                  class="text-sm font-black text-[#444547] dark:text-white truncate"
+                  style="font-family: 'Alexandria', sans-serif"
+                >
+                  {{ timelapse.name }}
+                </h3>
+                <a
+                  [href]="timelapse.link"
+                  target="_blank"
+                  rel="noopener"
+                  class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block mt-1"
+                >
+                  {{ timelapse.link }}
+                </a>
+              </div>
+              <div class="flex gap-1.5 ml-2 flex-shrink-0">
+                <button
+                  (click)="openTimelapseModal()"
+                  type="button"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[#e6d5c3]/50 dark:bg-[#444547]/20 text-[#5c5f63] hover:bg-[#fa8728]/15 hover:text-[#fa8728] transition-colors duration-200"
+                >
+                  ✏
+                </button>
+                <button
+                  (click)="deleteTimelapse()"
+                  type="button"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[#e6d5c3]/50 dark:bg-[#444547]/20 text-[#5c5f63] hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 transition-colors duration-200"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
       <!-- ===== FINANCIALS ===== -->
       <div class="ci-section" style="--delay: 0.18s">
         <div class="flex items-center justify-between mb-5">
@@ -957,6 +1032,73 @@
                 class="ci-btn-primary flex-1"
               >
                 {{ isSaving ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
+    @if (showTimelapseModal) {
+      <div class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div
+          class="fixed inset-0 bg-[#0e0e0e]/75 backdrop-blur-md"
+          (click)="showTimelapseModal = false"
+        ></div>
+        <div
+          class="ci-modal relative w-full max-w-md rounded-3xl p-8 shadow-2xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
+        >
+          <h2
+            class="text-xl font-black text-[#444547] dark:text-white mb-1"
+            style="font-family: 'Alexandria', sans-serif"
+          >
+            {{
+              (timelapse ? 'ADMIN.PROJECT_DETAILS.EDIT_TIMELAPSE' : 'ADMIN.PROJECT_DETAILS.NEW_TIMELAPSE')
+                | translate
+            }}
+          </h2>
+          <div class="w-8 h-0.5 bg-[#fa8728] rounded-full mb-6"></div>
+          <form [formGroup]="timelapseForm" class="space-y-4">
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+              >
+                {{ 'ADMIN.PROJECTS.TIMELAPSE_NAME' | translate }}
+              </label>
+              <input
+                formControlName="name"
+                type="text"
+                placeholder="{{ 'ADMIN.PROJECTS.TIMELAPSE_NAME_PLACEHOLDER' | translate }}"
+                class="ci-input"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+              >
+                {{ 'ADMIN.PROJECTS.TIMELAPSE_LINK' | translate }}
+              </label>
+              <input formControlName="link" type="url" placeholder="https://..." class="ci-input" />
+            </div>
+            <div class="flex gap-3 pt-2">
+              <button
+                type="button"
+                (click)="showTimelapseModal = false"
+                class="ci-btn-secondary flex-1"
+              >
+                {{ 'COMMON.CANCEL' | translate }}
+              </button>
+              <button
+                type="button"
+                (click)="saveTimelapse()"
+                [disabled]="timelapseForm.invalid || isSaving"
+                class="ci-btn-primary flex-1"
+              >
+                {{
+                  isSaving
+                    ? ('COMMON.LOADING' | translate)
+                    : (timelapse ? ('COMMON.SAVE' | translate) : ('COMMON.ADD' | translate))
+                }}
               </button>
             </div>
           </form>

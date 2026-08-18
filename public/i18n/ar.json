@@ -52,7 +52,11 @@
     "DELIVERABLES": "المخرجات",
     "FINANCIALS": "المالية",
     "MY_PROJECTS": "مشاريعي",
-    "CURRENT_PROJECT": "المشروع الحالي"
+    "CURRENT_PROJECT": "المشروع الحالي",
+    "SCREENS": "الشاشات",
+    "TIMELAPSE": "تايم لابس",
+    "COLLAPSE": "طي القائمة",
+    "EXPAND": "توسيع القائمة"
   },
   "ADMIN": {
     "PROJECT_DETAILS": {
@@ -67,6 +71,8 @@
       "WATCH_VIDEO": "▶ مشاهدة الفيديو",
       "NEW_OUTPUT": "مخرج جديد",
       "EDIT_OUTPUT": "تعديل مخرج",
+      "NEW_TIMELAPSE": "إضافة تايم لابس",
+      "EDIT_TIMELAPSE": "تعديل التايم لابس",
       "CONTRACT_PDF": "العقد PDF (اختياري)",
       "VIEW_CURRENT_CONTRACT": "📄 عرض العقد الحالي ↗",
       "UPLOAD_CONTRACT": "📄 رفع عقد PDF",
@@ -170,7 +176,14 @@
       "ITEMS": "العناصر",
       "BASIC_INFO": "المعلومات الأساسية",
       "PHOTO_OPTIONAL": "صورة (اختياري)",
-      "OUTPUT_NAME_PLACEHOLDER": "اسم المخرج (مثال: جلسة تصوير جوي)"
+      "OUTPUT_NAME_PLACEHOLDER": "اسم المخرج (مثال: جلسة تصوير جوي)",
+      "TIMELAPSE_SECTION": "تايم لابس",
+      "TIMELAPSE_HINT": "اختياري — تايم لابس واحد فقط لكل مشروع",
+      "TIMELAPSE_NAME": "اسم التايم لابس",
+      "TIMELAPSE_NAME_PLACEHOLDER": "مثال: تايم لابس المشروع",
+      "TIMELAPSE_LINK": "رابط التايم لابس",
+      "TIMELAPSE_INFO_TITLE": "التايم لابس اختياري",
+      "TIMELAPSE_INFO_DESC": "في حالة إضافة تايم لابس، يجب إدخال الاسم والرابط معًا. يمكن إضافة تايم لابس واحد فقط لكل مشروع."
     },
     "CAMERAS": {
       "TITLE": "الكاميرات",
@@ -379,7 +392,26 @@
   "EXIT_FULLSCREEN": "الخروج من ملء الشاشة",
   "ERROR_TITLE": "اللقطات غير متاحة",
   "ERROR_BODY": "تعذّر تحميل بث هذه الكاميرا حاليًا.",
-  "RETRY": "إعادة المحاولة"
+  "RETRY": "إعادة المحاولة",
+  "LIST": {
+    "EYEBROW": "وسائط المشروع",
+    "TITLE": "تايم لابس",
+    "SUBTITLE": "شاهد أحدث تايم لابس لمشروعك.",
+    "LOADING": "جارٍ تحميل التايم لابس...",
+    "ERROR_TITLE": "حدث خطأ ما",
+    "ERROR_BODY": "فشل تحميل التايم لابس.",
+    "TRY_AGAIN": "حاول مرة أخرى",
+    "EMPTY_TITLE": "لا يوجد تايم لابس متاح",
+    "EMPTY_BODY": "لا يوجد تايم لابس متاح لهذا المشروع حتى الآن.",
+    "AVAILABLE_LABEL": "التايم لابس المتاح",
+    "DESCRIPTION": "شاهد تقدم مشروعك من خلال لقطات التايم لابس المتاحة.",
+    "WATCH": "مشاهدة التايم لابس",
+    "OPEN_LINK": "فتح الرابط",
+    "LINK_LABEL": "رابط التايم لابس",
+    "OPEN": "فتح",
+    "NO_PROJECT_SELECTED": "لم يتم اختيار مشروع.",
+    "PROJECT_NOT_FOUND": "لم يتم العثور على معرف المشروع."
+  }
 },
   "FOOTER": {
     "OPERATIONAL": "يعمل",

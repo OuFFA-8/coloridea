@@ -12,29 +12,61 @@
   class="w-64 h-screen flex flex-col border-e transition-all duration-300 relative overflow-hidden bg-[#111827] border-[#444547]/30 text-gray-400 fixed md:relative z-50 md:z-auto top-0 end-0 hidden md:flex"
   [class.!flex]="isOpen"
   [class.ci-sidebar-slide]="animated"
+  [class.md:!w-20]="collapsed"
 >
   <!-- Top accent line -->
   <div
     class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#fa8728] via-[#f97316] to-transparent"
   ></div>
 
-  <!-- Logo -->
-  <div class="px-6 py-6 flex justify-center">
-    <img
-      [src]="isDark ? '/images/logo-10.png' : '/images/logo-09.png'"
-      alt="ColorIdea"
-      class="h-10 w-auto object-contain"
-    />
+  <!-- Logo + Collapse toggle -->
+  <div
+    class="px-4 py-6 flex items-center gap-2"
+    [class.justify-between]="!collapsed"
+    [class.justify-center]="collapsed"
+  >
+    @if (!collapsed) {
+      <img
+        [src]="isDark ? '/images/logo-10.png' : '/images/logo-09.png'"
+        alt="ColorIdea"
+        class="h-10 w-auto object-contain"
+      />
+    }
+
+    <button
+      type="button"
+      (click)="toggleCollapse.emit()"
+      class="hidden md:flex items-center justify-center w-7 h-7 rounded-lg shrink-0 border-none cursor-pointer bg-[#444547]/15 text-gray-400 hover:bg-[#fa8728]/15 hover:text-[#fa8728] transition-colors duration-200"
+      [attr.aria-label]="(collapsed ? 'SIDEBAR.EXPAND' : 'SIDEBAR.COLLAPSE') | translate"
+      [attr.title]="(collapsed ? 'SIDEBAR.EXPAND' : 'SIDEBAR.COLLAPSE') | translate"
+    >
+      <svg
+        class="w-3.5 h-3.5 transition-transform duration-300"
+        [class.rotate-180]="collapsed"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M11 19l-7-7 7-7M18 19l-7-7 7-7"
+        />
+      </svg>
+    </button>
   </div>
 
   <div class="mx-5 h-px bg-[#444547]/20 mb-3"></div>
 
-  <p
-    class="px-6 text-[8px] font-black uppercase text-gray-700 mb-2"
-    style="font-family: 'Alexandria', sans-serif"
-  >
-    {{ 'SIDEBAR.NAVIGATION' | translate }}
-  </p>
+  @if (!collapsed) {
+    <p
+      class="px-6 text-[8px] font-black uppercase text-gray-700 mb-2"
+      style="font-family: 'Alexandria', sans-serif"
+    >
+      {{ 'SIDEBAR.NAVIGATION' | translate }}
+    </p>
+  }
 
   <!-- Nav -->
   <nav class="flex-1 px-3 space-y-0.5">
@@ -42,7 +74,10 @@
       routerLink="/admin/dashboard"
       routerLinkActive="ci-nav-active"
       [routerLinkActiveOptions]="{ exact: true }"
+      [attr.aria-label]="'NAV.DASHBOARD' | translate"
+      [attr.title]="collapsed ? ('NAV.DASHBOARD' | translate) : null"
       class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+      [class.justify-center]="collapsed"
     >
       <span
         class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
@@ -56,13 +91,18 @@
           />
         </svg>
       </span>
-      {{ 'NAV.DASHBOARD' | translate }}
+      @if (!collapsed) {
+        {{ 'NAV.DASHBOARD' | translate }}
+      }
     </a>
 
     <a
       routerLink="/admin/clients"
       routerLinkActive="ci-nav-active"
+      [attr.aria-label]="'NAV.CLIENTS' | translate"
+      [attr.title]="collapsed ? ('NAV.CLIENTS' | translate) : null"
       class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+      [class.justify-center]="collapsed"
     >
       <span
         class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
@@ -76,13 +116,18 @@
           />
         </svg>
       </span>
-      {{ 'NAV.CLIENTS' | translate }}
+      @if (!collapsed) {
+        {{ 'NAV.CLIENTS' | translate }}
+      }
     </a>
 
     <a
       routerLink="/admin/projects"
       routerLinkActive="ci-nav-active"
+      [attr.aria-label]="'NAV.PROJECTS' | translate"
+      [attr.title]="collapsed ? ('NAV.PROJECTS' | translate) : null"
       class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+      [class.justify-center]="collapsed"
     >
       <span
         class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
@@ -96,13 +141,18 @@
           />
         </svg>
       </span>
-      {{ 'NAV.PROJECTS' | translate }}
+      @if (!collapsed) {
+        {{ 'NAV.PROJECTS' | translate }}
+      }
     </a>
 
     <a
       routerLink="/admin/camera-settings"
       routerLinkActive="ci-nav-active"
+      [attr.aria-label]="'SIDEBAR.SCREENS_SETTINGS' | translate"
+      [attr.title]="collapsed ? ('SIDEBAR.SCREENS_SETTINGS' | translate) : null"
       class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+      [class.justify-center]="collapsed"
     >
       <span
         class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
@@ -116,7 +166,9 @@
           />
         </svg>
       </span>
-      {{ 'SIDEBAR.SCREENS_SETTINGS' | translate }}
+      @if (!collapsed) {
+        {{ 'SIDEBAR.SCREENS_SETTINGS' | translate }}
+      }
     </a>
 
     <div class="h-px my-2 mx-2 bg-[#444547]/20"></div>
@@ -124,7 +176,10 @@
     <a
       routerLink="/admin/settings"
       routerLinkActive="ci-nav-active"
+      [attr.aria-label]="'NAV.SETTINGS' | translate"
+      [attr.title]="collapsed ? ('NAV.SETTINGS' | translate) : null"
       class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+      [class.justify-center]="collapsed"
     >
       <span
         class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
@@ -144,7 +199,9 @@
           />
         </svg>
       </span>
-      {{ 'NAV.SETTINGS' | translate }}
+      @if (!collapsed) {
+        {{ 'NAV.SETTINGS' | translate }}
+      }
     </a>
   </nav>
 
@@ -153,6 +210,8 @@
     @if (user) {
       <div
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 hover:bg-[#fa8728]/5 transition-colors duration-300 cursor-default"
+        [class.justify-center]="collapsed"
+        [attr.title]="collapsed ? user.name : null"
       >
         <div
           class="w-9 h-9 rounded-xl overflow-hidden shrink-0 border border-[#fa8728]/20 bg-linear-to-tr from-[#fa8728] to-[#f97316] flex items-center justify-center"
@@ -168,25 +227,30 @@
             <span class="text-white text-xs font-black">{{ user.name?.charAt(0) }}</span>
           }
         </div>
-        <div class="flex flex-col min-w-0">
-          <span
-            class="text-xs font-black text-gray-200 truncate"
-            style="font-family: 'Alexandria', sans-serif"
-            >{{ user.name }}</span
-          >
-          <span
-            class="text-[8px] font-black text-[#fa8728] uppercase tracking-widest"
-            style="font-family: 'Alexandria', sans-serif"
-          >
-            {{ 'SIDEBAR.SUPER_ADMIN' | translate }}
-          </span>
-        </div>
+        @if (!collapsed) {
+          <div class="flex flex-col min-w-0">
+            <span
+              class="text-xs font-black text-gray-200 truncate"
+              style="font-family: 'Alexandria', sans-serif"
+              >{{ user.name }}</span
+            >
+            <span
+              class="text-[8px] font-black text-[#fa8728] uppercase tracking-widest"
+              style="font-family: 'Alexandria', sans-serif"
+            >
+              {{ 'SIDEBAR.SUPER_ADMIN' | translate }}
+            </span>
+          </div>
+        }
       </div>
     }
 
     <button
       (click)="logout()"
+      [attr.aria-label]="'NAV.LOGOUT' | translate"
+      [attr.title]="collapsed ? ('NAV.LOGOUT' | translate) : null"
       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm font-black text-rose-400 border-none bg-transparent transition-all duration-300 hover:bg-rose-500/10 hover:text-rose-400"
+      [class.justify-center]="collapsed"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -196,7 +260,9 @@
           d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
         />
       </svg>
-      {{ 'NAV.LOGOUT' | translate }}
+      @if (!collapsed) {
+        {{ 'NAV.LOGOUT' | translate }}
+      }
     </button>
   </div>
 </aside>

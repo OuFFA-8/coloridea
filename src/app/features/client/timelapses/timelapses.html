@@ -1,0 +1,89 @@
+<div class="timelapse-stage min-h-full bg-black flex items-center justify-center relative overflow-hidden">
+  <!-- Ambient glow -->
+  <div class="ci-glow absolute w-72 h-72 rounded-full blur-[110px] bg-[#fa8728]/10 pointer-events-none"></div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="relative flex flex-col items-center gap-4 z-10">
+      <svg class="w-14 h-14 ci-aperture" viewBox="0 0 100 100">
+        @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+          <polygon
+            points="50,50 50,6 68,14"
+            fill="#fa8728"
+            [attr.transform]="'rotate(' + i * 60 + ' 50 50)'"
+            [style.animation-delay.ms]="i * 90"
+            class="ci-blade"
+          />
+        }
+        <circle cx="50" cy="50" r="10" fill="black" />
+      </svg>
+
+      <span class="text-[9px] font-black text-white/25 uppercase tracking-widest">
+        {{ 'TIMELAPSE.LIST.LOADING' | translate }}
+      </span>
+    </div>
+  }
+
+  <!-- Empty -->
+  @if (!loading && error === 'EMPTY') {
+    <div class="relative flex flex-col items-center gap-4 p-8 text-center z-10">
+      <div
+        class="w-14 h-14 rounded-2xl flex items-center justify-center bg-white/5 border border-white/10"
+      >
+        <svg class="w-6 h-6 text-white/25" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 10l4.553-2.069A1 1 0 0121 8.867v6.266a1 1 0 01-1.447.902L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"
+          />
+        </svg>
+      </div>
+
+      <div>
+        <p class="text-white/70 text-xs font-black uppercase tracking-widest">
+          {{ 'TIMELAPSE.LIST.EMPTY_TITLE' | translate }}
+        </p>
+        <p class="text-white/30 text-[11px] font-bold mt-1.5 max-w-xs">
+          {{ 'TIMELAPSE.LIST.EMPTY_BODY' | translate }}
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (!loading && error && error !== 'EMPTY') {
+    <div class="relative flex flex-col items-center gap-4 p-8 text-center z-10">
+      <div
+        class="w-14 h-14 rounded-2xl flex items-center justify-center bg-white/5 border border-white/10"
+      >
+        <svg class="w-6 h-6 text-white/25" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3 9a2 2 0 012-2h1.5l1-1.5h9l1 1.5H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4l18 16" />
+        </svg>
+      </div>
+
+      <div>
+        <p class="text-white/70 text-xs font-black uppercase tracking-widest">
+          {{ 'TIMELAPSE.LIST.ERROR_TITLE' | translate }}
+        </p>
+        <p class="text-white/30 text-[11px] font-bold mt-1.5 max-w-xs">
+          {{ 'TIMELAPSE.LIST.' + error | translate }}
+        </p>
+      </div>
+
+      @if (error === 'ERROR_BODY') {
+        <button
+          type="button"
+          (click)="reload()"
+          class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border-none cursor-pointer bg-[#fa8728] hover:bg-[#f97316] text-white transition-colors"
+        >
+          {{ 'TIMELAPSE.LIST.TRY_AGAIN' | translate }}
+        </button>
+      }
+    </div>
+  }
+</div>

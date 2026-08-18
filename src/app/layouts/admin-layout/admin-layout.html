@@ -6,6 +6,8 @@
     class="flex-shrink-0"
     [isOpen]="sidebarOpen()"
     (closeEvent)="closeSidebar()"
+    [collapsed]="sidebarCollapsed()"
+    (toggleCollapse)="toggleSidebarCollapse()"
   ></app-admin-sidebar>
 
   <!-- Main content -->

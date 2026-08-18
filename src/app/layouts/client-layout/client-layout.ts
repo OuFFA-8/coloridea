@@ -12,6 +12,7 @@ import { Footer } from '../../shared/components/footer/footer';
 })
 export class ClientLayout {
   sidebarOpen = signal(false);
+  sidebarCollapsed = signal(false);
 
   toggleSidebar() {
     this.sidebarOpen.update((v) => !v);
@@ -19,5 +20,9 @@ export class ClientLayout {
 
   closeSidebar() {
     this.sidebarOpen.set(false);
+  }
+
+  toggleSidebarCollapse() {
+    this.sidebarCollapsed.update((v) => !v);
   }
 }

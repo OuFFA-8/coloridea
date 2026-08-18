@@ -70,10 +70,16 @@
                   [class.text-white/50]="!client.isActive"
                   [class.border-white/15]="!client.isActive"
                 >
-                  {{ (client.isActive ? 'CLIENT.PROFILE.STATUS_ACTIVE' : 'CLIENT.PROFILE.STATUS_INACTIVE') | translate }}
+                  {{
+                    (client.isActive
+                      ? 'CLIENT.PROFILE.STATUS_ACTIVE'
+                      : 'CLIENT.PROFILE.STATUS_INACTIVE'
+                    ) | translate
+                  }}
                 </span>
                 <span class="text-white/50 text-[10px] font-bold"
-                  >{{ client.projectsCount }} {{ 'ADMIN.CLIENT_DETAILS.PROJECTS_COUNT_LABEL' | translate }}</span
+                  >{{ client.projectsCount }}
+                  {{ 'ADMIN.CLIENT_DETAILS.PROJECTS_COUNT_LABEL' | translate }}</span
                 >
               </div>
               <h1
@@ -114,7 +120,9 @@
         <div class="flex items-center gap-3">
           <div class="w-1 h-5 rounded-full bg-[#fa8728]"></div>
           <h2 class="text-xs font-black uppercase text-[#5c5f63]/50 dark:text-gray-500">
-            {{ 'ADMIN.CLIENT_DETAILS.PROJECTS_SECTION' | translate }} ({{ client.projects?.length || 0 }})
+            {{ 'ADMIN.CLIENT_DETAILS.PROJECTS_SECTION' | translate }} ({{
+              client.projects?.length || 0
+            }})
           </h2>
         </div>
       </div>
@@ -263,107 +271,121 @@
       </div>
 
       <div [@collapseExpand]="camerasExpanded ? 'open' : 'closed'">
-      @if (isLoadingCameras) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          @for (_ of [1, 2, 3]; track $index) {
-            <div class="h-52 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
-          }
-        </div>
-      } @else {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          @for (camera of cameras; track $index) {
-            <div class="group bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm overflow-hidden">
-              <!-- Thumbnail -->
-              <div class="w-full h-40 bg-[#444547]/10 dark:bg-[#444547]/20 overflow-hidden relative">
-                @if (camera.lastPicUrl || camera.lastPic) {
-                  <img
-                    [src]="camera.lastPicUrl || camera.lastPic"
-                    [alt]="camera.name"
-                    class="w-full h-full object-cover"
-                    (error)="$any($event.target).style.display = 'none'"
-                  />
-                } @else {
-                  <div class="w-full h-full flex items-center justify-center">
-                    <span class="text-5xl opacity-10">📷</span>
-                  </div>
-                }
-
-                <!-- isActive toggle -->
-                <div class="absolute top-3 left-3">
-                  <button
-                    (click)="$event.stopPropagation(); toggleCameraActive(camera)"
-                    class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest backdrop-blur-sm border-none cursor-pointer transition-all duration-200"
-                    [class.bg-[#68ab1f]/90]="camera.isActive"
-                    [class.hover:bg-[#68ab1f]]="camera.isActive"
-                    [class.text-white]="camera.isActive"
-                    [class.bg-black/40]="!camera.isActive"
-                    [class.hover:bg-black/60]="!camera.isActive"
-                    [class.text-white/70]="!camera.isActive"
-                  >
-                    {{ camera.isActive ? ('ADMIN.CAMERAS.ACTIVE' | translate) : ('ADMIN.CAMERAS.INACTIVE' | translate) }}
-                  </button>
-                </div>
-
-                <!-- Action buttons -->
-                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button
-                    (click)="toggleCameraModal(camera)"
-                    class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer bg-white/90 hover:bg-white text-[#444547] text-xs backdrop-blur-sm transition-colors duration-200"
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    (click)="deleteCamera(camera._id)"
-                    class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer bg-rose-500/90 hover:bg-rose-600 text-white text-xs backdrop-blur-sm transition-colors duration-200"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              <!-- Content -->
-              <div class="p-4">
-                <div class="flex items-start justify-between gap-2 mb-3">
-                  <h4
-                    class="text-sm font-black text-[#444547] dark:text-white truncate"
-                    style="font-family: 'Alexandria', sans-serif"
-                  >
-                    {{ camera.name }}
-                  </h4>
-                  <span class="text-[9px] font-black text-[#5c5f63]/40 dark:text-gray-600 shrink-0 whitespace-nowrap">
-                    ⏱ {{ camera.displayDuration }}s
-                  </span>
-                </div>
-                @if (camera.cameraVideo) {
-                  <a
-                    [href]="camera.cameraVideo"
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors bg-[#444547]/8 hover:bg-[#444547]/15 text-[#444547] dark:bg-white/8 dark:hover:bg-white/15 dark:text-white"
-                  >
-                    🎥 {{ 'ADMIN.CAMERAS.CAMERA_LINK' | translate }}
-                  </a>
-                }
-              </div>
-            </div>
-          } @empty {
-            <div
-              class="col-span-full py-20 text-center border-2 border-dashed border-[#444547]/15 dark:border-[#444547]/30 rounded-2xl"
-            >
-              <div class="text-4xl mb-3 opacity-20">📷</div>
-              <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest">
-                {{ 'ADMIN.CAMERAS.NO_CAMERAS' | translate }}
-              </p>
-              <button
-                (click)="toggleCameraModal()"
-                class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#444547] hover:bg-[#5c5f63]"
+        @if (isLoadingCameras) {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            @for (_ of [1, 2, 3]; track $index) {
+              <div class="h-52 rounded-2xl bg-[#e6d5c3]/40 dark:bg-[#1c1c1c] animate-pulse"></div>
+            }
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            @for (camera of cameras; track $index) {
+              <div
+                class="group bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm overflow-hidden"
               >
-                + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }} (0/12)
-              </button>
-            </div>
-          }
-        </div>
-      }
+                <!-- Thumbnail -->
+                <div
+                  class="w-full h-40 bg-[#444547]/10 dark:bg-[#444547]/20 overflow-hidden relative"
+                >
+                  @if (camera.lastPicUrl || camera.lastPic) {
+                    <img
+                      [src]="camera.lastPicUrl || camera.lastPic"
+                      [alt]="camera.name"
+                      class="w-full h-full object-cover"
+                      (error)="$any($event.target).style.display = 'none'"
+                    />
+                  } @else {
+                    <div class="w-full h-full flex items-center justify-center">
+                      <span class="text-5xl opacity-10">📷</span>
+                    </div>
+                  }
+
+                  <!-- isActive toggle -->
+                  <div class="absolute top-3 left-3">
+                    <button
+                      (click)="$event.stopPropagation(); toggleCameraActive(camera)"
+                      class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest backdrop-blur-sm border-none cursor-pointer transition-all duration-200"
+                      [class.bg-[#68ab1f]/90]="camera.isActive"
+                      [class.hover:bg-[#68ab1f]]="camera.isActive"
+                      [class.text-white]="camera.isActive"
+                      [class.bg-black/40]="!camera.isActive"
+                      [class.hover:bg-black/60]="!camera.isActive"
+                      [class.text-white/70]="!camera.isActive"
+                    >
+                      {{
+                        camera.isActive
+                          ? ('ADMIN.CAMERAS.ACTIVE' | translate)
+                          : ('ADMIN.CAMERAS.INACTIVE' | translate)
+                      }}
+                    </button>
+                  </div>
+
+                  <!-- Action buttons -->
+                  <div
+                    class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  >
+                    <button
+                      (click)="toggleCameraModal(camera)"
+                      class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer bg-white/90 hover:bg-white text-[#444547] text-xs backdrop-blur-sm transition-colors duration-200"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      (click)="deleteCamera(camera._id)"
+                      class="w-7 h-7 rounded-lg flex items-center justify-center border-none cursor-pointer bg-rose-500/90 hover:bg-rose-600 text-white text-xs backdrop-blur-sm transition-colors duration-200"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Content -->
+                <div class="p-4">
+                  <div class="flex items-start justify-between gap-2 mb-3">
+                    <h4
+                      class="text-sm font-black text-[#444547] dark:text-white truncate"
+                      style="font-family: 'Alexandria', sans-serif"
+                    >
+                      {{ camera.name }}
+                    </h4>
+                    <span
+                      class="text-[9px] font-black text-[#5c5f63]/40 dark:text-gray-600 shrink-0 whitespace-nowrap"
+                    >
+                      ⏱ {{ camera.displayDuration }}s
+                    </span>
+                  </div>
+                  @if (camera.cameraVideo) {
+                    <a
+                      [href]="camera.cameraVideo"
+                      target="_blank"
+                      rel="noopener"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest no-underline transition-colors bg-[#444547]/8 hover:bg-[#444547]/15 text-[#444547] dark:bg-white/8 dark:hover:bg-white/15 dark:text-white"
+                    >
+                      🎥 {{ 'ADMIN.CAMERAS.CAMERA_LINK' | translate }}
+                    </a>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div
+                class="col-span-full py-20 text-center border-2 border-dashed border-[#444547]/15 dark:border-[#444547]/30 rounded-2xl"
+              >
+                <div class="text-4xl mb-3 opacity-20">📷</div>
+                <p
+                  class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest"
+                >
+                  {{ 'ADMIN.CAMERAS.NO_CAMERAS' | translate }}
+                </p>
+                <button
+                  (click)="toggleCameraModal()"
+                  class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#444547] hover:bg-[#5c5f63]"
+                >
+                  + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }} (0/12)
+                </button>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 
@@ -378,8 +400,12 @@
         </div>
         <div class="flex items-center gap-3">
           <!-- Display duration inline control -->
-          <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30">
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 whitespace-nowrap">
+          <div
+            class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30"
+          >
+            <span
+              class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 whitespace-nowrap"
+            >
               {{ 'ADMIN.AD_VIDEOS.DISPLAY_DURATION' | translate }}
             </span>
             <div class="relative">
@@ -423,8 +449,12 @@
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           @for (vid of adVideos; track vid._id) {
-            <div class="group flex items-center gap-4 p-4 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm">
-              <div class="w-12 h-12 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0 text-xl">
+            <div
+              class="group flex items-center gap-4 p-4 bg-white dark:bg-[#1c1c1c] rounded-2xl border border-[#e6d5c3] dark:border-[#444547]/30 shadow-sm"
+            >
+              <div
+                class="w-12 h-12 rounded-xl bg-[#fa8728]/10 flex items-center justify-center shrink-0 text-xl"
+              >
                 🎬
               </div>
               <div class="min-w-0 flex-1">
@@ -466,7 +496,9 @@
               class="col-span-full py-16 text-center border-2 border-dashed border-[#fa8728]/15 dark:border-[#fa8728]/20 rounded-2xl"
             >
               <div class="text-4xl mb-3 opacity-20">🎬</div>
-              <p class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest">
+              <p
+                class="text-[10px] font-black text-[#5c5f63]/30 dark:text-gray-700 uppercase tracking-widest"
+              >
                 {{ 'ADMIN.AD_VIDEOS.NO_VIDEOS' | translate }}
               </p>
               <button
@@ -501,7 +533,10 @@
                 class="text-xl font-black text-[#444547] dark:text-white"
                 style="font-family: 'Alexandria', sans-serif"
               >
-                {{ (editingCamera ? 'ADMIN.CAMERAS.EDIT_CAMERA' : 'ADMIN.CAMERAS.ADD_CAMERA') | translate }}
+                {{
+                  (editingCamera ? 'ADMIN.CAMERAS.EDIT_CAMERA' : 'ADMIN.CAMERAS.ADD_CAMERA')
+                    | translate
+                }}
               </h2>
               <div class="w-8 h-0.5 bg-[#444547] dark:bg-gray-500 rounded-full mt-1"></div>
             </div>
@@ -579,36 +614,45 @@
                     class="ci-input"
                     dir="ltr"
                   />
-                  <span class="absolute inset-y-0 end-3 flex items-center text-[10px] font-black text-[#5c5f63]/40 dark:text-gray-600 pointer-events-none">s</span>
+                  <span
+                    class="absolute inset-y-0 end-3 flex items-center text-[10px] font-black text-[#5c5f63]/40 dark:text-gray-600 pointer-events-none"
+                    >s</span
+                  >
                 </div>
               </div>
 
               <!-- isActive toggle (edit only) -->
               @if (editingCamera) {
-              <div class="flex items-center justify-between p-4 rounded-2xl bg-[#fff1e6] dark:bg-[#0e0e0e] border border-[#e6d5c3] dark:border-[#444547]/20">
-                <div>
-                  <p class="text-[10px] font-black uppercase tracking-widest text-[#444547] dark:text-white">
-                    {{ 'ADMIN.CAMERAS.IS_ACTIVE' | translate }}
-                  </p>
-                  <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 mt-0.5">
-                    {{ 'ADMIN.CAMERAS.IS_ACTIVE_DESC' | translate }}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  (click)="cameraForm.get('isActive')!.setValue(!cameraForm.get('isActive')!.value)"
-                  class="relative w-11 h-6 rounded-full transition-colors duration-300 border-none cursor-pointer shrink-0"
-                  [class.bg-[#68ab1f]]="cameraForm.get('isActive')!.value"
-                  [class.bg-[#e6d5c3]]="!cameraForm.get('isActive')!.value"
-                  [class.dark:bg-[#444547]]="!cameraForm.get('isActive')!.value"
+                <div
+                  class="flex items-center justify-between p-4 rounded-2xl bg-[#fff1e6] dark:bg-[#0e0e0e] border border-[#e6d5c3] dark:border-[#444547]/20"
                 >
-                  <span
-                    class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
-                    [class.left-5]="cameraForm.get('isActive')!.value"
-                    [class.left-0.5]="!cameraForm.get('isActive')!.value"
-                  ></span>
-                </button>
-              </div>
+                  <div>
+                    <p
+                      class="text-[10px] font-black uppercase tracking-widest text-[#444547] dark:text-white"
+                    >
+                      {{ 'ADMIN.CAMERAS.IS_ACTIVE' | translate }}
+                    </p>
+                    <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 mt-0.5">
+                      {{ 'ADMIN.CAMERAS.IS_ACTIVE_DESC' | translate }}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    (click)="
+                      cameraForm.get('isActive')!.setValue(!cameraForm.get('isActive')!.value)
+                    "
+                    class="relative w-11 h-6 rounded-full transition-colors duration-300 border-none cursor-pointer shrink-0"
+                    [class.bg-[#68ab1f]]="cameraForm.get('isActive')!.value"
+                    [class.bg-[#e6d5c3]]="!cameraForm.get('isActive')!.value"
+                    [class.dark:bg-[#444547]]="!cameraForm.get('isActive')!.value"
+                  >
+                    <span
+                      class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                      [class.left-5]="cameraForm.get('isActive')!.value"
+                      [class.left-0.5]="!cameraForm.get('isActive')!.value"
+                    ></span>
+                  </button>
+                </div>
               }
             </form>
           </div>
@@ -628,7 +672,9 @@
               {{
                 isSavingCamera
                   ? ('COMMON.LOADING' | translate)
-                  : (editingCamera ? ('COMMON.SAVE' | translate) : ('ADMIN.CAMERAS.ADD_CAMERA' | translate))
+                  : editingCamera
+                    ? ('COMMON.SAVE' | translate)
+                    : ('ADMIN.CAMERAS.ADD_CAMERA' | translate)
               }}
             </button>
           </div>
@@ -671,7 +717,9 @@
           <!-- Body -->
           <div class="p-8 space-y-5">
             <!-- Toggle: File vs Link -->
-            <div class="flex rounded-xl overflow-hidden border border-[#e6d5c3] dark:border-[#444547]/30">
+            <div
+              class="flex rounded-xl overflow-hidden border border-[#e6d5c3] dark:border-[#444547]/30"
+            >
               <button
                 type="button"
                 (click)="adVideoInputType = 'file'"
@@ -705,7 +753,9 @@
               >
                 @if (adVideoFile) {
                   <span class="text-2xl">🎬</span>
-                  <p class="text-[10px] font-black text-[#444547] dark:text-white truncate max-w-xs px-4">
+                  <p
+                    class="text-[10px] font-black text-[#444547] dark:text-white truncate max-w-xs px-4"
+                  >
                     {{ adVideoFile.name }}
                   </p>
                 } @else {
@@ -922,13 +972,91 @@
 
               <div class="h-px bg-[#e6d5c3] dark:bg-[#444547]/20"></div>
 
-              <!-- Section 3: Financials -->
+              <!-- Section 3: Timelapse -->
+              <div class="space-y-4" [formGroup]="timelapseGroup">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-5 h-5 rounded-lg bg-[#fa8728] flex items-center justify-center text-white text-[9px] font-black flex-shrink-0"
+                  >
+                    3
+                  </div>
+
+                  <div>
+                    <h3
+                      class="text-[9px] font-black uppercase text-[#5c5f63]/50 dark:text-gray-500"
+                    >
+                      {{ 'ADMIN.PROJECTS.TIMELAPSE_SECTION' | translate }}
+                    </h3>
+
+                    <p class="text-[8px] text-[#5c5f63]/30 dark:text-gray-600 mt-0.5">
+                      {{ 'ADMIN.PROJECTS.TIMELAPSE_HINT' | translate }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Timelapse Name -->
+                <div>
+                  <label
+                    class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+                  >
+                    {{ 'ADMIN.PROJECTS.TIMELAPSE_NAME' | translate }}
+                  </label>
+
+                  <input
+                    formControlName="name"
+                    type="text"
+                    placeholder="{{ 'ADMIN.PROJECTS.TIMELAPSE_NAME_PLACEHOLDER' | translate }}"
+                    class="ci-input"
+                  />
+                </div>
+
+                <!-- Timelapse Link -->
+                <div>
+                  <label
+                    class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+                  >
+                    {{ 'ADMIN.PROJECTS.TIMELAPSE_LINK' | translate }}
+                  </label>
+
+                  <input
+                    formControlName="link"
+                    type="url"
+                    placeholder="https://..."
+                    class="ci-input"
+                  />
+                </div>
+
+                <!-- Info -->
+                <div
+                  class="flex items-start gap-3 p-3 rounded-xl bg-[#fa8728]/5 border border-[#fa8728]/10"
+                >
+                  <div
+                    class="w-7 h-7 rounded-lg bg-[#fa8728]/10 text-[#fa8728] flex items-center justify-center flex-shrink-0 text-xs font-black"
+                  >
+                    i
+                  </div>
+
+                  <div>
+                    <p class="text-[9px] font-black text-[#5c5f63] dark:text-gray-300">
+                      {{ 'ADMIN.PROJECTS.TIMELAPSE_INFO_TITLE' | translate }}
+                    </p>
+
+                    <p class="text-[8px] leading-5 text-[#5c5f63]/50 dark:text-gray-500 mt-0.5">
+                      {{ 'ADMIN.PROJECTS.TIMELAPSE_INFO_DESC' | translate }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="h-px bg-[#e6d5c3] dark:bg-[#444547]/20"></div>
+
+              <!-- Section 4: Financials -->
               <div class="space-y-4">
                 <div class="flex items-center gap-3">
                   <div
                     class="w-5 h-5 rounded-lg bg-[#68ab1f] flex items-center justify-center text-white text-[9px] font-black flex-shrink-0"
                   >
-                    3
+                    4
                   </div>
                   <h3 class="text-[9px] font-black uppercase text-[#5c5f63]/50 dark:text-gray-500">
                     {{ 'CLIENT.FINANCIALS.TITLE' | translate }}
@@ -1051,7 +1179,9 @@
             class="px-8 py-6 border-b border-[#e6d5c3] dark:border-[#444547]/20 flex items-center justify-between flex-shrink-0"
           >
             <div>
-              <h2 class="text-xl font-black text-[#444547] dark:text-white">{{ 'ADMIN.CLIENT_DETAILS.EDIT_TITLE' | translate }}</h2>
+              <h2 class="text-xl font-black text-[#444547] dark:text-white">
+                {{ 'ADMIN.CLIENT_DETAILS.EDIT_TITLE' | translate }}
+              </h2>
               <div class="w-8 h-0.5 bg-[#fa8728] rounded-full mt-1"></div>
             </div>
             <button
@@ -1159,14 +1289,21 @@
                     class="ci-input"
                     dir="ltr"
                   />
-                  <span class="absolute inset-y-0 end-3 flex items-center text-[10px] font-black text-[#5c5f63]/40 dark:text-gray-600 pointer-events-none">s</span>
+                  <span
+                    class="absolute inset-y-0 end-3 flex items-center text-[10px] font-black text-[#5c5f63]/40 dark:text-gray-600 pointer-events-none"
+                    >s</span
+                  >
                 </div>
                 <button
                   (click)="updateDisplayDuration()"
                   [disabled]="isUpdatingDuration"
                   class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#fa8728] hover:bg-[#f97316] shrink-0 disabled:opacity-50"
                 >
-                  {{ isUpdatingDuration ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
+                  {{
+                    isUpdatingDuration
+                      ? ('COMMON.LOADING' | translate)
+                      : ('COMMON.SAVE' | translate)
+                  }}
                 </button>
               </div>
             </div>
@@ -1257,7 +1394,9 @@
           <div
             class="px-8 py-5 border-t border-[#e6d5c3] dark:border-[#444547]/20 flex gap-3 flex-shrink-0"
           >
-            <button (click)="toggleEditModal()" class="ci-btn-secondary flex-1">{{ 'COMMON.CANCEL' | translate }}</button>
+            <button (click)="toggleEditModal()" class="ci-btn-secondary flex-1">
+              {{ 'COMMON.CANCEL' | translate }}
+            </button>
             <button (click)="saveEdit()" [disabled]="isEditing" class="ci-btn-primary flex-1">
               {{ isEditing ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
             </button>

@@ -30,6 +30,9 @@ export class AdminSidebar implements OnInit, OnDestroy {
   @Input() isOpen = false;
   @Output() closeEvent = new EventEmitter<void>();
 
+  @Input() collapsed = false;
+  @Output() toggleCollapse = new EventEmitter<void>();
+
   user: any = null;
   baseUrl = environment.baseUrl;
   animated = false;

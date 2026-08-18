@@ -36,6 +36,9 @@ export class ClientSidebar implements OnInit, OnDestroy {
   @Input() isOpen = false;
   @Output() closeEvent = new EventEmitter<void>();
 
+  @Input() collapsed = false;
+  @Output() toggleCollapse = new EventEmitter<void>();
+
   animated = true;
   isDark = true;
   projectId = '';
