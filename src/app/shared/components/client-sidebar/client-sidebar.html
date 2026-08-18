@@ -133,15 +133,6 @@
                 />
                 <line stroke-linecap="round" stroke-width="2" x1="12" y1="22.08" x2="12" y2="12" />
               }
-              @if (link.icon === 'financials') {
-                <line stroke-linecap="round" stroke-width="2" x1="12" y1="1" x2="12" y2="23" />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
-                />
-              }
             </svg>
           </span>
           @if (!collapsed) {
@@ -149,7 +140,6 @@
           }
         </a>
       }
-      <div class="h-px my-2 mx-2 bg-[#444547]/20"></div>
     }
 
     @if (hasTimelapse) {
@@ -180,6 +170,33 @@
       </a>
     }
 
+    <a
+      routerLink="/cameras"
+      routerLinkActive="ci-nav-active"
+      [attr.aria-label]="'SIDEBAR.SCREENS' | translate"
+      [attr.title]="collapsed ? ('SIDEBAR.SCREENS' | translate) : null"
+      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+      [class.justify-center]="collapsed"
+    >
+      <span
+        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          />
+        </svg>
+      </span>
+      @if (!collapsed) {
+        {{ 'SIDEBAR.SCREENS' | translate }}
+      }
+    </a>
+
+    <div class="h-px my-2 mx-2 bg-[#444547]/20"></div>
+
     <!-- My Projects -->
     <a
       routerLink="/select-project"
@@ -205,6 +222,35 @@
         {{ 'SIDEBAR.MY_PROJECTS' | translate }}
       }
     </a>
+
+    <!-- Financials -->
+    @if (showFinancials) {
+      <a
+        [routerLink]="['/client/projects', projectId, 'financials']"
+        routerLinkActive="ci-nav-active"
+        [attr.aria-label]="'SIDEBAR.FINANCIALS' | translate"
+        [attr.title]="collapsed ? ('SIDEBAR.FINANCIALS' | translate) : null"
+        class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+        [class.justify-center]="collapsed"
+      >
+        <span
+          class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <line stroke-linecap="round" stroke-width="2" x1="12" y1="1" x2="12" y2="23" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
+            />
+          </svg>
+        </span>
+        @if (!collapsed) {
+          {{ 'SIDEBAR.FINANCIALS' | translate }}
+        }
+      </a>
+    }
 
     <!-- Managers (user only) -->
     @if (isUser) {
@@ -233,31 +279,6 @@
         }
       </a>
     }
-
-    <a
-      routerLink="/cameras"
-      routerLinkActive="ci-nav-active"
-      [attr.aria-label]="'SIDEBAR.SCREENS' | translate"
-      [attr.title]="collapsed ? ('SIDEBAR.SCREENS' | translate) : null"
-      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
-      [class.justify-center]="collapsed"
-    >
-      <span
-        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
-      >
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-          />
-        </svg>
-      </span>
-      @if (!collapsed) {
-        {{ 'SIDEBAR.SCREENS' | translate }}
-      }
-    </a>
 
     <!-- Screens Settings (not for managers) -->
     @if (!isManager) {
