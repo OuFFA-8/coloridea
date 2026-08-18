@@ -15,6 +15,7 @@ import { Subscription, filter } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { environment } from '../../../../environments/environment';
+import { TimelapseService } from '../../../core/services/timelapse-service/timelapse-service';
 
 @Component({
   selector: 'app-client-sidebar',
@@ -26,10 +27,13 @@ import { environment } from '../../../../environments/environment';
 export class ClientSidebar implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
+  private timelapseService = inject(TimelapseService);
   private routerSub!: Subscription;
   private themeObserver?: MutationObserver;
+  private lastTimelapseProjectId = '';
   private projectChangedHandler = () => {
     this.readProjectFromStorage();
+    this.syncTimelapseVisibility();
     this.cdr.detectChanges();
   };
 
@@ -47,9 +51,10 @@ export class ClientSidebar implements OnInit, OnDestroy {
   clientLogo = '';
   role = '';
   managerPermissions: string[] = [];
+  hasTimelapse = false;
 
   get projectLinks() {
-    const links: { path: string[]; icon: string; label: string; exact: { exact: boolean } }[] = [
+    return [
       {
         path: ['/client/projects', this.projectId],
         icon: 'overview',
@@ -63,17 +68,13 @@ export class ClientSidebar implements OnInit, OnDestroy {
         exact: { exact: false },
       },
     ];
+  }
 
-    if (this.role !== 'manager' || this.managerPermissions.includes('view-financials')) {
-      links.push({
-        path: ['/client/projects', this.projectId, 'financials'],
-        icon: 'financials',
-        label: 'SIDEBAR.FINANCIALS',
-        exact: { exact: false },
-      });
-    }
-
-    return links;
+  get showFinancials(): boolean {
+    return (
+      !!this.projectId &&
+      (this.role !== 'manager' || this.managerPermissions.includes('view-financials'))
+    );
   }
 
   get isUser(): boolean {
@@ -95,6 +96,7 @@ export class ClientSidebar implements OnInit, OnDestroy {
       this.extractProjectFromUrl();
       this.loadUserPattern();
       this.detectTheme();
+      this.syncTimelapseVisibility();
 
       this.routerSub = this.router.events
         .pipe(filter((e) => e instanceof NavigationEnd))
@@ -102,6 +104,7 @@ export class ClientSidebar implements OnInit, OnDestroy {
           this.closeEvent.emit(); // غلق الـ drawer عند التنقل على الموبايل
           this.readProjectFromStorage();
           this.extractProjectFromUrl();
+          this.syncTimelapseVisibility();
         });
 
       window.addEventListener('selectedProjectChanged', this.projectChangedHandler);
@@ -157,6 +160,29 @@ export class ClientSidebar implements OnInit, OnDestroy {
   extractProjectFromUrl() {
     const match = this.router.url.match(/\/client\/projects\/([^\/]+)/);
     if (match?.[1]) this.projectId = match[1];
+  }
+
+  private syncTimelapseVisibility(): void {
+    if (!this.projectId) {
+      this.lastTimelapseProjectId = '';
+      this.hasTimelapse = false;
+      return;
+    }
+
+    if (this.projectId === this.lastTimelapseProjectId) return;
+
+    this.lastTimelapseProjectId = this.projectId;
+
+    this.timelapseService.getProjectTimelapse(this.projectId).subscribe({
+      next: (res) => {
+        this.hasTimelapse = !!res?.data?.[0]?.link;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.hasTimelapse = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   logout() {

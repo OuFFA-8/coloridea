@@ -31,7 +31,6 @@ export class TimelapseViewer implements OnDestroy {
   hasError = false;
   isFullscreen = false;
   safeUrl: SafeResourceUrl | null = null;
-  private rawUrl = '';
   private projectId: string | null = null;
 
   constructor() {
@@ -56,7 +55,6 @@ export class TimelapseViewer implements OnDestroy {
 
     this.hasError = false;
     this.isLoading = true;
-    this.rawUrl = url;
     this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
@@ -74,12 +72,6 @@ export class TimelapseViewer implements OnDestroy {
     this.isLoading = false;
     this.hasError = true;
     this.cdr.detectChanges();
-  }
-
-  openExternal() {
-    if (this.rawUrl) {
-      window.open(this.rawUrl, '_blank');
-    }
   }
 
   toggleFullscreen() {

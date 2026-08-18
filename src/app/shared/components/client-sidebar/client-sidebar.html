@@ -152,31 +152,33 @@
       <div class="h-px my-2 mx-2 bg-[#444547]/20"></div>
     }
 
-    <a
-      routerLink="/client/timelapse"
-      routerLinkActive="ci-nav-active"
-      [attr.aria-label]="'SIDEBAR.TIMELAPSE' | translate"
-      [attr.title]="collapsed ? ('SIDEBAR.TIMELAPSE' | translate) : null"
-      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
-      [class.justify-center]="collapsed"
-    >
-      <span
-        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
+    @if (hasTimelapse) {
+      <a
+        routerLink="/client/timelapse"
+        routerLinkActive="ci-nav-active"
+        [attr.aria-label]="'SIDEBAR.TIMELAPSE' | translate"
+        [attr.title]="collapsed ? ('SIDEBAR.TIMELAPSE' | translate) : null"
+        class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+        [class.justify-center]="collapsed"
       >
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </span>
+        <span
+          class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </span>
 
-      @if (!collapsed) {
-        {{ 'SIDEBAR.TIMELAPSE' | translate }}
-      }
-    </a>
+        @if (!collapsed) {
+          {{ 'SIDEBAR.TIMELAPSE' | translate }}
+        }
+      </a>
+    }
 
     <!-- My Projects -->
     <a
