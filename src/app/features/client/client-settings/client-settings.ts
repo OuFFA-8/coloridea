@@ -15,6 +15,7 @@ import { AdVideoService } from '../../../core/services/ad-video-service/ad-video
 import { UsersService } from '../../../core/services/users-service/users-service';
 import { AuthServices } from '../../../core/services/auth-services/auth-services';
 import { AlertService } from '../../../core/services/alert-service/alert-service';
+import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -31,6 +32,7 @@ export class ClientSettings implements OnInit {
   private usersService = inject(UsersService);
   private authServices = inject(AuthServices);
   private alert = inject(AlertService);
+  private projectsService = inject(ProjectsService);
   private fb = inject(FormBuilder);
 
   readonly baseUrl = environment.baseUrl;
@@ -38,11 +40,18 @@ export class ClientSettings implements OnInit {
 
   // Cameras
   cameras: any[] = [];
+  myProjects: any[] = [];
   isLoadingCameras = true;
   showCameraModal = false;
   editingCamera: any = null;
   isSavingCamera = false;
   cameraForm: FormGroup;
+
+  // Camera type quick-edit (from the card badge, without opening the full form)
+  quickEditCameraId: string | null = null;
+  quickEditType: 'general' | 'project' = 'general';
+  quickEditProject = '';
+  isSavingQuickType = false;
 
   // Ad Videos
   adVideos: any[] = [];
@@ -60,6 +69,8 @@ export class ClientSettings implements OnInit {
   constructor() {
     this.cameraForm = this.fb.group({
       name: ['', Validators.required],
+      type: ['general', Validators.required],
+      project: [''],
       lastPic: [''],
       cameraVideo: [''],
       displayDuration: [60, [Validators.required, Validators.min(1)]],
@@ -71,10 +82,20 @@ export class ClientSettings implements OnInit {
     const user = this.authServices.getUser();
     this.editDisplayDuration = user?.displayDuration ?? 60;
     if (this.isAdmin) {
-      await this.loadCameras();
+      await Promise.all([this.loadCameras(), this.loadMyProjects()]);
     } else {
-      await Promise.all([this.loadCameras(), this.loadAdVideos()]);
+      await Promise.all([this.loadCameras(), this.loadAdVideos(), this.loadMyProjects()]);
     }
+  }
+
+  async loadMyProjects() {
+    try {
+      const user = this.authServices.getUser();
+      if (!user?._id) return;
+      const res = await firstValueFrom(this.projectsService.getUserProjects(user._id));
+      this.myProjects = res.data || [];
+    } catch {}
+    this.cdr.detectChanges();
   }
 
   async loadCameras() {
@@ -116,13 +137,82 @@ export class ClientSettings implements OnInit {
           cameraVideo: camera.cameraVideo || '',
           displayDuration: camera.displayDuration ?? 60,
         });
+        this.setCameraType(camera.type === 'project' ? 'project' : 'general');
+        if (camera.type === 'project') {
+          this.cameraForm.get('project')!.setValue(camera.project || '');
+        }
       } else {
-        this.cameraForm.reset({ displayDuration: 60 });
+        this.cameraForm.reset({ displayDuration: 60, type: 'general', project: '' });
+        this.setCameraType('general');
       }
     } else {
       this.editingCamera = null;
     }
     this.cdr.detectChanges();
+  }
+
+  // Toggles the camera type (general/project) and adjusts the project
+  // control's validators accordingly - only required when type is 'project'.
+  setCameraType(type: 'general' | 'project') {
+    this.cameraForm.get('type')!.setValue(type);
+    const projectControl = this.cameraForm.get('project')!;
+    if (type === 'project') {
+      projectControl.setValidators([Validators.required]);
+    } else {
+      projectControl.clearValidators();
+      projectControl.setValue('');
+    }
+    projectControl.updateValueAndValidity();
+  }
+
+  getProjectName(projectId: string): string {
+    const project = (this.myProjects || []).find((p: any) => p._id === projectId);
+    return project?.name || 'مشروع محذوف';
+  }
+
+  // ── Camera type quick-edit (badge on the card) ─────────────────────────────
+
+  toggleQuickTypeEditor(camera: any) {
+    if (this.quickEditCameraId === camera._id) {
+      this.closeQuickTypeEditor();
+      return;
+    }
+    this.quickEditCameraId = camera._id;
+    this.quickEditType = camera.type === 'project' ? 'project' : 'general';
+    this.quickEditProject = camera.project || '';
+  }
+
+  closeQuickTypeEditor() {
+    this.quickEditCameraId = null;
+  }
+
+  saveQuickType(camera: any) {
+    if (this.quickEditType === 'project' && !this.quickEditProject) {
+      this.alert.error('اختر المشروع أولاً');
+      return;
+    }
+    this.isSavingQuickType = true;
+    const formData = new FormData();
+    formData.append('type', this.quickEditType);
+    if (this.quickEditType === 'project') {
+      formData.append('project', this.quickEditProject);
+    }
+    const request = this.isAdmin
+      ? this.camerasService.updateCamera(camera._id, formData)
+      : this.camerasService.updateMyCamera(camera._id, formData);
+    request.subscribe({
+      next: (res: any) => {
+        this.isSavingQuickType = false;
+        this.cameras = this.cameras.map((c) => (c._id === camera._id ? res.data : c));
+        this.quickEditCameraId = null;
+        this.alert.success('تم تحديث نوع الكاميرا بنجاح');
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.isSavingQuickType = false;
+        this.alert.error(err.error?.message || 'فشل تحديث نوع الكاميرا');
+      },
+    });
   }
 
   saveCamera() {
@@ -135,6 +225,8 @@ export class ClientSettings implements OnInit {
     const formData = new FormData();
     formData.append('name', val.name.trim());
     formData.append('displayDuration', String(val.displayDuration));
+    formData.append('type', val.type);
+    if (val.type === 'project' && val.project) formData.append('project', val.project);
     if (val.lastPic?.trim()) formData.append('lastPic', val.lastPic.trim());
     if (val.cameraVideo?.trim()) formData.append('cameraVideo', val.cameraVideo.trim());
 
