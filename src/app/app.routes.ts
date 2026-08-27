@@ -48,6 +48,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'project-screens',
+    loadComponent: () =>
+      import('./features/client/project-screens/project-screens').then((m) => m.ProjectScreens),
+    canActivate: [authGuard],
+  },
+  {
     path: 'client/timelapse-viewer',
     loadComponent: () =>
       import('./features/client/timelapse-viewer/timelapse-viewer').then((m) => m.TimelapseViewer),
