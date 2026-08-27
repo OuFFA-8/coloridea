@@ -171,7 +171,7 @@
     }
 
     <a
-      routerLink="/cameras"
+      routerLink="/project-screens"
       routerLinkActive="ci-nav-active"
       [attr.aria-label]="'SIDEBAR.SCREENS' | translate"
       [attr.title]="collapsed ? ('SIDEBAR.SCREENS' | translate) : null"
@@ -192,6 +192,39 @@
       </span>
       @if (!collapsed) {
         {{ 'SIDEBAR.SCREENS' | translate }}
+      }
+    </a>
+
+    <!--
+      "Live" (all cameras: project + general combined) — this used to be
+      what "Screens" pointed to; kept reachable here now that "Screens"
+      points to the project-only page above.
+      NOTE: no translation key exists for this yet (not in the uploaded
+      i18n files) — using a plain literal for now. Add a proper
+      SIDEBAR.LIVE key to your translation files and swap it in.
+    -->
+    <a
+      routerLink="/cameras"
+      routerLinkActive="ci-nav-active"
+      aria-label="Live"
+      [attr.title]="collapsed ? 'Live' : null"
+      class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
+      [class.justify-center]="collapsed"
+    >
+      <span
+        class="ci-nav-icon w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-250 bg-[#444547]/15 group-hover:bg-[#fa8728]/15"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 10l4.553-2.069A1 1 0 0121 8.867v6.266a1 1 0 01-1.447.902L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"
+          />
+        </svg>
+      </span>
+      @if (!collapsed) {
+        Live
       }
     </a>
 
