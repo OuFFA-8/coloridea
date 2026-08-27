@@ -79,6 +79,12 @@ export class ClientDetails implements OnInit {
   isSavingCamera = false;
   cameraForm: FormGroup;
 
+  // Camera type quick-edit (from the card badge, without opening the full form)
+  quickEditCameraId: string | null = null;
+  quickEditType: 'general' | 'project' = 'general';
+  quickEditProject = '';
+  isSavingQuickType = false;
+
   // Ad Videos
   adVideos: any[] = [];
   isLoadingAdVideos = false;
@@ -122,6 +128,8 @@ export class ClientDetails implements OnInit {
 
     this.cameraForm = this.fb.group({
       name: ['', Validators.required],
+      type: ['general', Validators.required],
+      project: [''],
       lastPic: [''],
       cameraVideo: [''],
       displayDuration: [60, [Validators.required, Validators.min(1)]],
@@ -328,25 +336,24 @@ export class ClientDetails implements OnInit {
         }
 
         // Create Timelapse
-        this.timelapseService
-          .createTimelapse(projectId, {
-            name: timelapseName,
-            link: timelapseLink,
-          })
-          .subscribe({
-            next: () => {
-              this.finishProjectCreation(createdProject);
-            },
+        const timelapseFormData = new FormData();
+        timelapseFormData.append('name', timelapseName);
+        timelapseFormData.append('link', timelapseLink);
 
-            error: (err) => {
-              console.error('Timelapse creation failed:', err);
+        this.timelapseService.createTimelapse(projectId, timelapseFormData).subscribe({
+          next: () => {
+            this.finishProjectCreation(createdProject);
+          },
 
-              this.finishProjectCreation(createdProject, {
-                type: 'error',
-                text: err.error?.message || 'Project was created, but Timelapse creation failed.',
-              });
-            },
-          });
+          error: (err) => {
+            console.error('Timelapse creation failed:', err);
+
+            this.finishProjectCreation(createdProject, {
+              type: 'error',
+              text: err.error?.message || 'Project was created, but Timelapse creation failed.',
+            });
+          },
+        });
       },
 
       error: (err) => {
@@ -510,12 +517,78 @@ export class ClientDetails implements OnInit {
           displayDuration: camera.displayDuration ?? 60,
           isActive: camera.isActive ?? true,
         });
+        this.setCameraType(camera.type === 'project' ? 'project' : 'general');
+        if (camera.type === 'project') {
+          this.cameraForm.get('project')!.setValue(camera.project || '');
+        }
       } else {
-        this.cameraForm.reset({ displayDuration: 60, isActive: true });
+        this.cameraForm.reset({ displayDuration: 60, isActive: true, type: 'general', project: '' });
+        this.setCameraType('general');
       }
     } else {
       this.editingCamera = null;
     }
+  }
+
+  // Toggles the camera type (general/project) and adjusts the project
+  // control's validators accordingly - only required when type is 'project'.
+  setCameraType(type: 'general' | 'project') {
+    this.cameraForm.get('type')!.setValue(type);
+    const projectControl = this.cameraForm.get('project')!;
+    if (type === 'project') {
+      projectControl.setValidators([Validators.required]);
+    } else {
+      projectControl.clearValidators();
+      projectControl.setValue('');
+    }
+    projectControl.updateValueAndValidity();
+  }
+
+  getProjectName(projectId: string): string {
+    const project = (this.client?.projects || []).find((p: any) => p._id === projectId);
+    return project?.name || 'مشروع محذوف';
+  }
+
+  // ── Camera type quick-edit (badge on the card) ─────────────────────────────
+
+  toggleQuickTypeEditor(camera: any) {
+    if (this.quickEditCameraId === camera._id) {
+      this.closeQuickTypeEditor();
+      return;
+    }
+    this.quickEditCameraId = camera._id;
+    this.quickEditType = camera.type === 'project' ? 'project' : 'general';
+    this.quickEditProject = camera.project || '';
+  }
+
+  closeQuickTypeEditor() {
+    this.quickEditCameraId = null;
+  }
+
+  saveQuickType(camera: any) {
+    if (this.quickEditType === 'project' && !this.quickEditProject) {
+      this.alert.error('اختر المشروع أولاً');
+      return;
+    }
+    this.isSavingQuickType = true;
+    const formData = new FormData();
+    formData.append('type', this.quickEditType);
+    if (this.quickEditType === 'project') {
+      formData.append('project', this.quickEditProject);
+    }
+    this.camerasService.updateCamera(camera._id, formData).subscribe({
+      next: (res: any) => {
+        this.isSavingQuickType = false;
+        this.cameras = this.cameras.map((c) => (c._id === camera._id ? res.data : c));
+        this.quickEditCameraId = null;
+        this.alert.success('تم تحديث نوع الكاميرا بنجاح');
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.isSavingQuickType = false;
+        this.alert.error(err.error?.message || 'فشل تحديث نوع الكاميرا');
+      },
+    });
   }
 
   saveCamera() {
@@ -531,6 +604,8 @@ export class ClientDetails implements OnInit {
     formData.append('name', val.name.trim());
     formData.append('user', this.client._id);
     formData.append('displayDuration', String(val.displayDuration));
+    formData.append('type', val.type);
+    if (val.type === 'project' && val.project) formData.append('project', val.project);
     if (lastPic) formData.append('lastPic', lastPic);
     if (cameraVideo) formData.append('cameraVideo', cameraVideo);
 

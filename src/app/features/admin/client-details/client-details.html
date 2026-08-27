@@ -259,14 +259,9 @@
         </div>
         <button
           (click)="toggleCameraModal()"
-          [disabled]="cameras.length >= 12"
-          class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#444547]/20 dark:hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
+          class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none transition-all text-[#444547] dark:text-white bg-[#444547]/10 dark:bg-white/10 hover:bg-[#444547]/20 dark:hover:bg-white/20"
         >
-          @if (cameras.length >= 12) {
-            12/12 Max
-          } @else {
-            + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }} ({{ cameras.length }}/12)
-          }
+          + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }}
         </button>
       </div>
 
@@ -364,6 +359,95 @@
                       🎥 {{ 'ADMIN.CAMERAS.CAMERA_LINK' | translate }}
                     </a>
                   }
+
+                  <!-- Camera type badge (general/project) - click to quick-edit -->
+                  <div class="relative mt-3">
+                    <button
+                      type="button"
+                      (click)="$event.stopPropagation(); toggleQuickTypeEditor(camera)"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border-none cursor-pointer transition-colors"
+                      [class.bg-[#fa8728]/15]="camera.type === 'project'"
+                      [class.text-[#fa8728]]="camera.type === 'project'"
+                      [class.bg-[#444547]/8]="camera.type !== 'project'"
+                      [class.text-[#444547]]="camera.type !== 'project'"
+                      [class.dark:bg-white/8]="camera.type !== 'project'"
+                      [class.dark:text-white]="camera.type !== 'project'"
+                    >
+                      @if (camera.type === 'project') {
+                        🔗 {{ getProjectName(camera.project) }}
+                      } @else {
+                        📡 {{ 'ADMIN.CAMERAS.TYPE_GENERAL' | translate }}
+                      }
+                      <span class="opacity-50">✎</span>
+                    </button>
+
+                    @if (quickEditCameraId === camera._id) {
+                      <div
+                        (click)="$event.stopPropagation()"
+                        class="mt-2 p-3 rounded-xl border border-[#e6d5c3] dark:border-[#444547]/30 bg-[#fff1e6] dark:bg-[#0e0e0e] space-y-2.5"
+                      >
+                        <div class="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            (click)="quickEditType = 'general'"
+                            class="px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border-none cursor-pointer transition-colors"
+                            [class.bg-[#444547]]="quickEditType === 'general'"
+                            [class.text-white]="quickEditType === 'general'"
+                            [class.bg-[#e6d5c3]/60]="quickEditType !== 'general'"
+                            [class.dark:bg-[#444547]/30]="quickEditType !== 'general'"
+                            [class.text-[#5c5f63]]="quickEditType !== 'general'"
+                          >
+                            📡 {{ 'ADMIN.CAMERAS.TYPE_GENERAL' | translate }}
+                          </button>
+                          <button
+                            type="button"
+                            (click)="quickEditType = 'project'"
+                            class="px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border-none cursor-pointer transition-colors"
+                            [class.bg-[#fa8728]]="quickEditType === 'project'"
+                            [class.text-white]="quickEditType === 'project'"
+                            [class.bg-[#e6d5c3]/60]="quickEditType !== 'project'"
+                            [class.dark:bg-[#444547]/30]="quickEditType !== 'project'"
+                            [class.text-[#5c5f63]]="quickEditType !== 'project'"
+                          >
+                            🔗 {{ 'ADMIN.CAMERAS.TYPE_PROJECT' | translate }}
+                          </button>
+                        </div>
+
+                        @if (quickEditType === 'project') {
+                          <select
+                            [(ngModel)]="quickEditProject"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="ci-input text-xs"
+                          >
+                            <option value="" disabled>
+                              {{ 'ADMIN.CAMERAS.SELECT_PROJECT' | translate }}
+                            </option>
+                            @for (p of client.projects; track p._id) {
+                              <option [value]="p._id">{{ p.name }}</option>
+                            }
+                          </select>
+                        }
+
+                        <div class="flex gap-2">
+                          <button
+                            type="button"
+                            (click)="closeQuickTypeEditor()"
+                            class="ci-btn-secondary flex-1 !py-1.5 !text-[9px]"
+                          >
+                            {{ 'COMMON.CANCEL' | translate }}
+                          </button>
+                          <button
+                            type="button"
+                            (click)="saveQuickType(camera)"
+                            [disabled]="isSavingQuickType"
+                            class="ci-btn-primary flex-1 !py-1.5 !text-[9px]"
+                          >
+                            {{ 'COMMON.SAVE' | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
                 </div>
               </div>
             } @empty {
@@ -380,7 +464,7 @@
                   (click)="toggleCameraModal()"
                   class="mt-4 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-all text-white bg-[#444547] hover:bg-[#5c5f63]"
                 >
-                  + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }} (0/12)
+                  + {{ 'ADMIN.CAMERAS.ADD_CAMERA' | translate }}
                 </button>
               </div>
             }
@@ -565,6 +649,73 @@
                   class="ci-input"
                 />
               </div>
+
+              <!-- Camera Type -->
+              <div class="space-y-1.5">
+                <label
+                  class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+                >
+                  {{ 'ADMIN.CAMERAS.TYPE' | translate }} *
+                </label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    (click)="setCameraType('general')"
+                    class="px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-colors"
+                    [class.bg-[#444547]]="cameraForm.get('type')!.value === 'general'"
+                    [class.text-white]="cameraForm.get('type')!.value === 'general'"
+                    [class.bg-[#e6d5c3]/60]="cameraForm.get('type')!.value !== 'general'"
+                    [class.dark:bg-[#444547]/30]="cameraForm.get('type')!.value !== 'general'"
+                    [class.text-[#5c5f63]]="cameraForm.get('type')!.value !== 'general'"
+                  >
+                    📡 {{ 'ADMIN.CAMERAS.TYPE_GENERAL' | translate }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="setCameraType('project')"
+                    class="px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none cursor-pointer transition-colors"
+                    [class.bg-[#fa8728]]="cameraForm.get('type')!.value === 'project'"
+                    [class.text-white]="cameraForm.get('type')!.value === 'project'"
+                    [class.bg-[#e6d5c3]/60]="cameraForm.get('type')!.value !== 'project'"
+                    [class.dark:bg-[#444547]/30]="cameraForm.get('type')!.value !== 'project'"
+                    [class.text-[#5c5f63]]="cameraForm.get('type')!.value !== 'project'"
+                  >
+                    🔗 {{ 'ADMIN.CAMERAS.TYPE_PROJECT' | translate }}
+                  </button>
+                </div>
+                <p class="text-[9px] text-[#5c5f63]/40 dark:text-gray-600 mt-1">
+                  {{
+                    (cameraForm.get('type')!.value === 'project'
+                      ? 'ADMIN.CAMERAS.TYPE_PROJECT_DESC'
+                      : 'ADMIN.CAMERAS.TYPE_GENERAL_DESC'
+                    ) | translate
+                  }}
+                </p>
+              </div>
+
+              <!-- Project select (only when type is 'project') -->
+              @if (cameraForm.get('type')!.value === 'project') {
+                <div class="space-y-1.5">
+                  <label
+                    class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500"
+                  >
+                    {{ 'ADMIN.CAMERAS.PROJECT' | translate }} *
+                  </label>
+                  <select formControlName="project" class="ci-input">
+                    <option value="" disabled>
+                      {{ 'ADMIN.CAMERAS.SELECT_PROJECT' | translate }}
+                    </option>
+                    @for (p of client.projects; track p._id) {
+                      <option [value]="p._id">{{ p.name }}</option>
+                    }
+                  </select>
+                  @if (!client.projects || client.projects.length === 0) {
+                    <p class="text-[9px] text-rose-500 mt-1">
+                      {{ 'ADMIN.CAMERAS.NO_PROJECTS_HINT' | translate }}
+                    </p>
+                  }
+                </div>
+              }
 
               <!-- Last Pic URL -->
               <div class="space-y-1.5">
