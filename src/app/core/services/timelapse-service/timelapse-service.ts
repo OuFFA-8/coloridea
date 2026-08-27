@@ -7,6 +7,7 @@ export interface Timelapse {
   _id: string;
   name: string;
   link: string;
+  backgroundColor?: string;
   photo: string | null;
   project: string;
 }
@@ -24,6 +25,7 @@ export interface TimelapseSingleResponse {
 export interface CreateTimelapsePayload {
   name: string;
   link: string;
+  backgroundColor?: string;
 }
 
 @Injectable({
@@ -48,10 +50,7 @@ export class TimelapseService {
    *
    * POST /timeLaps/:projectId
    */
-  createTimelapse(
-    projectId: string,
-    payload: CreateTimelapsePayload,
-  ): Observable<TimelapseSingleResponse> {
+  createTimelapse(projectId: string, payload: FormData): Observable<TimelapseSingleResponse> {
     return this.http.post<TimelapseSingleResponse>(`${this.baseUrl}/${projectId}`, payload);
   }
 
@@ -60,10 +59,7 @@ export class TimelapseService {
    *
    * PATCH /timeLaps/:timelapseId
    */
-  updateTimelapse(
-    timelapseId: string,
-    payload: CreateTimelapsePayload,
-  ): Observable<TimelapseSingleResponse> {
+  updateTimelapse(timelapseId: string, payload: FormData): Observable<TimelapseSingleResponse> {
     return this.http.patch<TimelapseSingleResponse>(`${this.baseUrl}/${timelapseId}`, payload);
   }
 

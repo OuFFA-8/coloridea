@@ -92,6 +92,7 @@ export class Timelapses implements OnInit {
             url: timelapse.link,
             name: timelapse.name,
             projectId: this.projectId,
+            bg: timelapse.backgroundColor || '#0a0a0a',
           },
           replaceUrl: true,
         });
