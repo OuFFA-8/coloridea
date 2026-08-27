@@ -9,7 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
@@ -57,6 +57,7 @@ export interface LayoutOption {
 })
 export class ProjectScreens implements OnInit, OnDestroy {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private camerasService = inject(CamerasService);
   private adVideoService = inject(AdVideoService);
   private managersService = inject(ManagersService);
@@ -91,8 +92,21 @@ export class ProjectScreens implements OnInit, OnDestroy {
   // Right-click context menu
   contextMenu = { visible: false, x: 0, y: 0, slotIndex: -1 };
 
-  // Scopes this page to cameras belonging to the currently selected project
+  // Scopes this page to cameras belonging to the currently selected project.
+  // The route (/client/projects/:id/screens) is the source of truth - it's
+  // always the project actually open, never a stale one left over in
+  // localStorage from a previous visit. localStorage is only a fallback for
+  // the rare case this page is reached without that route param (e.g. an
+  // old bookmark).
   currentProjectId = '';
+
+  private resolveProjectId(): string {
+    // No longer nested under a parent route (this page renders full-screen,
+    // outside the client shell) - the :id is on this route directly now.
+    const routeProjectId = this.route.snapshot.paramMap.get('id');
+    if (routeProjectId) return routeProjectId;
+    return this.getSelectedProjectId();
+  }
 
   private getSelectedProjectId(): string {
     try {
@@ -147,7 +161,7 @@ export class ProjectScreens implements OnInit, OnDestroy {
 
     const storedUser = this.authServices.getUser();
     this.userDisplayDuration = storedUser?.displayDuration ?? 60;
-    this.currentProjectId = this.getSelectedProjectId();
+    this.currentProjectId = this.resolveProjectId();
 
     const role = this.authServices.getRole();
     if (role !== 'manager') {
@@ -541,14 +555,10 @@ export class ProjectScreens implements OnInit, OnDestroy {
   goBack() {
     if (this.authServices.isAdmin()) {
       this.router.navigate(['/admin/dashboard']);
+    } else if (this.currentProjectId) {
+      this.router.navigate(['/client/projects', this.currentProjectId]);
     } else {
-      const stored = localStorage.getItem('selectedProject');
-      const projectId = stored ? JSON.parse(stored)?._id : null;
-      if (projectId) {
-        this.router.navigate(['/client/projects', projectId]);
-      } else {
-        this.router.navigate(['/select-project']);
-      }
+      this.router.navigate(['/select-project']);
     }
   }
 

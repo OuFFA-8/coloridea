@@ -171,7 +171,7 @@
     }
 
     <a
-      routerLink="/cameras"
+      [routerLink]="['/client/projects', projectId, 'screens']"
       routerLinkActive="ci-nav-active"
       [attr.aria-label]="'SIDEBAR.SCREENS' | translate"
       [attr.title]="collapsed ? ('SIDEBAR.SCREENS' | translate) : null"
@@ -257,8 +257,8 @@
       <a
         routerLink="/client/managers"
         routerLinkActive="ci-nav-active"
-        aria-label="المشرفين"
-        [attr.title]="collapsed ? 'المشرفين' : null"
+        [attr.aria-label]="'SIDEBAR.MANAGERS' | translate"
+        [attr.title]="collapsed ? ('SIDEBAR.MANAGERS' | translate) : null"
         class="ci-nav-item group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold no-underline transition-all duration-250 text-gray-400 hover:text-[#fa8728] hover:bg-[#fa8728]/6"
         [class.justify-center]="collapsed"
       >
@@ -275,7 +275,7 @@
           </svg>
         </span>
         @if (!collapsed) {
-          المشرفين
+          {{ 'SIDEBAR.MANAGERS' | translate }}
         }
       </a>
     }
