@@ -6,7 +6,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { TimelapseService } from '../../../core/services/timelapse-service/timelapse-service';
@@ -28,6 +28,7 @@ interface SelectedProject {
 export class Timelapses implements OnInit {
   private readonly timelapseService = inject(TimelapseService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
 
   loading = true;
@@ -36,10 +37,26 @@ export class Timelapses implements OnInit {
   projectId = '';
 
   ngOnInit(): void {
-    this.getSelectedProject();
+    this.resolveProjectId();
   }
 
-  private getSelectedProject(): void {
+  // Same pattern used by the deliverables/financials tabs: the project id
+  // always comes from the route (/client/projects/:id/timelapse), so this
+  // page shows the timelapse of whichever project is currently open - never
+  // a stale one left over in localStorage from a previous visit.
+  private resolveProjectId(): void {
+    const routeProjectId = this.route.parent?.snapshot.paramMap.get('id');
+
+    if (routeProjectId) {
+      this.projectId = routeProjectId;
+      this.loadTimelapse();
+      return;
+    }
+
+    this.getSelectedProjectFromStorage();
+  }
+
+  private getSelectedProjectFromStorage(): void {
     try {
       const selectedProjectRaw = localStorage.getItem('selectedProject');
 

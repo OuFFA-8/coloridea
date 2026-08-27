@@ -109,12 +109,12 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/client/financials/financials').then((m) => m.Financials),
           },
+          {
+            path: 'timelapse',
+            loadComponent: () =>
+              import('./features/client/timelapses/timelapses').then((m) => m.Timelapses),
+          },
         ],
-      },
-      {
-        path: 'timelapse',
-        loadComponent: () =>
-          import('./features/client/timelapses/timelapses').then((m) => m.Timelapses),
       },
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
     ],
