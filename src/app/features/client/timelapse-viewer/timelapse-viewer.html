@@ -43,7 +43,7 @@
   </div>
 
   <!-- ===== STAGE ===== -->
-  <div class="flex-1 relative bg-black overflow-hidden">
+  <div class="flex-1 relative overflow-hidden" [style.background-color]="backgroundColor">
     <!-- Loading -->
     @if (isLoading && !hasError) {
       <div class="absolute inset-0 flex items-center justify-center bg-black z-20">
@@ -113,6 +113,7 @@
         [src]="safeUrl"
         (load)="onIframeLoad()"
         (error)="onIframeError()"
+        [style.background-color]="backgroundColor"
         class="w-full h-full border-0 relative z-10 ci-fade-in"
         [class.opacity-0]="isLoading"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"

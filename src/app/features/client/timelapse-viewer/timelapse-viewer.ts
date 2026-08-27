@@ -31,6 +31,7 @@ export class TimelapseViewer implements OnDestroy {
   hasError = false;
   isFullscreen = false;
   safeUrl: SafeResourceUrl | null = null;
+  backgroundColor = '#0a0a0a';
   private projectId: string | null = null;
 
   constructor() {
@@ -46,6 +47,7 @@ export class TimelapseViewer implements OnDestroy {
     const url = params.get('url');
     this.title = params.get('name') || 'Timelapse';
     this.projectId = params.get('projectId');
+    this.backgroundColor = params.get('bg') || '#0a0a0a';
 
     if (!url) {
       this.hasError = true;
@@ -64,8 +66,15 @@ export class TimelapseViewer implements OnDestroy {
   }
 
   onIframeLoad() {
-    this.isLoading = false;
-    this.cdr.detectChanges();
+    // The (load) event only fires once the iframe's outer document has
+    // loaded — Tikee's own app then takes a bit longer to render its
+    // content internally, during which its default white background is
+    // visible. We can't restyle that (cross-origin), so we buffer a short
+    // delay before revealing to reduce the chance of seeing that flash.
+    setTimeout(() => {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }, 900);
   }
 
   onIframeError() {
