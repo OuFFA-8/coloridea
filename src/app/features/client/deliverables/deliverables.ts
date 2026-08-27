@@ -9,7 +9,11 @@ import { AuthServices } from '../../../core/services/auth-services/auth-services
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { ManagersService } from '../../../core/services/managers-service/managers-service';
 import { LoadingService } from '../../../core/services/loading-service/loading-service';
-import { MyTranslate } from '../../../core/services/my-translate/my-translate'; 
+import { MyTranslate } from '../../../core/services/my-translate/my-translate';
+import {
+  TimelapseService,
+  Timelapse,
+} from '../../../core/services/timelapse-service/timelapse-service';
 @Component({
   selector: 'app-deliverables',
   standalone: true,
@@ -21,6 +25,7 @@ export class Deliverables implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
   private loadingService = inject(LoadingService);
+  private timelapseService = inject(TimelapseService);
 
   outputs: any[] = [];
   isLoading = true;
@@ -29,6 +34,8 @@ export class Deliverables implements OnInit {
   driveLoading = false;
   driveError = false;
   selectedDriveFile: any = null;
+  timelapse: Timelapse | null = null;
+  private projectId = '';
 
   baseUrl = environment.baseUrl;
   private apiKey = environment.googleApiKey;
@@ -48,11 +55,14 @@ export class Deliverables implements OnInit {
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       const projectId = this.route.parent?.snapshot.paramMap.get('id');
+      this.projectId = projectId || '';
       const user = this.authServices.getUser();
       if (!user?._id) {
         this.isLoading = false;
         return;
       }
+
+      this.loadTimelapse();
 
       this.loadingService.show('Loading deliverables...');
       const role = this.authServices.getRole();
@@ -93,6 +103,32 @@ export class Deliverables implements OnInit {
         });
       }
     }
+  }
+
+  private loadTimelapse(): void {
+    if (!this.projectId) return;
+    this.timelapseService.getProjectTimelapse(this.projectId).subscribe({
+      next: (res) => {
+        this.timelapse = res.data?.[0] ?? null;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.timelapse = null;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  openTimelapse(): void {
+    if (!this.timelapse) return;
+    this.router.navigate(['/client/timelapse-viewer'], {
+      queryParams: {
+        url: this.timelapse.link,
+        name: this.timelapse.name,
+        projectId: this.projectId,
+        bg: this.timelapse.backgroundColor || '#0a0a0a',
+      },
+    });
   }
 
   getPhotoUrl(path: string | null): string {

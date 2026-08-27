@@ -38,6 +38,45 @@
       </div>
     }
 
+    <!-- Standalone Timelapse card -->
+    @if (timelapse) {
+      <div
+        (click)="openTimelapse()"
+        class="ci-section ci-item group/item relative rounded-3xl overflow-hidden border cursor-pointer bg-white border-[#e6d5c3] shadow-sm dark:bg-[#1c1c1c] dark:border-[#444547]/30"
+        style="--delay: 0.02s"
+      >
+        <div class="h-44 relative overflow-hidden">
+          @if (timelapse.photo) {
+            <img
+              [src]="getPhotoUrl(timelapse.photo)"
+              [alt]="timelapse.name"
+              class="ci-item-img w-full h-full object-cover"
+              (error)="$any($event.target).style.display = 'none'"
+            />
+          } @else {
+            <div
+              class="w-full h-full flex items-center justify-center"
+              [style.background-color]="timelapse.backgroundColor || '#0a0a0a'"
+            >
+              <svg class="w-10 h-10 opacity-40 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          }
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex items-end p-4"
+          >
+            <div>
+              <p class="text-[9px] font-black uppercase tracking-widest text-white/70">
+                {{ 'SIDEBAR.TIMELAPSE' | translate }}
+              </p>
+              <p class="text-sm font-bold text-white">{{ timelapse.name }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- ACCORDION -->
     @for (output of outputs; track output._id; let i = $index) {
       <details
