@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProjectsService } from '../../../core/services/projects-service/projects-service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environments/environment';
@@ -67,6 +67,8 @@ export class AdminProjectDetails implements OnInit {
   projectPhotoPreview: string | null = null;
   itemPhotoFile: File | null = null;
   itemPhotoPreview: string | null = null;
+  timelapsePhotoFile: File | null = null;
+  timelapsePhotoPreview: string | null = null;
   contractFile: File | null = null;
   invoiceFile: File | null = null;
   receiptFile: File | null = null;
@@ -76,6 +78,7 @@ export class AdminProjectDetails implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private projectsService: ProjectsService,
     private outputsService: OutputsService,
     private alert: AlertService,
@@ -118,7 +121,7 @@ export class AdminProjectDetails implements OnInit {
     });
     this.timelapseForm = this.fb.group({
       name: ['', Validators.required],
-      link: ['', Validators.required],
+      embedCode: ['', Validators.required],
     });
   }
 
@@ -164,21 +167,93 @@ export class AdminProjectDetails implements OnInit {
   }
 
   openTimelapseModal() {
+    const existingEmbed = this.timelapse
+      ? `<iframe style="width:100%; border: none; height:100%; background-color:${
+          this.timelapse.backgroundColor || '#0a0a0a'
+        }; " src="${this.timelapse.link}" allowfullscreen></iframe>`
+      : '';
     this.timelapseForm.reset({
       name: this.timelapse?.name || '',
-      link: this.timelapse?.link || '',
+      embedCode: existingEmbed,
     });
+    this.timelapsePhotoFile = null;
+    this.timelapsePhotoPreview = this.timelapse?.photo
+      ? this.getPhotoUrl(this.timelapse.photo)
+      : null;
     this.showTimelapseModal = true;
+  }
+
+  onTimelapsePhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+    this.timelapsePhotoFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.timelapsePhotoPreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  openTimelapseLink(timelapse: Timelapse) {
+    if (!timelapse?.link) return;
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(['/client/timelapse-viewer'], {
+        queryParams: {
+          url: timelapse.link,
+          name: timelapse.name,
+          bg: timelapse.backgroundColor || '#0a0a0a',
+        },
+      }),
+    );
+    window.open(url, '_blank');
+  }
+
+  /**
+   * Extracts the `src` link and `background-color` from a pasted Tikee
+   * <iframe> embed snippet, so we never send raw HTML to the backend
+   * (avoids the XSS-sanitizer mangling `<`/`>` into `&lt;`/`&gt;`).
+   */
+  private parseTikeeEmbed(pasted: string): { link: string; backgroundColor: string } | null {
+    if (!pasted) return null;
+
+    // In case it was already escaped once (e.g. pasted from a place that HTML-encoded it)
+    const decoded = pasted
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"');
+
+    const srcMatch = decoded.match(/src=["']([^"']+)["']/i);
+    if (!srcMatch) return null;
+
+    const bgMatch = decoded.match(/background-color\s*:\s*(#[0-9a-fA-F]{3,8})/i);
+
+    return {
+      link: srcMatch[1],
+      backgroundColor: bgMatch ? bgMatch[1] : '#0a0a0a',
+    };
   }
 
   saveTimelapse() {
     if (this.timelapseForm.invalid) return;
+
+    const parsed = this.parseTikeeEmbed(this.timelapseForm.value.embedCode);
+    if (!parsed) {
+      this.alert.error('Please paste a valid embed code containing a src="..." link.');
+      return;
+    }
+
     this.isSaving = true;
     this.loadingService.show(this.timelapse ? 'Updating timelapse...' : 'Adding timelapse...');
-    const payload = this.timelapseForm.value;
+    const formData = new FormData();
+    formData.append('name', this.timelapseForm.value.name);
+    formData.append('link', parsed.link);
+    formData.append('backgroundColor', parsed.backgroundColor);
+    if (this.timelapsePhotoFile) formData.append('photo', this.timelapsePhotoFile);
     const request = this.timelapse
-      ? this.timelapseService.updateTimelapse(this.timelapse._id, payload)
-      : this.timelapseService.createTimelapse(this.project._id, payload);
+      ? this.timelapseService.updateTimelapse(this.timelapse._id, formData)
+      : this.timelapseService.createTimelapse(this.project._id, formData);
     request.subscribe({
       next: (res) => {
         this.timelapse = res.data;

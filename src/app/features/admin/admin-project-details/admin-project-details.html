@@ -451,44 +451,89 @@
           </div>
         } @else {
           <div
-            class="ci-card group relative rounded-2xl p-6 shadow-sm bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 max-w-md"
+            class="ci-card group relative rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#1c1c1c] border border-[#e6d5c3] dark:border-[#444547]/30 max-w-md"
           >
             <div
-              class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-[#fa8728] to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out"
+              class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-[#fa8728] to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out z-10"
             ></div>
 
-            <div class="flex items-start justify-between mb-3">
-              <div class="flex-1 min-w-0">
-                <h3
-                  class="text-sm font-black text-[#444547] dark:text-white truncate"
-                  style="font-family: 'Alexandria', sans-serif"
+            <!-- Thumbnail (uploaded photo, or a default placeholder) — click to open -->
+            <div
+              (click)="openTimelapseLink(timelapse)"
+              class="h-36 relative overflow-hidden cursor-pointer group/thumb"
+            >
+              @if (timelapse.photo) {
+                <img
+                  [src]="getPhotoUrl(timelapse.photo)"
+                  [alt]="timelapse.name"
+                  class="w-full h-full object-cover"
+                  (error)="$any($event.target).style.display = 'none'"
+                />
+              } @else {
+                <div
+                  class="w-full h-full flex items-center justify-center"
+                  [style.background-color]="timelapse.backgroundColor || '#0a0a0a'"
                 >
-                  {{ timelapse.name }}
-                </h3>
-                <a
-                  [href]="timelapse.link"
-                  target="_blank"
-                  rel="noopener"
-                  class="text-[9px] font-bold text-[#fa8728] hover:underline truncate block mt-1"
+                  <svg
+                    class="w-9 h-9 opacity-40 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              }
+              <div
+                class="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/20 transition-colors duration-200 flex items-center justify-center"
+              >
+                <svg
+                  class="w-8 h-8 text-white opacity-0 group-hover/thumb:opacity-90 transition-opacity duration-200"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
                 >
-                  {{ timelapse.link }}
-                </a>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
               </div>
-              <div class="flex gap-1.5 ml-2 flex-shrink-0">
-                <button
-                  (click)="openTimelapseModal()"
-                  type="button"
-                  class="w-7 h-7 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[#e6d5c3]/50 dark:bg-[#444547]/20 text-[#5c5f63] hover:bg-[#fa8728]/15 hover:text-[#fa8728] transition-colors duration-200"
-                >
-                  ✏
-                </button>
-                <button
-                  (click)="deleteTimelapse()"
-                  type="button"
-                  class="w-7 h-7 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[#e6d5c3]/50 dark:bg-[#444547]/20 text-[#5c5f63] hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 transition-colors duration-200"
-                >
-                  ✕
-                </button>
+            </div>
+
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1 min-w-0">
+                  <h3
+                    class="text-sm font-black text-[#444547] dark:text-white truncate"
+                    style="font-family: 'Alexandria', sans-serif"
+                  >
+                    {{ timelapse.name }}
+                  </h3>
+                </div>
+                <div class="flex gap-1.5 ml-2 flex-shrink-0">
+                  <button
+                    (click)="openTimelapseModal()"
+                    type="button"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[#e6d5c3]/50 dark:bg-[#444547]/20 text-[#5c5f63] hover:bg-[#fa8728]/15 hover:text-[#fa8728] transition-colors duration-200"
+                  >
+                    ✏
+                  </button>
+                  <button
+                    (click)="deleteTimelapse()"
+                    type="button"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[#e6d5c3]/50 dark:bg-[#444547]/20 text-[#5c5f63] hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 transition-colors duration-200"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1078,7 +1123,38 @@
               >
                 {{ 'ADMIN.PROJECTS.TIMELAPSE_LINK' | translate }}
               </label>
-              <input formControlName="link" type="url" placeholder="https://..." class="ci-input" />
+              <textarea
+                formControlName="embedCode"
+                rows="4"
+                placeholder="&lt;iframe style=&quot;width:100%; border: none; height:100%; background-color:#0a0a0a;&quot; src=&quot;https://my.tikee.io/...&quot; allowfullscreen&gt;&lt;/iframe&gt;"
+                class="ci-input font-mono text-xs"
+              ></textarea>
+            </div>
+            <div>
+              <label
+                class="block text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/50 dark:text-gray-500 mb-1.5"
+              >
+                {{ 'ADMIN.PROJECT_DETAILS.THUMBNAIL' | translate }}
+              </label>
+              <div
+                class="relative h-24 rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all duration-300 border-[#e6d5c3] dark:border-[#444547]/30 hover:border-[#fa8728]/50 bg-[#fff1e6] dark:bg-[#0e0e0e]"
+              >
+                @if (timelapsePhotoPreview) {
+                  <img [src]="timelapsePhotoPreview" class="w-full h-full object-cover" />
+                } @else {
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-[#5c5f63]/30">
+                      {{ 'ADMIN.PROJECT_DETAILS.THUMBNAIL' | translate }}
+                    </p>
+                  </div>
+                }
+                <input
+                  type="file"
+                  (change)="onTimelapsePhotoSelected($event)"
+                  accept="image/*"
+                  class="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              </div>
             </div>
             <div class="flex gap-3 pt-2">
               <button
